@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Twitter, Linkedin, Github, Shield, Award } from 'lucide-react';
 import NyvelMark from '../ui/NyvelMark';
 
@@ -71,15 +70,14 @@ export default function Footer() {
                 { Icon: Linkedin, label: 'Nyvel on LinkedIn' },
                 { Icon: Github, label: 'Nyvel on GitHub' },
               ].map(({ Icon, label }) => (
-                <a
+                <button
                   key={label}
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  type="button"
                   aria-label={label}
                   className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
                 >
                   <Icon size={16} />
-                </a>
+                </button>
               ))}
             </div>
           </div>
