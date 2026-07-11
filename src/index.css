@@ -1,0 +1,304 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply font-sans antialiased text-slate-900 dark:text-slate-50 bg-white dark:bg-slate-950 transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+
+  h1 { @apply text-5xl sm:text-6xl lg:text-7xl; }
+  h2 { @apply text-3xl sm:text-4xl; }
+  h3 { @apply text-2xl sm:text-3xl; }
+  h4 { @apply text-xl sm:text-2xl; }
+  h5 { @apply text-lg sm:text-xl; }
+  h6 { @apply text-base sm:text-lg; }
+
+  /* WCAG AAA compliant focus states for all interactive elements */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-brand-500 dark:ring-brand-400;
+  }
+
+  .dark *:focus-visible {
+    @apply ring-offset-slate-950;
+  }
+
+  .bg-slate-950 *:focus-visible,
+  .bg-slate-900 *:focus-visible,
+  .dark .bg-slate-900 *:focus-visible {
+    @apply ring-offset-slate-950;
+  }
+
+  /* Links should always be visible and understandable */
+  a {
+    @apply text-brand-600 dark:text-brand-400 hover:underline focus-visible:rounded-sm;
+  }
+
+  /* Form field baseline */
+  input, textarea, select {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  /* Semantic card component with elevation system */
+  .card {
+    @apply bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-elevation-sm dark:shadow-elevation-dark-sm transition-all duration-200;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer hover:shadow-elevation-md dark:hover:shadow-elevation-dark-md hover:border-slate-300 dark:hover:border-slate-600;
+  }
+
+  .card-elevated {
+    @apply card shadow-elevation-md dark:shadow-elevation-dark-md;
+  }
+
+  .card-highlight {
+    @apply card border-brand-200 dark:border-brand-900/50 bg-brand-50/30 dark:bg-brand-950/20;
+  }
+
+  /* Gradient text — used sparingly for emphasis */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-500 to-brand-600 dark:from-brand-400 dark:to-brand-500 bg-clip-text text-transparent;
+  }
+
+  /* Glass morphism for dark sections */
+  .glass-card {
+    @apply bg-white/5 dark:bg-white/5 backdrop-blur-sm border border-white/10 dark:border-white/20;
+  }
+
+  /* Ticker animation component */
+  .ticker-wrap {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    animation: ticker 50s linear infinite;
+  }
+
+  .ticker-inner:hover {
+    animation-play-state: paused;
+  }
+
+  /* Navigation link component */
+  .nav-link {
+    @apply flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-150 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800;
+  }
+
+  .nav-link.active {
+    @apply bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-semibold;
+  }
+
+  /* Sidebar navigation styling */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150;
+  }
+
+  .sidebar-link.active {
+    @apply bg-brand-600 dark:bg-brand-700 text-white shadow-elevation-sm dark:shadow-elevation-dark-sm;
+  }
+
+  .sidebar-link:not(.active) {
+    @apply text-slate-400 dark:text-slate-500 hover:bg-slate-800 dark:hover:bg-slate-700 hover:text-white dark:hover:text-slate-300;
+  }
+
+  /* Stat card — dashboard KPI display */
+  .stat-card {
+    @apply card p-5 hover:shadow-elevation-md dark:hover:shadow-elevation-dark-md transition-shadow duration-200;
+  }
+
+  /* Data table styling */
+  .data-table {
+    @apply w-full text-sm;
+  }
+
+  .data-table thead {
+    @apply bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 border-t border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-slate-50 dark:bg-slate-800/30;
+  }
+
+  /* Form controls with WCAG AAA focus states */
+  .form-input,
+  .form-textarea,
+  .form-select {
+    @apply w-full px-3 py-2 rounded-md border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-50 bg-white dark:bg-slate-900 placeholder-slate-500 dark:placeholder-slate-400
+           transition-all duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 focus:border-transparent;
+  }
+
+  .form-input:disabled,
+  .form-textarea:disabled,
+  .form-select:disabled {
+    @apply bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed;
+  }
+
+  .form-input.error,
+  .form-textarea.error,
+  .form-select.error {
+    @apply border-error-500 dark:border-error-400 ring-error-500/20 dark:ring-error-400/20;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5;
+  }
+
+  .form-label.required::after {
+    content: '*';
+    @apply ml-1 text-error-600 dark:text-error-400;
+  }
+
+  .form-help {
+    @apply mt-1 text-xs text-slate-500 dark:text-slate-400;
+  }
+
+  .form-error {
+    @apply mt-1 text-xs text-error-600 dark:text-error-400 font-medium;
+  }
+
+  /* Section eyebrow/overline text */
+  .section-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400;
+  }
+
+  /* Status badge styles (semantic color system) */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border;
+  }
+
+  .badge-success {
+    @apply bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-success-200 dark:border-success-800;
+  }
+
+  .badge-warning {
+    @apply bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 border-warning-200 dark:border-warning-800;
+  }
+
+  .badge-error {
+    @apply bg-error-50 dark:bg-error-900/30 text-error-700 dark:text-error-300 border-error-200 dark:border-error-800;
+  }
+
+  .badge-info {
+    @apply bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-800;
+  }
+
+  .badge-neutral {
+    @apply bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700;
+  }
+
+  /* Alert/message components */
+  .alert {
+    @apply flex items-start gap-3 p-4 rounded-lg border;
+  }
+
+  .alert-success {
+    @apply bg-success-50 dark:bg-success-900/20 border-success-200 dark:border-success-800 text-success-800 dark:text-success-200;
+  }
+
+  .alert-warning {
+    @apply bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800 text-warning-800 dark:text-warning-200;
+  }
+
+  .alert-error {
+    @apply bg-error-50 dark:bg-error-900/20 border-error-200 dark:border-error-800 text-error-800 dark:text-error-200;
+  }
+
+  .alert-info {
+    @apply bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800 text-brand-800 dark:text-brand-200;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Semantic text utilities */
+  .text-label {
+    @apply text-sm font-semibold text-slate-700 dark:text-slate-300;
+  }
+
+  .text-caption {
+    @apply text-xs text-slate-500 dark:text-slate-400;
+  }
+
+  .text-muted {
+    @apply text-slate-600 dark:text-slate-400;
+  }
+
+  .text-subtle {
+    @apply text-slate-500 dark:text-slate-500;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-600 rounded-full transition-colors duration-200;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400 dark:bg-slate-500;
+}
+
+/*
+  Reduced-motion safeguard.
+  Several elements start at opacity:0 and are revealed by entrance
+  animations. When a visitor asks the OS to reduce motion, those
+  animations must not simply be cancelled (that would leave the
+  content invisible) — we cancel the motion AND force the final
+  visible state. The !important overrides the inline opacity:0.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  [class*="animate-fade"],
+  [class*="animate-count"],
+  [class*="animate-slide"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .ticker-inner {
+    animation: none !important;
+  }
+}
+
+/* Dark mode specific overrides */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
