@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Play, ShieldCheck, UserCheck, Layers, Timer } from 'lucide-react';
+import { ArrowRight, ShieldCheck, UserCheck, Layers, Timer } from 'lucide-react';
 import { tickerItems } from '../../data/mockData';
 import Button from '../ui/Button';
 
