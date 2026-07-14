@@ -9,6 +9,7 @@ const navLinks = [
     label: 'Platform',
     href: '#features',
     sub: [
+      { label: 'Overview', href: '#features' },
       { label: 'Bug Hunt', href: '#test-types' },
       { label: 'Usability Testing', href: '#test-types' },
       { label: 'Load Testing', href: '#test-types' },
@@ -17,9 +18,10 @@ const navLinks = [
       { label: 'Game Playtesting', href: '#test-types' },
     ],
   },
+  { label: 'Use Cases', href: '#test-types' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'Security', href: '#security' },
+  { label: 'Quality & Security', href: '#security' },
 ];
 
 export default function Navbar() {
@@ -46,7 +48,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2.5 group">
             <NyvelMark size={32} className="rounded-lg shadow-glow transition-transform group-hover:scale-105" />
             <span className="font-display font-bold text-white text-lg tracking-tight">
-              Ny<span className="text-brand-400">vel</span>
+              Ny<span className="text-accent-400">vel</span>
             </span>
           </Link>
 
@@ -101,8 +103,8 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* CTA Buttons - Different for different user types */}
+          <div className="hidden md:flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -111,8 +113,20 @@ export default function Navbar() {
             >
               Sign In
             </Button>
-            <Button size="sm" onClick={() => navigate('/login')}>
-              Get Started
+            <Button 
+              variant="secondary" 
+              size="sm"
+              onClick={() => navigate('/login?role=tester')}
+              className="text-slate-900"
+            >
+              Join as Tester
+            </Button>
+            <Button 
+              size="sm" 
+              onClick={() => navigate('/login?role=company')}
+              className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold shadow-md hover:shadow-lg transition-all"
+            >
+              Start Free
             </Button>
           </div>
 
@@ -144,8 +158,14 @@ export default function Navbar() {
             <Button variant="ghost" className="w-full text-slate-300" onClick={() => navigate('/login')}>
               Sign In
             </Button>
-            <Button className="w-full" onClick={() => navigate('/login')}>
-              Get Started
+            <Button variant="secondary" className="w-full text-slate-900" onClick={() => navigate('/login?role=tester')}>
+              Join as Tester
+            </Button>
+            <Button 
+              className="w-full bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold" 
+              onClick={() => navigate('/login?role=company')}
+            >
+              Start Free
             </Button>
           </div>
         </div>
