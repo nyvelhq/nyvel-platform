@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../components/marketing/Navbar';
 import Hero from '../components/marketing/Hero';
+import TrustSignals from '../components/marketing/TrustSignals';
 import Features from '../components/marketing/Features';
 import HowItWorks from '../components/marketing/HowItWorks';
 import Pricing from '../components/marketing/Pricing';
@@ -29,6 +30,7 @@ export default function LandingPage() {
     <div className="min-h-screen">
       <Navbar />
       <Hero />
+      <TrustSignals />
       <Features />
       <HowItWorks />
 

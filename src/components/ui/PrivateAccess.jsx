@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import Button from './Button';
 
 /**
- * PrivateAccess — Gate the entire app with a password
- * Wraps App.js to require authentication before accessing
+ * PrivateAccess — Gate dashboard routes with a password
+ * Public marketing pages (/, /login) are always accessible
  */
 export default function PrivateAccess({ children }) {
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return sessionStorage.getItem('nyvel_authenticated') === 'true';
   });
@@ -17,6 +19,10 @@ export default function PrivateAccess({ children }) {
   const [loading, setLoading] = useState(false);
 
   const CORRECT_PASSWORD = process.env.REACT_APP_PASSWORD || 'nyvel2024';
+
+  // Public routes that don't require password authentication
+  const publicRoutes = ['/', '/login'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +43,7 @@ export default function PrivateAccess({ children }) {
     setLoading(false);
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !isPublicRoute) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 dark:from-slate-950 dark:to-slate-900">
         <div className="w-full max-w-md px-6 py-8">

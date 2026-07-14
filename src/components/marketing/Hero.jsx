@@ -4,7 +4,6 @@ import { ArrowRight, Play, ShieldCheck, UserCheck, Layers, Timer } from 'lucide-
 import { tickerItems } from '../../data/mockData';
 import Button from '../ui/Button';
 
-// Honest, qualitative value props — no fabricated counts or certifications.
 const statItems = [
   { value: 'QA-led', label: 'Testing run by professionals', icon: UserCheck },
   { value: 'Vetted', label: 'Screened, NDA-bound testers', icon: ShieldCheck },
@@ -40,49 +39,59 @@ export default function Hero() {
           className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white text-center leading-[1.05] tracking-tight max-w-5xl animate-fade-up"
           style={{ animationDelay: '100ms', opacity: 0, animationFillMode: 'forwards' }}
         >
-          Beta Testing,
+          The Real
           <br />
-          Perfected by{' '}
-          <span className="gradient-text">Real People</span>
+          Beta Testing
+          <br />
+          <span className="gradient-text">Platform</span>
         </h1>
 
-        {/* Subheading — honest */}
-        <p
-          className="mt-7 text-lg sm:text-xl text-slate-400 text-center max-w-2xl leading-relaxed animate-fade-up"
-          style={{ animationDelay: '200ms', opacity: 0, animationFillMode: 'forwards' }}
-        >
-          Nyvel pairs vetted human testers with an experienced QA team, so you get
-          real-world feedback that actually improves your product — before it ships.
-        </p>
-
-        {/* CTAs */}
+        {/* Key Benefits — checkmarks like BetaTesting */}
         <div
-          className="mt-10 flex flex-col sm:flex-row gap-4 items-center animate-fade-up"
-          style={{ animationDelay: '300ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-8 space-y-3 text-center max-w-2xl animate-fade-up"
+          style={{ animationDelay: '150ms', opacity: 0, animationFillMode: 'forwards' }}
+        >
+          <p className="flex items-center justify-center gap-3 text-base text-slate-300">
+            <span className="text-brand-400 font-bold">✓</span>
+            Testing with vetted, real-world testers
+          </p>
+          <p className="flex items-center justify-center gap-3 text-base text-slate-300">
+            <span className="text-brand-400 font-bold">✓</span>
+            Professional QA review for structured insights
+          </p>
+          <p className="flex items-center justify-center gap-3 text-base text-slate-300">
+            <span className="text-brand-400 font-bold">✓</span>
+            A powerful platform for any test type
+          </p>
+        </div>
+
+        {/* CTAs — Different buttons for different user types */}
+        <div
+          className="mt-12 flex flex-col sm:flex-row gap-4 items-center animate-fade-up"
+          style={{ animationDelay: '250ms', opacity: 0, animationFillMode: 'forwards' }}
         >
           <Button
-            size="xl"
-            className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 shadow-glow"
-            onClick={() => navigate('/login')}
+            size="lg"
+            className="bg-brand-600 hover:bg-brand-700 text-white px-8 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all"
+            onClick={() => navigate('/login?role=company')}
             iconRight={<ArrowRight size={18} />}
           >
-            Launch Your Test
+            Get Started
           </Button>
           <Button
-            size="xl"
+            size="lg"
             variant="ghost"
-            className="text-slate-300 hover:text-white hover:bg-white/10 border border-white/15"
-            onClick={() => navigate('/login')}
-            icon={<Play size={18} />}
+            className="text-slate-300 hover:text-white hover:bg-white/10 border border-slate-500 px-8 py-3 rounded-full font-semibold"
+            onClick={() => navigate('/login?role=tester')}
           >
-            Join as Tester · Free
+            Join as Beta Tester
           </Button>
         </div>
 
         {/* Honest heritage line (replaces borrowed customer logos) */}
         <div
-          className="mt-12 flex flex-col items-center gap-2 animate-fade-up"
-          style={{ animationDelay: '400ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-10 flex flex-col items-center gap-2 animate-fade-up"
+          style={{ animationDelay: '350ms', opacity: 0, animationFillMode: 'forwards' }}
         >
           <span className="text-xs text-slate-500 font-semibold uppercase tracking-widest text-center">
             Backed by an established software-QA team
@@ -96,7 +105,7 @@ export default function Hero() {
         {/* Live Ticker — labelled as an illustrative preview */}
         <div
           className="mt-14 w-full max-w-5xl animate-fade-up"
-          style={{ animationDelay: '500ms', opacity: 0, animationFillMode: 'forwards' }}
+          style={{ animationDelay: '450ms', opacity: 0, animationFillMode: 'forwards' }}
         >
           <div className="border border-white/10 rounded-xl overflow-hidden bg-slate-900/60 backdrop-blur-sm">
             <div className="flex items-center gap-3 px-4 py-2 border-b border-white/10 bg-slate-900/40">
@@ -126,7 +135,7 @@ export default function Hero() {
         {/* Value-prop row (replaces fabricated metric grid) */}
         <div
           className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8 w-full max-w-4xl animate-fade-up"
-          style={{ animationDelay: '600ms', opacity: 0, animationFillMode: 'forwards' }}
+          style={{ animationDelay: '550ms', opacity: 0, animationFillMode: 'forwards' }}
         >
           {statItems.map(({ value, label, icon: Icon }) => (
             <div key={label} className="text-center group">
