@@ -125,7 +125,7 @@ export const validators = {
    */
   phone: (value) => {
     if (!value) return null;
-    const phoneRegex = /^[\d\s\-\(\)\+]+$/.test(value) && value.replace(/\D/g, '').length >= 10;
+    const phoneRegex = /^[\d\s\-()+]+$/.test(value) && value.replace(/\D/g, '').length >= 10;
     return !phoneRegex ? 'Please enter a valid phone number' : null;
   },
 
