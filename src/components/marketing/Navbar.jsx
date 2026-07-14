@@ -48,7 +48,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2.5 group">
             <NyvelMark size={32} className="rounded-lg shadow-glow transition-transform group-hover:scale-105" />
             <span className="font-display font-bold text-white text-lg tracking-tight">
-              Ny<span className="text-brand-400">vel</span>
+              Ny<span className="text-accent-400">vel</span>
             </span>
           </Link>
 
@@ -121,8 +121,12 @@ export default function Navbar() {
             >
               Join as Tester
             </Button>
-            <Button size="sm" onClick={() => navigate('/login?role=company')}>
-              Start Testing
+            <Button 
+              size="sm" 
+              onClick={() => navigate('/login?role=company')}
+              className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold shadow-md hover:shadow-lg transition-all"
+            >
+              Start Free
             </Button>
           </div>
 
@@ -157,8 +161,11 @@ export default function Navbar() {
             <Button variant="secondary" className="w-full text-slate-900" onClick={() => navigate('/login?role=tester')}>
               Join as Tester
             </Button>
-            <Button className="w-full" onClick={() => navigate('/login?role=company')}>
-              Start Testing
+            <Button 
+              className="w-full bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold" 
+              onClick={() => navigate('/login?role=company')}
+            >
+              Start Free
             </Button>
           </div>
         </div>
