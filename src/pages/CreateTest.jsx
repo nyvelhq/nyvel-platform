@@ -5,6 +5,7 @@ import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import Stepper from '../components/ui/Stepper';
 import { useAppData } from '../context/DataContext';
+import { validators } from '../utils/validation';
 
 const testTypeOptions = [
   { id: 'bug-hunt', label: 'Bug Hunt', icon: '🐛', desc: 'Find defects & crashes', canonical: 'Bug Hunt' },
@@ -29,6 +30,7 @@ export default function CreateTest() {
   const { addCompanyTest } = useAppData();
   const [step, setStep] = useState(1);
   const [launching, setLaunching] = useState(false);
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     name: '',
     type: '',
@@ -45,7 +47,26 @@ export default function CreateTest() {
     briefing: '',
   });
 
-  const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+  const set = (key, val) => {
+    setForm((f) => ({ ...f, [key]: val }));
+    validateField(key, val);
+  };
+
+  const validateField = (field, value) => {
+    let error = null;
+
+    if (field === 'compensation') {
+      error = validators.number(value, 10, 1000);
+    }
+
+    setErrors((prev) => {
+      if (error) {
+        return { ...prev, [field]: error };
+      }
+      const { [field]: _, ...rest } = prev;
+      return rest;
+    });
+  };
 
   const toggleArray = (key, val) =>
     setForm((f) => ({
@@ -236,12 +257,17 @@ export default function CreateTest() {
                 <label className="form-label">Tester Compensation ($)</label>
                 <input
                   type="number"
-                  className="form-input"
+                  className={`form-input ${errors.compensation ? 'border-red-500' : ''}`}
                   value={form.compensation}
-                  onChange={(e) => set('compensation', Number(e.target.value))}
+                  onChange={(e) => set('compensation', e.target.value ? Number(e.target.value) : '')}
                   min="10"
+                  max="1000"
                   step="5"
+                  placeholder="Enter amount (10-1000)"
                 />
+                {errors.compensation && (
+                  <p className="text-xs text-red-600 mt-1">{errors.compensation}</p>
+                )}
               </div>
             </div>
 
@@ -262,7 +288,7 @@ export default function CreateTest() {
               <Button variant="secondary" onClick={() => setStep(1)}>Back</Button>
               <Button
                 onClick={() => setStep(3)}
-                disabled={form.platforms.length === 0}
+                disabled={form.platforms.length === 0 || !!errors.compensation}
                 iconRight={<ChevronRight size={16} />}
               >
                 Review Test

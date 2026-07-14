@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import Button from './Button';
 
 /**
@@ -12,12 +13,17 @@ export default function PrivateAccess({ children }) {
 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const CORRECT_PASSWORD = process.env.REACT_APP_PASSWORD || 'nyvel2024';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
+
+    await new Promise((res) => setTimeout(res, 600));
 
     if (password === CORRECT_PASSWORD) {
       setIsAuthenticated(true);
@@ -27,6 +33,8 @@ export default function PrivateAccess({ children }) {
       setError('Incorrect password. Please try again.');
       setPassword('');
     }
+
+    setLoading(false);
   };
 
   if (!isAuthenticated) {
@@ -50,15 +58,27 @@ export default function PrivateAccess({ children }) {
               <label htmlFor="password" className="form-label text-white">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                autoFocus
-                className="form-input bg-slate-800 border-slate-700 text-white placeholder-slate-500"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                  autoFocus
+                  disabled={loading}
+                  className="form-input bg-slate-800 border-slate-700 text-white placeholder-slate-500 pr-11 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
               {error && (
                 <p className="form-error mt-2">{error}</p>
               )}
@@ -67,9 +87,10 @@ export default function PrivateAccess({ children }) {
             <Button
               type="submit"
               className="w-full"
-              disabled={!password}
+              disabled={!password || loading}
+              loading={loading}
             >
-              Access Platform
+              {loading ? 'Verifying...' : 'Access Platform'}
             </Button>
           </form>
 
