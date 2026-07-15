@@ -85,13 +85,11 @@ export function RealTimeRefresh({ isEnabled, onToggle, lastUpdated, onRefresh, i
 export function useAutoRefresh(callback, options = {}) {
   const {
     autoRefreshEnabled: initialEnabled = false,
-    refreshInterval: initialInterval = 30000,
   } = options;
 
   const [isEnabled, setIsEnabled] = useState(initialEnabled);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [refreshInterval, setRefreshInterval] = useState(initialInterval);
 
   const handleRefresh = async () => {
     setIsLoading(true);

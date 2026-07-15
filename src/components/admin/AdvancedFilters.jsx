@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export function AdvancedFilters({ onFilterChange, filterOptions = {} }) {
   const [isOpen, setIsOpen] = useState(false);

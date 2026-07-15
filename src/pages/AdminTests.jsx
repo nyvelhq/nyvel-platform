@@ -13,13 +13,6 @@ import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
 
-const statusColors = {
-  'Active': 'cyan',
-  'In Progress': 'amber',
-  'Completed': 'emerald',
-  default: 'slate',
-};
-
 const typeColors = {
   'Bug Hunt': 'red',
   'Usability': 'violet',
@@ -29,7 +22,6 @@ const typeColors = {
   default: 'slate',
 };
 
-const getStatusColor = (status) => statusColors[status] || statusColors.default;
 const getTypeColor = (type) => typeColors[type] || typeColors.default;
 
 export default function AdminTests() {
