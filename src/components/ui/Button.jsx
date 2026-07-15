@@ -40,6 +40,7 @@ export default function Button({
   icon,
   iconRight,
   type = 'button',
+  textColor = '',
   'aria-label': ariaLabel,
   ...props
 }) {
@@ -57,6 +58,7 @@ export default function Button({
         focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 dark:focus-visible:ring-brand-400 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-950
         ${variantClasses}
         ${sizeClasses}
+        ${textColor}
         ${className}
       `}
       disabled={isDisabled}

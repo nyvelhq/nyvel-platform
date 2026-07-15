@@ -82,8 +82,9 @@ export default function Pricing() {
 
               <div className="p-8 pt-0">
                 <Button
-                  variant={plan.highlighted ? 'accent' : 'outline'}
-                  className={`w-full ${plan.highlighted ? 'bg-white text-brand-700 hover:bg-brand-50' : ''}`}
+                  variant="outline"
+                  className={`w-full ${plan.highlighted ? '!bg-white !border-white' : ''}`}
+                  textColor={plan.highlighted ? '!text-slate-900' : ''}
                   onClick={() => navigate('/login')}
                 >
                   {plan.cta}
