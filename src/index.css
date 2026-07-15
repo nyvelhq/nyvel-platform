@@ -328,6 +328,118 @@
   .toast-exit {
     @apply animate-slide-up-out;
   }
+
+  /* Phase 6: Page transition utilities */
+  .page-container {
+    @apply w-full min-h-screen transition-all;
+  }
+
+  .page-enter {
+    @apply animate-fade-in-page;
+  }
+
+  .page-exit {
+    @apply animate-fade-out;
+  }
+
+  /* Directional page transitions */
+  .page-enter-right {
+    @apply animate-slide-in-right;
+  }
+
+  .page-enter-left {
+    @apply animate-slide-in-left-page;
+  }
+
+  .page-enter-up {
+    @apply animate-slide-in-up;
+  }
+
+  .page-exit-left {
+    @apply animate-page-exit-left;
+  }
+
+  .page-exit-right {
+    @apply animate-page-exit-right;
+  }
+
+  /* Phase 6: Scroll reveal utilities */
+  .scroll-reveal {
+    @apply transition-all;
+  }
+
+  .scroll-reveal-fade {
+    @apply animate-fade-in-page;
+  }
+
+  .scroll-reveal-up {
+    @apply animate-slide-in-up;
+  }
+
+  /* Parallax effect (used with JavaScript) */
+  .parallax {
+    @apply will-change-transform;
+  }
+
+  /* Phase 6: Gesture animation utilities */
+  .gesture-swipe {
+    @apply transition-all will-change-transform;
+  }
+
+  .gesture-swipe-out-right {
+    @apply animate-slide-out-right;
+  }
+
+  .gesture-swipe-out-left {
+    @apply animate-slide-out-left;
+  }
+
+  .gesture-bounce-back {
+    @apply animate-bounce-back;
+  }
+
+  /* Phase 6: Table row animations */
+  .table-row-enter {
+    @apply animate-table-row-in;
+  }
+
+  .table-row-exit {
+    @apply animate-table-row-out;
+  }
+
+  /* Stagger delays for sequential animations */
+  .stagger-75 {
+    animation-delay: 75ms;
+  }
+
+  .stagger-100 {
+    animation-delay: 100ms;
+  }
+
+  .stagger-150 {
+    animation-delay: 150ms;
+  }
+
+  .stagger-200 {
+    animation-delay: 200ms;
+  }
+
+  .stagger-250 {
+    animation-delay: 250ms;
+  }
+
+  .stagger-300 {
+    animation-delay: 300ms;
+  }
+
+  /* Smooth page exit transition wrapper */
+  .page-transition-wrapper {
+    @apply relative min-h-screen;
+  }
+
+  .page-transition-content {
+    @apply w-full;
+  }
 }
 
 @layer utilities {

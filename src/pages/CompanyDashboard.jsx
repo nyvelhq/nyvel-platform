@@ -12,6 +12,7 @@ import StatCard from '../components/ui/StatCard';
 import EmptyState from '../components/ui/EmptyState';
 import { StatusBadge, TypeBadge, SeverityBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
+import ScrollReveal from '../components/ScrollReveal';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
 import {
@@ -49,39 +50,47 @@ export default function CompanyDashboard() {
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-          <StatCard
-            label="Active Tests"
-            value={companyStats.activeTests}
-            trend={companyStats.trends.activeTests}
-            trendLabel=" this week"
-            icon={FlaskConical}
-            iconColor="violet"
-          />
-          <StatCard
-            label="Total Testers"
-            value={companyStats.totalTesters}
-            trend={companyStats.trends.totalTesters}
-            trendLabel=" this month"
-            icon={Users}
-            iconColor="cyan"
-          />
-          <StatCard
-            label="Open Issues"
-            value={companyStats.openIssues}
-            trend={companyStats.trends.openIssues}
-            trendLabel=" since last week"
-            icon={AlertTriangle}
-            iconColor="amber"
-            invert
-          />
-          <StatCard
-            label="Completion Rate"
-            value={`${companyStats.completionRate}%`}
-            trend={companyStats.trends.completionRate}
-            trendLabel="%"
-            icon={CheckCircle}
-            iconColor="green"
-          />
+            <ScrollReveal animation="fade-in-page" staggerIndex={0} staggerDelay={100}>
+              <StatCard
+                label="Active Tests"
+                value={companyStats.activeTests}
+                trend={companyStats.trends.activeTests}
+                trendLabel=" this week"
+                icon={FlaskConical}
+                iconColor="violet"
+              />
+            </ScrollReveal>
+            <ScrollReveal animation="fade-in-page" staggerIndex={1} staggerDelay={100}>
+              <StatCard
+                label="Total Testers"
+                value={companyStats.totalTesters}
+                trend={companyStats.trends.totalTesters}
+                trendLabel=" this month"
+                icon={Users}
+                iconColor="cyan"
+              />
+            </ScrollReveal>
+            <ScrollReveal animation="fade-in-page" staggerIndex={2} staggerDelay={100}>
+              <StatCard
+                label="Open Issues"
+                value={companyStats.openIssues}
+                trend={companyStats.trends.openIssues}
+                trendLabel=" since last week"
+                icon={AlertTriangle}
+                iconColor="amber"
+                invert
+              />
+            </ScrollReveal>
+            <ScrollReveal animation="fade-in-page" staggerIndex={3} staggerDelay={100}>
+              <StatCard
+                label="Completion Rate"
+                value={`${companyStats.completionRate}%`}
+                trend={companyStats.trends.completionRate}
+                trendLabel="%"
+                icon={CheckCircle}
+                iconColor="green"
+              />
+            </ScrollReveal>
           </div>
         </div>
 

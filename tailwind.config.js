@@ -117,6 +117,20 @@ module.exports = {
         'check-mark': 'checkMark 0.3s ease-out forwards',
         'error-shake': 'errorShake 0.4s ease-in-out forwards',
         'fade-out': 'fadeOut 0.2s ease-out forwards',
+        // Phase 6: Page transitions
+        'slide-in-right': 'slideInRight 0.35s ease-out forwards',
+        'slide-in-left-page': 'slideInLeftPage 0.35s ease-out forwards',
+        'slide-in-up': 'slideInUp 0.35s ease-out forwards',
+        'fade-in-page': 'fadeInPage 0.3s ease-out forwards',
+        'page-exit-left': 'pageExitLeft 0.25s ease-in forwards',
+        'page-exit-right': 'pageExitRight 0.25s ease-in forwards',
+        // Phase 6: Gesture animations
+        'slide-out-right': 'slideOutRight 0.3s ease-in forwards',
+        'slide-out-left': 'slideOutLeft 0.3s ease-in forwards',
+        'bounce-back': 'bounceBack 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
+        // Phase 6: Table animations
+        'table-row-in': 'tableRowIn 0.4s ease-out forwards',
+        'table-row-out': 'tableRowOut 0.25s ease-in forwards',
       },
       keyframes: {
         ticker: {
@@ -168,6 +182,53 @@ module.exports = {
         fadeOut: {
           '0%': { opacity: '1' },
           '100%': { opacity: '0' },
+        },
+        // Phase 6: Page transitions
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(100%)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideInLeftPage: {
+          '0%': { opacity: '0', transform: 'translateX(-100%)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideInUp: {
+          '0%': { opacity: '0', transform: 'translateY(40px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInPage: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        pageExitLeft: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(-100%)' },
+        },
+        pageExitRight: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(100%)' },
+        },
+        // Phase 6: Gesture animations
+        slideOutRight: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(100%)' },
+        },
+        slideOutLeft: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(-100%)' },
+        },
+        bounceBack: {
+          '0%': { transform: 'translateX(var(--bounce-distance, 30px))' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        // Phase 6: Table animations
+        tableRowIn: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        tableRowOut: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(-100%)' },
         },
       },
       backgroundImage: {

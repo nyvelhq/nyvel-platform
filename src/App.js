@@ -22,6 +22,7 @@ import ComingSoon from './pages/ComingSoon';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import PasswordGate from './components/ui/PasswordGate';
 import Toast from './components/ui/Toast';
+import PageTransitionWrapper from './components/PageTransitionWrapper';
 import { DataProvider } from './context/DataContext';
 import { ToastProvider } from './context/ToastContext';
 
@@ -166,42 +167,44 @@ function AppRoutes() {
   }
 
   return (
-    <Routes>
-      {/* Marketing */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
+    <PageTransitionWrapper>
+      <Routes>
+        {/* Marketing */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
 
-      {/* Company routes */}
-      <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
-      <Route path="/company/create-test" element={guarded('company', <CreateTest />)} />
-      <Route path="/company/tests" element={guarded('company', <ComingSoon title="My Tests" />)} />
-      <Route path="/company/tests/:id" element={guarded('company', <ComingSoon title="Test Details" />)} />
-      <Route path="/company/testers" element={guarded('company', <ComingSoon title="Testers" />)} />
-      <Route path="/company/reports" element={guarded('company', <ComingSoon title="Reports" />)} />
-      <Route path="/company/settings" element={guarded('company', <ComingSoon title="Settings" />)} />
+        {/* Company routes */}
+        <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
+        <Route path="/company/create-test" element={guarded('company', <CreateTest />)} />
+        <Route path="/company/tests" element={guarded('company', <ComingSoon title="My Tests" />)} />
+        <Route path="/company/tests/:id" element={guarded('company', <ComingSoon title="Test Details" />)} />
+        <Route path="/company/testers" element={guarded('company', <ComingSoon title="Testers" />)} />
+        <Route path="/company/reports" element={guarded('company', <ComingSoon title="Reports" />)} />
+        <Route path="/company/settings" element={guarded('company', <ComingSoon title="Settings" />)} />
 
-      {/* Tester routes */}
-      <Route path="/tester/dashboard" element={guarded('tester', <TesterDashboard />)} />
-      <Route path="/tester/onboarding" element={guarded('tester', <TesterOnboarding />)} />
-      <Route path="/tester/profile" element={guarded('tester', <TesterProfile />)} />
-      <Route path="/tester/tests" element={guarded('tester', <ComingSoon title="Available Tests" />)} />
-      <Route path="/tester/tests/:id" element={guarded('tester', <ComingSoon title="Test Details" />)} />
-      <Route path="/tester/applications" element={guarded('tester', <ComingSoon title="My Applications" />)} />
-      <Route path="/tester/applications/:id" element={guarded('tester', <ComingSoon title="Application Details" />)} />
-      <Route path="/tester/earnings" element={guarded('tester', <ComingSoon title="Earnings" />)} />
-      <Route path="/tester/settings" element={guarded('tester', <ComingSoon title="Settings" />)} />
+        {/* Tester routes */}
+        <Route path="/tester/dashboard" element={guarded('tester', <TesterDashboard />)} />
+        <Route path="/tester/onboarding" element={guarded('tester', <TesterOnboarding />)} />
+        <Route path="/tester/profile" element={guarded('tester', <TesterProfile />)} />
+        <Route path="/tester/tests" element={guarded('tester', <ComingSoon title="Available Tests" />)} />
+        <Route path="/tester/tests/:id" element={guarded('tester', <ComingSoon title="Test Details" />)} />
+        <Route path="/tester/applications" element={guarded('tester', <ComingSoon title="My Applications" />)} />
+        <Route path="/tester/applications/:id" element={guarded('tester', <ComingSoon title="Application Details" />)} />
+        <Route path="/tester/earnings" element={guarded('tester', <ComingSoon title="Earnings" />)} />
+        <Route path="/tester/settings" element={guarded('tester', <ComingSoon title="Settings" />)} />
 
-      {/* Admin routes */}
-      <Route path="/admin/dashboard" element={guarded('admin', <AdminDashboard />)} />
-      <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
-      <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
-      <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
-      <Route path="/admin/security" element={guarded('admin', <AdminSecurity />)} />
-      <Route path="/admin/settings" element={guarded('admin', <AdminSettings />)} />
+        {/* Admin routes */}
+        <Route path="/admin/dashboard" element={guarded('admin', <AdminDashboard />)} />
+        <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
+        <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
+        <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
+        <Route path="/admin/security" element={guarded('admin', <AdminSecurity />)} />
+        <Route path="/admin/settings" element={guarded('admin', <AdminSettings />)} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </PageTransitionWrapper>
   );
 }
 
