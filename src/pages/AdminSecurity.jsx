@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Shield, Lock, AlertTriangle, CheckCircle, Key, Clock } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { adminSecurityLog } from '../data/mockData';
