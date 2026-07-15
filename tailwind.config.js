@@ -132,16 +132,16 @@ module.exports = {
         'grid-slate-dark': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(148 163 184 / 0.1)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
       },
       boxShadow: {
-        brand: '0 0 0 3px rgba(23, 168, 151, 0.2)',
-        glow: '0 0 30px rgba(23, 168, 151, 0.28)',
-        // Elevation system
-        'elevation-xs': '0 1px 2px 0 rgba(15, 23, 42, 0.05)',
-        'elevation-sm': '0 1px 3px 0 rgba(15, 23, 42, 0.1), 0 1px 2px 0 rgba(15, 23, 42, 0.06)',
-        'elevation-md': '0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -1px rgba(15, 23, 42, 0.06)',
-        'elevation-lg': '0 10px 15px -3px rgba(15, 23, 42, 0.1), 0 4px 6px -2px rgba(15, 23, 42, 0.05)',
-        'elevation-xl': '0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04)',
-        'elevation-dark-sm': '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.24)',
-        'elevation-dark-md': '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.24)',
+        brand: '0 0 0 3px rgba(23, 168, 151, 0.15)',
+        glow: '0 0 30px rgba(23, 168, 151, 0.2)',
+        // Elevation system (softened for premium feel)
+        'elevation-xs': '0 1px 2px 0 rgba(15, 23, 42, 0.03)',
+        'elevation-sm': '0 1px 2px 0 rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.05)',
+        'elevation-md': '0 2px 4px -1px rgba(15, 23, 42, 0.07), 0 1px 2px -1px rgba(15, 23, 42, 0.05)',
+        'elevation-lg': '0 4px 8px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -1px rgba(15, 23, 42, 0.04)',
+        'elevation-xl': '0 8px 16px -4px rgba(15, 23, 42, 0.09), 0 4px 8px -2px rgba(15, 23, 42, 0.03)',
+        'elevation-dark-sm': '0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 3px 0 rgba(0, 0, 0, 0.15)',
+        'elevation-dark-md': '0 2px 4px -1px rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.15)',
       },
       borderRadius: {
         'sm': '6px',

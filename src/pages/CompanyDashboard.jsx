@@ -25,7 +25,7 @@ export default function CompanyDashboard() {
 
   return (
     <PlatformLayout title="Dashboard">
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         {/* Welcome bar */}
         <div className="flex items-center justify-between">
           <div>

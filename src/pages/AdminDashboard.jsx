@@ -32,7 +32,7 @@ export default function AdminDashboard() {
 
   return (
     <PlatformLayout title="Platform Overview">
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

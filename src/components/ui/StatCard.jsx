@@ -17,21 +17,21 @@ export default function StatCard({
 }) {
   const displayValue = formatter ? formatter(value) : value;
 
-  // Semantic icon background colors
+  // Semantic icon background colors (refined, more subtle)
   const iconColorMap = {
-    brand: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
-    accent: 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400',
-    success: 'bg-success-100 dark:bg-success-900/30 text-success-600 dark:text-success-400',
-    warning: 'bg-warning-100 dark:bg-warning-900/30 text-warning-600 dark:text-warning-400',
-    error: 'bg-error-100 dark:bg-error-900/30 text-error-600 dark:text-error-400',
+    brand: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400',
+    accent: 'bg-accent-50/70 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400',
+    success: 'bg-success-50/70 dark:bg-success-900/20 text-success-600 dark:text-success-400',
+    warning: 'bg-warning-50/70 dark:bg-warning-900/20 text-warning-600 dark:text-warning-400',
+    error: 'bg-error-50/70 dark:bg-error-900/20 text-error-600 dark:text-error-400',
     // Legacy aliases for backward compatibility
-    teal: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
-    amber: 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400',
-    green: 'bg-success-100 dark:bg-success-900/30 text-success-600 dark:text-success-400',
-    red: 'bg-error-100 dark:bg-error-900/30 text-error-600 dark:text-error-400',
-    blue: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
-    violet: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
-    cyan: 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400',
+    teal: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400',
+    amber: 'bg-accent-50/70 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400',
+    green: 'bg-success-50/70 dark:bg-success-900/20 text-success-600 dark:text-success-400',
+    red: 'bg-error-50/70 dark:bg-error-900/20 text-error-600 dark:text-error-400',
+    blue: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400',
+    violet: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400',
+    cyan: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400',
   };
 
   const hasTrend = trend !== undefined && trend !== null;
@@ -55,12 +55,12 @@ export default function StatCard({
         )}
         {hasTrend && (
           <div
-            className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
+            className={`flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-all duration-200 ${
               trendNeutral
-                ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                ? 'bg-slate-100/70 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400'
                 : trendGood
-                ? 'bg-success-100 dark:bg-success-900/30 text-success-600 dark:text-success-400'
-                : 'bg-error-100 dark:bg-error-900/30 text-error-600 dark:text-error-400'
+                ? 'bg-success-50/70 dark:bg-success-900/20 text-success-600 dark:text-success-400'
+                : 'bg-error-50/70 dark:bg-error-900/20 text-error-600 dark:text-error-400'
             }`}
             role="status"
             aria-label={`Trend: ${trendNeutral ? 'No change' : `${trendPositive ? 'up' : 'down'} ${Math.abs(trend)}${trendLabel || ''}`}`}

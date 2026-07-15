@@ -2,23 +2,23 @@ import React from 'react';
 
 const variants = {
   // Primary action — high emphasis
-  primary: 'bg-brand-600 hover:bg-brand-700 active:bg-brand-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  primary: 'bg-brand-600 hover:bg-brand-700 active:bg-brand-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
   // Secondary action — medium emphasis
-  secondary: 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-50 hover:bg-slate-200 dark:hover:bg-slate-700 active:bg-slate-300 dark:active:bg-slate-600 shadow-elevation-xs',
+  secondary: 'bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 text-slate-900 dark:text-slate-50 hover:bg-slate-200 dark:hover:bg-slate-700 active:bg-slate-300 dark:active:bg-slate-600 shadow-elevation-xs hover:shadow-elevation-sm',
   // Tertiary — low emphasis
   ghost: 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700',
   // Destructive action
-  danger: 'bg-error-600 hover:bg-error-700 active:bg-error-800 dark:bg-error-700 dark:hover:bg-error-600 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  danger: 'bg-error-600 hover:bg-error-700 active:bg-error-800 dark:bg-error-700 dark:hover:bg-error-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
   // Outlined variant
   outline: 'border-2 border-brand-500 dark:border-brand-400 text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-950/30 active:bg-brand-100 dark:active:bg-brand-900/50',
   // Dark background variant
-  dark: 'bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 active:bg-slate-950 dark:active:bg-slate-600 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  dark: 'bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 active:bg-slate-950 dark:active:bg-slate-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
   // Accent/success actions
-  accent: 'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-500 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  accent: 'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-500 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
   // Success/approval actions
-  success: 'bg-success-600 hover:bg-success-700 active:bg-success-800 dark:bg-success-700 dark:hover:bg-success-600 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  success: 'bg-success-600 hover:bg-success-700 active:bg-success-800 dark:bg-success-700 dark:hover:bg-success-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
   // Warning actions
-  warning: 'bg-warning-600 hover:bg-warning-700 active:bg-warning-800 dark:bg-warning-700 dark:hover:bg-warning-600 text-white shadow-elevation-sm hover:shadow-elevation-md',
+  warning: 'bg-warning-600 hover:bg-warning-700 active:bg-warning-800 dark:bg-warning-700 dark:hover:bg-warning-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs',
 };
 
 const sizes = {
@@ -52,9 +52,10 @@ export default function Button({
       type={type}
       className={`
         inline-flex items-center justify-center font-semibold
-        transition-all duration-150 ease-out
+        transition-all duration-200 ease-out
         disabled:opacity-60 disabled:cursor-not-allowed
         focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 dark:focus-visible:ring-brand-400
+        active:scale-[0.98]
         ${variantClasses}
         ${sizeClasses}
         ${className}
