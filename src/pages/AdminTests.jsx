@@ -10,6 +10,8 @@ import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/a
 import { InlineEditCell } from '../components/admin/InlineEdit';
 import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
+import { ColumnVisibilityToggle, useColumnVisibility } from '../components/admin/ColumnVisibility';
+import { HighlightedText, SearchCounter } from '../components/admin/SearchHighlight';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -41,8 +43,21 @@ export default function AdminTests() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editedTests, setEditedTests] = useState({});
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
+  const [pageSize, setPageSize] = useState(10);
   const { addToast } = useToast();
-  const itemsPerPage = 10;
+
+  const testColumns = [
+    { key: 'id', label: 'ID' },
+    { key: 'name', label: 'Test Name' },
+    { key: 'company', label: 'Company' },
+    { key: 'type', label: 'Type' },
+    { key: 'status', label: 'Status' },
+    { key: 'progress', label: 'Progress' },
+    { key: 'testers', label: 'Testers' },
+    { key: 'issues', label: 'Issues' },
+  ];
+  const { visibleColumns, setVisibleColumns } = useColumnVisibility(testColumns, 'adminTestsColumns');
+  const itemsPerPage = pageSize;
 
   const handleRefresh = async () => {
     setIsLoading(true);
@@ -158,7 +173,7 @@ export default function AdminTests() {
   const paginatedTests = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredTests.slice(start, start + itemsPerPage);
-  }, [filteredTests, currentPage]);
+  }, [filteredTests, currentPage, itemsPerPage]);
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -413,6 +428,11 @@ export default function AdminTests() {
               }}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
+            <SearchCounter
+              searchTerm={searchTerm}
+              matchCount={filteredTests.length}
+              totalItems={validatedTests.length}
+            />
           </div>
           <div className="flex gap-2 flex-wrap">
             {['all', 'Active', 'In Progress', 'Completed'].map(status => (
@@ -439,6 +459,12 @@ export default function AdminTests() {
               filterOptions={{
                 statuses: ['Active', 'In Progress', 'Completed'],
               }}
+            />
+            <ColumnVisibilityToggle
+              columns={testColumns}
+              visibleColumns={visibleColumns}
+              onChange={setVisibleColumns}
+              storageKey="adminTestsColumns"
             />
             <button
               onClick={handleExport}
@@ -501,29 +527,35 @@ export default function AdminTests() {
                         onToggle={handleSelectAll}
                       />
                     </th>
-                    <th>ID</th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
-                      <div className="flex items-center gap-2">
-                        Test Name
-                        {sortBy === 'name' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
-                      <div className="flex items-center gap-2">
-                        Company
-                        {sortBy === 'company' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th>Type</th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
-                      <div className="flex items-center gap-2">
-                        Status
-                        {sortBy === 'status' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th>Progress</th>
-                    <th>Testers</th>
-                    <th>Issues</th>
+                    {visibleColumns.includes('id') && <th>ID</th>}
+                    {visibleColumns.includes('name') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                        <div className="flex items-center gap-2">
+                          Test Name
+                          {sortBy === 'name' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('company') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
+                        <div className="flex items-center gap-2">
+                          Company
+                          {sortBy === 'company' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('type') && <th>Type</th>}
+                    {visibleColumns.includes('status') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                        <div className="flex items-center gap-2">
+                          Status
+                          {sortBy === 'status' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('progress') && <th>Progress</th>}
+                    {visibleColumns.includes('testers') && <th>Testers</th>}
+                    {visibleColumns.includes('issues') && <th>Issues</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -551,59 +583,79 @@ export default function AdminTests() {
                               onToggle={() => handleSelectTest(testId)}
                             />
                           </td>
-                          <td className="font-mono text-sm font-bold text-slate-600">{testId}</td>
-                          <td>
-                            <InlineEditCell
-                              value={editedTests[testId]?.name || testName}
-                              onSave={(value) => handleInlineEdit(testId, 'name', value)}
-                              type="text"
-                            />
-                          </td>
-                          <td className="text-sm text-slate-600">{company}</td>
-                          <td>
-                            <Badge
-                              label={type}
-                              color={getTypeColor(type)}
-                            />
-                          </td>
-                          <td>
-                            <InlineEditCell
-                              value={editedTests[testId]?.status || status}
-                              onSave={(value) => handleInlineEdit(testId, 'status', value)}
-                              type="select"
-                              options={[
-                                { label: 'Active', value: 'Active' },
-                                { label: 'In Progress', value: 'In Progress' },
-                                { label: 'Completed', value: 'Completed' },
-                              ]}
-                            />
-                          </td>
-                          <td>
-                            <div className="flex items-center gap-2">
-                              <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-brand-500 transition-all"
-                                  style={{ width: `${validProgress}%` }}
-                                />
+                          {visibleColumns.includes('id') && (
+                            <td className="font-mono text-sm font-bold text-slate-600">
+                              <HighlightedText text={testId} searchTerm={searchTerm} />
+                            </td>
+                          )}
+                          {visibleColumns.includes('name') && (
+                            <td>
+                              <InlineEditCell
+                                value={editedTests[testId]?.name || testName}
+                                onSave={(value) => handleInlineEdit(testId, 'name', value)}
+                                type="text"
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('company') && (
+                            <td className="text-sm text-slate-600">
+                              <HighlightedText text={company} searchTerm={searchTerm} />
+                            </td>
+                          )}
+                          {visibleColumns.includes('type') && (
+                            <td>
+                              <Badge
+                                label={type}
+                                color={getTypeColor(type)}
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('status') && (
+                            <td>
+                              <InlineEditCell
+                                value={editedTests[testId]?.status || status}
+                                onSave={(value) => handleInlineEdit(testId, 'status', value)}
+                                type="select"
+                                options={[
+                                  { label: 'Active', value: 'Active' },
+                                  { label: 'In Progress', value: 'In Progress' },
+                                  { label: 'Completed', value: 'Completed' },
+                                ]}
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('progress') && (
+                            <td>
+                              <div className="flex items-center gap-2">
+                                <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-brand-500 transition-all"
+                                    style={{ width: `${validProgress}%` }}
+                                  />
+                                </div>
+                                <span className="text-xs font-semibold text-slate-600 w-8">{validProgress}%</span>
                               </div>
-                              <span className="text-xs font-semibold text-slate-600 w-8">{validProgress}%</span>
-                            </div>
-                          </td>
-                          <td className="text-sm font-semibold text-slate-700">
-                            {testers}/{target}
-                          </td>
-                          <td>
-                            <div className="flex items-center gap-1">
-                              {critical > 0 && (
-                                <>
-                                  <AlertCircle size={14} className="text-red-500" />
-                                  <span className="text-xs font-bold text-red-600">{critical}</span>
-                                  <span className="text-slate-300">•</span>
-                                </>
-                              )}
-                              <span className="text-xs font-semibold text-slate-600">{issues}</span>
-                            </div>
-                          </td>
+                            </td>
+                          )}
+                          {visibleColumns.includes('testers') && (
+                            <td className="text-sm font-semibold text-slate-700">
+                              {testers}/{target}
+                            </td>
+                          )}
+                          {visibleColumns.includes('issues') && (
+                            <td>
+                              <div className="flex items-center gap-1">
+                                {critical > 0 && (
+                                  <>
+                                    <AlertCircle size={14} className="text-red-500" />
+                                    <span className="text-xs font-bold text-red-600">{critical}</span>
+                                    <span className="text-slate-300">•</span>
+                                  </>
+                                )}
+                                <span className="text-xs font-semibold text-slate-600">{issues}</span>
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       );
                     })
@@ -626,6 +678,9 @@ export default function AdminTests() {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+            storageKey="adminTestsPageSize"
           />
         )}
 

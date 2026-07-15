@@ -1,7 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
+export default function Pagination({ currentPage, totalPages, onPageChange, pageSize = 10, onPageSizeChange, storageKey = 'pageSize' }) {
+  useEffect(() => {
+    if (onPageSizeChange) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        onPageSizeChange(Number(saved));
+      }
+    }
+  }, [onPageSizeChange, storageKey]);
+
+  const handlePageSizeChange = (size) => {
+    if (onPageSizeChange) {
+      onPageSizeChange(size);
+      localStorage.setItem(storageKey, String(size));
+    }
+  };
   const pages = [];
   const maxButtons = 5;
   let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
@@ -16,10 +31,24 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   }
 
   return (
-    <div className="flex items-center justify-between mt-6">
-      <p className="text-sm text-slate-600">
-        Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
-      </p>
+    <div className="flex items-center justify-between mt-6 gap-4">
+      <div className="flex items-center gap-4">
+        <p className="text-sm text-slate-600">
+          Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
+        </p>
+        {onPageSizeChange && (
+          <select
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+            className="px-3 py-1 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={10}>10 per page</option>
+            <option value={25}>25 per page</option>
+            <option value={50}>50 per page</option>
+            <option value={100}>100 per page</option>
+          </select>
+        )}
+      </div>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}

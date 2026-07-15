@@ -9,6 +9,8 @@ import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/a
 import { InlineEditCell } from '../components/admin/InlineEdit';
 import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
+import { ColumnVisibilityToggle, useColumnVisibility } from '../components/admin/ColumnVisibility';
+import { HighlightedText, SearchCounter } from '../components/admin/SearchHighlight';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -39,8 +41,19 @@ export default function AdminUsers() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editedUsers, setEditedUsers] = useState({});
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
+  const [pageSize, setPageSize] = useState(10);
   const { addToast } = useToast();
-  const itemsPerPage = 10;
+
+  const userColumns = [
+    { key: 'name', label: 'Name' },
+    { key: 'type', label: 'Type' },
+    { key: 'email', label: 'Email' },
+    { key: 'status', label: 'Status' },
+    { key: 'joined', label: 'Joined' },
+    { key: 'activity', label: 'Activity' },
+  ];
+  const { visibleColumns, setVisibleColumns } = useColumnVisibility(userColumns, 'adminUsersColumns');
+  const itemsPerPage = pageSize;
 
   const handleRefresh = async () => {
     setIsLoading(true);
@@ -157,7 +170,7 @@ export default function AdminUsers() {
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredUsers.slice(start, start + itemsPerPage);
-  }, [filteredUsers, currentPage]);
+  }, [filteredUsers, currentPage, itemsPerPage]);
 
   const handleSort = (column) => {
     if (sortBy === column) {
@@ -362,6 +375,11 @@ export default function AdminUsers() {
               }}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
+            <SearchCounter
+              searchTerm={searchTerm}
+              matchCount={filteredUsers.length}
+              totalItems={validatedUsers.length}
+            />
           </div>
           <div className="flex gap-2 flex-wrap">
             <button
@@ -411,6 +429,12 @@ export default function AdminUsers() {
               filterOptions={{
                 statuses: ['Active', 'Inactive'],
               }}
+            />
+            <ColumnVisibilityToggle
+              columns={userColumns}
+              visibleColumns={visibleColumns}
+              onChange={setVisibleColumns}
+              storageKey="adminUsersColumns"
             />
             <button
               onClick={handleExport}
@@ -473,32 +497,40 @@ export default function AdminUsers() {
                         onToggle={handleSelectAll}
                       />
                     </th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
-                      <div className="flex items-center gap-2">
-                        Name
-                        {sortBy === 'name' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
-                      <div className="flex items-center gap-2">
-                        Type
-                        {sortBy === 'type' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
-                      <div className="flex items-center gap-2">
-                        Email
-                        {sortBy === 'email' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
-                      <div className="flex items-center gap-2">
-                        Status
-                        {sortBy === 'status' && <ArrowUpDown size={14} />}
-                      </div>
-                    </th>
-                    <th>Joined</th>
-                    <th>Activity</th>
+                    {visibleColumns.includes('name') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                        <div className="flex items-center gap-2">
+                          Name
+                          {sortBy === 'name' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('type') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
+                        <div className="flex items-center gap-2">
+                          Type
+                          {sortBy === 'type' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('email') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
+                        <div className="flex items-center gap-2">
+                          Email
+                          {sortBy === 'email' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('status') && (
+                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                        <div className="flex items-center gap-2">
+                          Status
+                          {sortBy === 'status' && <ArrowUpDown size={14} />}
+                        </div>
+                      </th>
+                    )}
+                    {visibleColumns.includes('joined') && <th>Joined</th>}
+                    {visibleColumns.includes('activity') && <th>Activity</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -520,65 +552,79 @@ export default function AdminUsers() {
                               onToggle={() => handleSelectUser(userId)}
                             />
                           </td>
-                          <td>
-                            <InlineEditCell
-                              value={editedUsers[userId]?.name || userName}
-                              onSave={(value) => handleInlineEdit(userId, 'name', value)}
-                              type="text"
-                            />
-                          </td>
-                          <td>
-                            <Badge
-                              label={userType}
-                              color={isCompany ? 'violet' : 'cyan'}
-                            />
-                          </td>
-                          <td className="text-sm text-slate-600">{userEmail}</td>
-                          <td>
-                            <InlineEditCell
-                              value={editedUsers[userId]?.status || userStatus}
-                              onSave={(value) => handleInlineEdit(userId, 'status', value)}
-                              type="select"
-                              options={[
-                                { label: 'Active', value: 'Active' },
-                                { label: 'Inactive', value: 'Inactive' },
-                              ]}
-                            />
-                          </td>
-                          <td className="text-sm text-slate-600">{userJoined}</td>
-                          <td>
-                            <div className="flex items-center gap-3 text-xs text-slate-600">
-                              {isCompany ? (
-                                <>
-                                  <span>{safeProp(user, 'testsCreated', 0)} tests</span>
-                                  <span className="text-slate-300">•</span>
-                                  <span>{safeProp(user, 'testers', 0)} testers</span>
-                                  {safeProp(user, 'plan') && (
-                                    <>
-                                      <span className="text-slate-300">•</span>
-                                      <Badge
-                                        label={safeProp(user, 'plan', 'Unknown')}
-                                        color={getPlanColor(safeProp(user, 'plan'))}
-                                      />
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  <div className="flex items-center gap-1">
-                                    <Star size={12} className="text-amber-500 fill-amber-500" />
-                                    <span>{(safeProp(user, 'rating', 0)).toFixed(1)}</span>
-                                  </div>
-                                  <span className="text-slate-300">•</span>
-                                  <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
-                                  <span className="text-slate-300">•</span>
-                                  <span className="text-emerald-600 font-semibold">
-                                    {formatCurrency(safeProp(user, 'earnings', 0))}
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          </td>
+                          {visibleColumns.includes('name') && (
+                            <td>
+                              <InlineEditCell
+                                value={editedUsers[userId]?.name || userName}
+                                onSave={(value) => handleInlineEdit(userId, 'name', value)}
+                                type="text"
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('type') && (
+                            <td>
+                              <Badge
+                                label={userType}
+                                color={isCompany ? 'violet' : 'cyan'}
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('email') && (
+                            <td className="text-sm text-slate-600">
+                              <HighlightedText text={userEmail} searchTerm={searchTerm} />
+                            </td>
+                          )}
+                          {visibleColumns.includes('status') && (
+                            <td>
+                              <InlineEditCell
+                                value={editedUsers[userId]?.status || userStatus}
+                                onSave={(value) => handleInlineEdit(userId, 'status', value)}
+                                type="select"
+                                options={[
+                                  { label: 'Active', value: 'Active' },
+                                  { label: 'Inactive', value: 'Inactive' },
+                                ]}
+                              />
+                            </td>
+                          )}
+                          {visibleColumns.includes('joined') && (
+                            <td className="text-sm text-slate-600">{userJoined}</td>
+                          )}
+                          {visibleColumns.includes('activity') && (
+                            <td>
+                              <div className="flex items-center gap-3 text-xs text-slate-600">
+                                {isCompany ? (
+                                  <>
+                                    <span>{safeProp(user, 'testsCreated', 0)} tests</span>
+                                    <span className="text-slate-300">•</span>
+                                    <span>{safeProp(user, 'testers', 0)} testers</span>
+                                    {safeProp(user, 'plan') && (
+                                      <>
+                                        <span className="text-slate-300">•</span>
+                                        <Badge
+                                          label={safeProp(user, 'plan', 'Unknown')}
+                                          color={getPlanColor(safeProp(user, 'plan'))}
+                                        />
+                                      </>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="flex items-center gap-1">
+                                      <Star size={12} className="text-amber-500 fill-amber-500" />
+                                      <span>{(safeProp(user, 'rating', 0)).toFixed(1)}</span>
+                                    </div>
+                                    <span className="text-slate-300">•</span>
+                                    <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-emerald-600 font-semibold">
+                                      {formatCurrency(safeProp(user, 'earnings', 0))}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       );
                     })
@@ -601,6 +647,9 @@ export default function AdminUsers() {
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
+            storageKey="adminUsersPageSize"
           />
         )}
 
