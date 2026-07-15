@@ -21,7 +21,9 @@ import ComingSoon from './pages/ComingSoon';
 // Components & Providers
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import PasswordGate from './components/ui/PasswordGate';
+import Toast from './components/ui/Toast';
 import { DataProvider } from './context/DataContext';
+import { ToastProvider } from './context/ToastContext';
 
 // Auth Context
 const AuthContext = createContext(null);
@@ -208,9 +210,12 @@ export default function App() {
     <ErrorBoundary>
       <AuthProvider>
         <DataProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <ToastProvider>
+            <BrowserRouter>
+              <AppRoutes />
+              <Toast />
+            </BrowserRouter>
+          </ToastProvider>
         </DataProvider>
       </AuthProvider>
     </ErrorBoundary>

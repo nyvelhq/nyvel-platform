@@ -1,9 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Star, AlertCircle } from 'lucide-react';
+import { Search, Star, AlertCircle, ArrowUpDown } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
+import Pagination from '../components/ui/Pagination';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
+import { useToast } from '../context/ToastContext';
 
 const planColors = {
   Enterprise: 'violet',
@@ -19,6 +21,11 @@ export default function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const { addToast } = useToast();
+  const itemsPerPage = 10;
 
   // Validate and filter users data
   const validatedUsers = useMemo(() => {
@@ -36,7 +43,7 @@ export default function AdminUsers() {
 
   const filteredUsers = useMemo(() => {
     try {
-      return validatedUsers.filter(user => {
+      let filtered = validatedUsers.filter(user => {
         const name = safeProp(user, 'name', '').toLowerCase();
         const email = safeProp(user, 'email', '').toLowerCase();
         const type = safeProp(user, 'type', '');
@@ -46,11 +53,41 @@ export default function AdminUsers() {
         const matchesType = filterType === 'all' || type.toLowerCase() === filterType.toLowerCase();
         return matchesSearch && matchesType;
       });
+
+      filtered.sort((a, b) => {
+        let aVal, bVal;
+        switch (sortBy) {
+          case 'name':
+            aVal = safeProp(a, 'name', '').toLowerCase();
+            bVal = safeProp(b, 'name', '').toLowerCase();
+            break;
+          case 'email':
+            aVal = safeProp(a, 'email', '').toLowerCase();
+            bVal = safeProp(b, 'email', '').toLowerCase();
+            break;
+          case 'type':
+            aVal = safeProp(a, 'type', '').toLowerCase();
+            bVal = safeProp(b, 'type', '').toLowerCase();
+            break;
+          case 'status':
+            aVal = safeProp(a, 'status', '').toLowerCase();
+            bVal = safeProp(b, 'status', '').toLowerCase();
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      return filtered;
     } catch (err) {
       console.error('Filter error:', err);
       return [];
     }
-  }, [validatedUsers, searchTerm, filterType]);
+  }, [validatedUsers, searchTerm, filterType, sortBy, sortOrder]);
 
   const stats = useMemo(() => {
     try {
@@ -64,6 +101,50 @@ export default function AdminUsers() {
       return { companies: 0, testers: 0, activeUsers: 0 };
     }
   }, [validatedUsers]);
+
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const paginatedUsers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredUsers.slice(start, start + itemsPerPage);
+  }, [filteredUsers, currentPage]);
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1);
+  };
+
+  const handleExport = () => {
+    try {
+      const csv = [
+        ['Name', 'Type', 'Email', 'Status', 'Joined'].join(','),
+        ...filteredUsers.map(user =>
+          [
+            safeProp(user, 'name', 'N/A'),
+            safeProp(user, 'type', 'N/A'),
+            safeProp(user, 'email', 'N/A'),
+            safeProp(user, 'status', 'N/A'),
+            safeProp(user, 'joined', 'N/A'),
+          ].join(',')
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      addToast('Users exported successfully', 'success');
+    } catch (err) {
+      addToast('Failed to export users', 'error');
+      console.error('Export error:', err);
+    }
+  };
 
   return (
     <PlatformLayout title="Users">
@@ -112,13 +193,19 @@ export default function AdminUsers() {
               type="text"
               placeholder="Search by name or email..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setFilterType('all')}
+              onClick={() => {
+                setFilterType('all');
+                setCurrentPage(1);
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filterType === 'all'
                   ? 'bg-slate-900 text-white'
@@ -128,7 +215,10 @@ export default function AdminUsers() {
               All
             </button>
             <button
-              onClick={() => setFilterType('company')}
+              onClick={() => {
+                setFilterType('company');
+                setCurrentPage(1);
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filterType === 'company'
                   ? 'bg-slate-900 text-white'
@@ -138,7 +228,10 @@ export default function AdminUsers() {
               Companies
             </button>
             <button
-              onClick={() => setFilterType('tester')}
+              onClick={() => {
+                setFilterType('tester');
+                setCurrentPage(1);
+              }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 filterType === 'tester'
                   ? 'bg-slate-900 text-white'
@@ -146,6 +239,12 @@ export default function AdminUsers() {
               }`}
             >
               Testers
+            </button>
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"
+            >
+              Export
             </button>
           </div>
         </div>
@@ -156,17 +255,37 @@ export default function AdminUsers() {
             <table className="w-full data-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Email</th>
-                  <th>Status</th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                    <div className="flex items-center gap-2">
+                      Name
+                      {sortBy === 'name' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
+                    <div className="flex items-center gap-2">
+                      Type
+                      {sortBy === 'type' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
+                    <div className="flex items-center gap-2">
+                      Email
+                      {sortBy === 'email' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                    <div className="flex items-center gap-2">
+                      Status
+                      {sortBy === 'status' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
                   <th>Joined</th>
                   <th>Activity</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => {
+                {paginatedUsers.length > 0 ? (
+                  paginatedUsers.map((user) => {
                     const userId = safeProp(user, 'id', 'unknown');
                     const userName = safeProp(user, 'name', 'Unknown User');
                     const userEmail = safeProp(user, 'email', 'N/A');
@@ -243,10 +362,18 @@ export default function AdminUsers() {
           </div>
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
+
         {/* Footer */}
-        <div className="flex items-center justify-between text-sm text-slate-600">
-          <p>Showing {filteredUsers.length} of {adminUsers.length} users</p>
-          <p>Last updated: 2 minutes ago</p>
+        <div className="text-sm text-slate-600">
+          <p>Showing {paginatedUsers.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users</p>
         </div>
       </div>
     </PlatformLayout>
