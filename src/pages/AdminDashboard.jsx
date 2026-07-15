@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Users, FlaskConical, DollarSign, Activity, ArrowRight } from 'lucide-react';
+import { spring } from '../motion/tokens';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -118,12 +120,21 @@ export default function AdminDashboard() {
                     role="tab"
                     aria-selected={chartView === v}
                     onClick={() => setChartView(v)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-all duration-200
+                    className={`relative px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors duration-200
                       ${chartView === v
-                        ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-elevation-xs'
+                        ? 'text-slate-800 dark:text-slate-100'
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                   >
-                    {v}
+                    {chartView === v && (
+                      // Shared-element pill — springs between tabs via layoutId
+                      <motion.span
+                        layoutId="admin-chart-pill"
+                        className="absolute inset-0 rounded-md bg-white dark:bg-slate-700 shadow-elevation-xs"
+                        transition={spring.snappy}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="relative z-10">{v}</span>
                   </button>
                 ))}
               </div>

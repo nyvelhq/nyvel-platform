@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 
 // Pages
 // Admin dashboard pages implemented with comprehensive validation and error handling
@@ -211,16 +212,19 @@ function AppRoutes() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <DataProvider>
-          <ToastProvider>
-            <BrowserRouter>
-              <AppRoutes />
-              <Toast />
-            </BrowserRouter>
-          </ToastProvider>
-        </DataProvider>
-      </AuthProvider>
+      {/* reducedMotion="user" — Framer swaps transforms for crossfades when the OS asks for reduced motion */}
+      <MotionConfig reducedMotion="user">
+        <AuthProvider>
+          <DataProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <AppRoutes />
+                <Toast />
+              </BrowserRouter>
+            </ToastProvider>
+          </DataProvider>
+        </AuthProvider>
+      </MotionConfig>
     </ErrorBoundary>
   );
 }
