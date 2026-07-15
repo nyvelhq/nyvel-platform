@@ -1,17 +1,8 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 
 export function useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold = 50) {
   const touchStart = useRef(null);
   const touchEnd = useRef(null);
-
-  const handleTouchStart = useCallback((e) => {
-    touchStart.current = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-  }, []);
-
-  const handleTouchEnd = useCallback((e) => {
-    touchEnd.current = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-    handleSwipe();
-  }, [onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold]);
 
   const handleSwipe = useCallback(() => {
     if (!touchStart.current || !touchEnd.current) return;
@@ -28,6 +19,15 @@ export function useSwipe(onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, thre
     if (isUpSwipe && onSwipeUp) onSwipeUp();
     if (isDownSwipe && onSwipeDown) onSwipeDown();
   }, [onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold]);
+
+  const handleTouchStart = useCallback((e) => {
+    touchStart.current = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    touchEnd.current = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+    handleSwipe();
+  }, [handleSwipe]);
 
   return { handleTouchStart, handleTouchEnd };
 }
