@@ -7,6 +7,7 @@ import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
+import { InlineEditCell } from '../components/admin/InlineEdit';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -44,6 +45,7 @@ export default function AdminTests() {
     statuses: [],
   });
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [editedTests, setEditedTests] = useState({});
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -211,6 +213,17 @@ export default function AdminTests() {
       addToast('Failed to export tests', 'error');
       console.error('Export error:', err);
     }
+  };
+
+  const handleInlineEdit = (testId, field, value) => {
+    setEditedTests(prev => ({
+      ...prev,
+      [testId]: {
+        ...prev[testId],
+        [field]: value,
+      },
+    }));
+    addToast(`${field} updated`, 'success');
   };
 
   const handleExport = () => {
@@ -460,7 +473,13 @@ export default function AdminTests() {
                             />
                           </td>
                           <td className="font-mono text-sm font-bold text-slate-600">{testId}</td>
-                          <td className="font-medium text-slate-800">{testName}</td>
+                          <td>
+                            <InlineEditCell
+                              value={editedTests[testId]?.name || testName}
+                              onSave={(value) => handleInlineEdit(testId, 'name', value)}
+                              type="text"
+                            />
+                          </td>
                           <td className="text-sm text-slate-600">{company}</td>
                           <td>
                             <Badge
@@ -469,9 +488,15 @@ export default function AdminTests() {
                             />
                           </td>
                           <td>
-                            <Badge
-                              label={status}
-                              color={getStatusColor(status)}
+                            <InlineEditCell
+                              value={editedTests[testId]?.status || status}
+                              onSave={(value) => handleInlineEdit(testId, 'status', value)}
+                              type="select"
+                              options={[
+                                { label: 'Active', value: 'Active' },
+                                { label: 'In Progress', value: 'In Progress' },
+                                { label: 'Completed', value: 'Completed' },
+                              ]}
                             />
                           </td>
                           <td>

@@ -6,6 +6,7 @@ import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
+import { InlineEditCell } from '../components/admin/InlineEdit';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -34,6 +35,7 @@ export default function AdminUsers() {
     statuses: [],
   });
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [editedUsers, setEditedUsers] = useState({});
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -201,6 +203,17 @@ export default function AdminUsers() {
       addToast('Failed to export users', 'error');
       console.error('Export error:', err);
     }
+  };
+
+  const handleInlineEdit = (userId, field, value) => {
+    setEditedUsers(prev => ({
+      ...prev,
+      [userId]: {
+        ...prev[userId],
+        [field]: value,
+      },
+    }));
+    addToast(`${field} updated`, 'success');
   };
 
   const handleExport = () => {
@@ -420,7 +433,13 @@ export default function AdminUsers() {
                               onToggle={() => handleSelectUser(userId)}
                             />
                           </td>
-                          <td className="font-medium text-slate-800">{userName}</td>
+                          <td>
+                            <InlineEditCell
+                              value={editedUsers[userId]?.name || userName}
+                              onSave={(value) => handleInlineEdit(userId, 'name', value)}
+                              type="text"
+                            />
+                          </td>
                           <td>
                             <Badge
                               label={userType}
@@ -429,13 +448,15 @@ export default function AdminUsers() {
                           </td>
                           <td className="text-sm text-slate-600">{userEmail}</td>
                           <td>
-                            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                              userStatus === 'Active'
-                                ? 'bg-emerald-100 text-emerald-700'
-                                : 'bg-slate-100 text-slate-600'
-                            }`}>
-                              {userStatus}
-                            </span>
+                            <InlineEditCell
+                              value={editedUsers[userId]?.status || userStatus}
+                              onSave={(value) => handleInlineEdit(userId, 'status', value)}
+                              type="select"
+                              options={[
+                                { label: 'Active', value: 'Active' },
+                                { label: 'Inactive', value: 'Inactive' },
+                              ]}
+                            />
                           </td>
                           <td className="text-sm text-slate-600">{userJoined}</td>
                           <td>
