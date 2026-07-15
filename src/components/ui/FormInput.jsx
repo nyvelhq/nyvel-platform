@@ -13,6 +13,8 @@ export const FormInput = React.forwardRef(({
   error,
   required = false,
   disabled = false,
+  icon: Icon,
+  iconRight: IconRight,
   className = '',
   ...props
 }, ref) => {
@@ -28,18 +30,30 @@ export const FormInput = React.forwardRef(({
           {required && <span aria-label="required" className="text-error-600 dark:text-error-400">*</span>}
         </label>
       )}
-      <input
-        ref={ref}
-        id={inputId}
-        type={type}
-        placeholder={placeholder}
-        disabled={disabled}
-        required={required}
-        aria-describedby={[helpId, errorId].filter(Boolean).join(' ') || undefined}
-        aria-invalid={!!error}
-        className={`form-input ${error ? 'error' : ''} ${className}`}
-        {...props}
-      />
+      <div className="relative">
+        {Icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 pointer-events-none flex-shrink-0 w-4 h-4">
+            {Icon}
+          </div>
+        )}
+        <input
+          ref={ref}
+          id={inputId}
+          type={type}
+          placeholder={placeholder}
+          disabled={disabled}
+          required={required}
+          aria-describedby={[helpId, errorId].filter(Boolean).join(' ') || undefined}
+          aria-invalid={!!error}
+          className={`form-input ${Icon ? 'pl-9' : ''} ${IconRight ? 'pr-9' : ''} ${error ? 'error' : ''} ${className}`}
+          {...props}
+        />
+        {IconRight && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-600 pointer-events-none flex-shrink-0 w-4 h-4">
+            {IconRight}
+          </div>
+        )}
+      </div>
       {helpText && (
         <p id={helpId} className="form-help">{helpText}</p>
       )}

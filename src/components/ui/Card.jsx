@@ -35,7 +35,7 @@ export function Card({
  */
 export function CardHeader({ children, className = '', ...props }) {
   return (
-    <div className={`border-b border-slate-200 dark:border-slate-700 px-6 py-4 ${className}`} {...props}>
+    <div className={`border-b border-slate-200/60 dark:border-slate-700/50 px-6 py-4 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -57,7 +57,7 @@ export function CardContent({ children, className = '', ...props }) {
  */
 export function CardFooter({ children, className = '', ...props }) {
   return (
-    <div className={`border-t border-slate-200 dark:border-slate-700 px-6 py-4 flex items-center justify-end gap-3 ${className}`} {...props}>
+    <div className={`border-t border-slate-200/60 dark:border-slate-700/50 px-6 py-4 flex items-center justify-end gap-3 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -68,7 +68,7 @@ export function CardFooter({ children, className = '', ...props }) {
  */
 export function CardTitle({ children, className = '', ...props }) {
   return (
-    <h3 className={`text-lg font-semibold text-slate-900 dark:text-slate-50 ${className}`} {...props}>
+    <h3 className={`text-lg font-semibold text-slate-900 dark:text-slate-50 leading-tight ${className}`} {...props}>
       {children}
     </h3>
   );
@@ -79,7 +79,7 @@ export function CardTitle({ children, className = '', ...props }) {
  */
 export function CardDescription({ children, className = '', ...props }) {
   return (
-    <p className={`text-sm text-slate-600 dark:text-slate-400 ${className}`} {...props}>
+    <p className={`text-sm text-slate-600 dark:text-slate-400 leading-relaxed ${className}`} {...props}>
       {children}
     </p>
   );

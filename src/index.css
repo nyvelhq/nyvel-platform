@@ -72,6 +72,15 @@
     @apply bg-gradient-to-r from-brand-500 to-brand-600 dark:from-brand-400 dark:to-brand-500 bg-clip-text text-transparent;
   }
 
+  /* Gradient text variants */
+  .gradient-text-success {
+    @apply bg-gradient-to-r from-success-500 to-success-600 dark:from-success-400 dark:to-success-500 bg-clip-text text-transparent;
+  }
+
+  .gradient-text-warning {
+    @apply bg-gradient-to-r from-warning-500 to-warning-600 dark:from-warning-400 dark:to-warning-500 bg-clip-text text-transparent;
+  }
+
   /* Glass morphism for dark sections */
   .glass-card {
     @apply bg-white/5 dark:bg-white/5 backdrop-blur-sm border border-white/10 dark:border-white/20;
@@ -210,23 +219,23 @@
 
   /* Alert/message components */
   .alert {
-    @apply flex items-start gap-3 p-4 rounded-lg border;
+    @apply flex items-start gap-3 p-4 rounded-lg border transition-all duration-200;
   }
 
   .alert-success {
-    @apply bg-success-50 dark:bg-success-900/20 border-success-200 dark:border-success-800 text-success-800 dark:text-success-200;
+    @apply bg-success-50/70 dark:bg-success-900/20 border-success-200/70 dark:border-success-800/50 text-success-800 dark:text-success-200;
   }
 
   .alert-warning {
-    @apply bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800 text-warning-800 dark:text-warning-200;
+    @apply bg-warning-50/70 dark:bg-warning-900/20 border-warning-200/70 dark:border-warning-800/50 text-warning-800 dark:text-warning-200;
   }
 
   .alert-error {
-    @apply bg-error-50 dark:bg-error-900/20 border-error-200 dark:border-error-800 text-error-800 dark:text-error-200;
+    @apply bg-error-50/70 dark:bg-error-900/20 border-error-200/70 dark:border-error-800/50 text-error-800 dark:text-error-200;
   }
 
   .alert-info {
-    @apply bg-brand-50 dark:bg-brand-900/20 border-brand-200 dark:border-brand-800 text-brand-800 dark:text-brand-200;
+    @apply bg-brand-50/70 dark:bg-brand-900/20 border-brand-200/70 dark:border-brand-800/50 text-brand-800 dark:text-brand-200;
   }
 }
 
@@ -250,6 +259,24 @@
 
   .text-subtle {
     @apply text-slate-500 dark:text-slate-500;
+  }
+
+  /* Enhanced typography utilities */
+  .text-overline {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300;
+  }
+
+  .text-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-widest text-brand-600 dark:text-brand-400;
+  }
+
+  /* Link utilities */
+  .link-subtle {
+    @apply text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors duration-150;
+  }
+
+  .link-primary {
+    @apply text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium transition-colors duration-150;
   }
 }
 

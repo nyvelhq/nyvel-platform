@@ -1,17 +1,17 @@
 import React from 'react';
 
-// Unified semantic color system for badges
+// Unified semantic color system for badges (refined, more subtle)
 const colorMap = {
   // Brand/Info
-  brand: 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800',
+  brand: 'bg-brand-50/70 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 border border-brand-200/70 dark:border-brand-800/50 transition-all duration-150',
   // Success/Approved
-  success: 'bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 border border-success-200 dark:border-success-800',
+  success: 'bg-success-50/70 dark:bg-success-900/20 text-success-700 dark:text-success-300 border border-success-200/70 dark:border-success-800/50 transition-all duration-150',
   // Warning/Pending
-  warning: 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 border border-warning-200 dark:border-warning-800',
+  warning: 'bg-warning-50/70 dark:bg-warning-900/20 text-warning-700 dark:text-warning-300 border border-warning-200/70 dark:border-warning-800/50 transition-all duration-150',
   // Error/Rejected
-  error: 'bg-error-50 dark:bg-error-900/30 text-error-700 dark:text-error-300 border border-error-200 dark:border-error-800',
+  error: 'bg-error-50/70 dark:bg-error-900/20 text-error-700 dark:text-error-300 border border-error-200/70 dark:border-error-800/50 transition-all duration-150',
   // Neutral
-  slate: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
+  slate: 'bg-slate-100/70 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700/50 transition-all duration-150',
 };
 
 const dotMap = {
