@@ -2,10 +2,10 @@ import React from 'react';
 
 export function SkeletonCard() {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5 animate-pulse">
-      <div className="h-4 bg-slate-200 rounded w-1/3 mb-3"></div>
-      <div className="h-8 bg-slate-200 rounded w-1/2 mb-3"></div>
-      <div className="h-3 bg-slate-100 rounded w-2/3"></div>
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+      <div className="h-4 shimmer-bg rounded w-1/3 mb-3"></div>
+      <div className="h-8 shimmer-bg rounded w-1/2 mb-3"></div>
+      <div className="h-3 shimmer-bg rounded w-2/3"></div>
     </div>
   );
 }
@@ -15,7 +15,7 @@ export function SkeletonTableRow({ columns = 6 }) {
     <tr>
       {[...Array(columns)].map((_, i) => (
         <td key={i} className="px-6 py-4 whitespace-nowrap">
-          <div className="h-4 bg-slate-200 rounded animate-pulse w-full"></div>
+          <div className="h-4 shimmer-bg rounded w-full"></div>
         </td>
       ))}
     </tr>
@@ -24,7 +24,7 @@ export function SkeletonTableRow({ columns = 6 }) {
 
 export function SkeletonTable({ rows = 10, columns = 6 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <tbody>
@@ -39,7 +39,7 @@ export function SkeletonTable({ rows = 10, columns = 6 }) {
 }
 
 export function SkeletonLine({ width = 'w-full' }) {
-  return <div className={`h-4 bg-slate-200 rounded ${width} animate-pulse`}></div>;
+  return <div className={`h-4 shimmer-bg rounded ${width}`}></div>;
 }
 
 export function SkeletonStats({ columns = 3 }) {
@@ -52,10 +52,10 @@ export function SkeletonStats({ columns = 3 }) {
   return (
     <div className={`grid grid-cols-1 ${gridClass} gap-4`}>
       {[...Array(columns)].map((_, i) => (
-        <div key={i} className="bg-white rounded-xl border border-slate-100 shadow-sm p-5 animate-pulse">
-          <div className="h-3 bg-slate-200 rounded w-1/2 mb-3"></div>
-          <div className="h-8 bg-slate-200 rounded w-3/4 mb-3"></div>
-          <div className="h-2 bg-slate-100 rounded w-2/3"></div>
+        <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+          <div className="h-3 shimmer-bg rounded w-1/2 mb-3"></div>
+          <div className="h-8 shimmer-bg rounded w-3/4 mb-3"></div>
+          <div className="h-2 shimmer-bg rounded w-2/3"></div>
         </div>
       ))}
     </div>

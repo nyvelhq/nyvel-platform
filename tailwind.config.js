@@ -108,6 +108,15 @@ module.exports = {
         'count-up': 'countUp 0.8s ease-out forwards',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-in-left': 'slideInLeft 0.3s ease-out forwards',
+        // Phase 5 micro-interactions
+        'scale-in': 'scaleIn 0.2s ease-out forwards',
+        'slide-down': 'slideDown 0.15s ease-out forwards',
+        'slide-up-out': 'slideUpOut 0.2s ease-in forwards',
+        'shimmer': 'shimmer 2s infinite',
+        'bounce-in': 'bounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        'check-mark': 'checkMark 0.3s ease-out forwards',
+        'error-shake': 'errorShake 0.4s ease-in-out forwards',
+        'fade-out': 'fadeOut 0.2s ease-out forwards',
       },
       keyframes: {
         ticker: {
@@ -125,6 +134,40 @@ module.exports = {
         slideInLeft: {
           '0%': { opacity: '0', transform: 'translateX(-8px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        // Phase 5 keyframes
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        slideDown: {
+          '0%': { opacity: '0', transform: 'translateY(-8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideUpOut: {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-8px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        bounceIn: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        checkMark: {
+          '0%': { transform: 'scale(0.8) rotate(-45deg)', opacity: '0' },
+          '100%': { transform: 'scale(1) rotate(0)', opacity: '1' },
+        },
+        errorShake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '25%': { transform: 'translateX(-6px)' },
+          '75%': { transform: 'translateX(6px)' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
       backgroundImage: {

@@ -40,7 +40,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
           <select
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="px-3 py-1 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1 text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all duration-150"
           >
             <option value={10}>10 per page</option>
             <option value={25}>25 per page</option>
@@ -53,7 +53,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 transition-all duration-150 hover:scale-110 active:scale-95"
         >
           <ChevronLeft size={18} />
         </button>
@@ -62,22 +62,23 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
           <>
             <button
               onClick={() => onPageChange(1)}
-              className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+              className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-150 hover:scale-105 active:scale-95"
             >
               1
             </button>
-            {startPage > 2 && <span className="text-slate-400">...</span>}
+            {startPage > 2 && <span className="text-slate-400 dark:text-slate-600">...</span>}
           </>
         )}
 
-        {pages.map(page => (
+        {pages.map((page, idx) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`px-3 py-1 rounded-lg transition-colors ${
+            style={{ animationDelay: `${idx * 25}ms` }}
+            className={`px-3 py-1 rounded-lg transition-all duration-150 animate-bounce-in ${
               page === currentPage
-                ? 'bg-slate-900 text-white'
-                : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                ? 'bg-brand-600 dark:bg-brand-700 text-white hover:bg-brand-700 dark:hover:bg-brand-600 hover:scale-105 active:scale-95'
+                : 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:scale-105 active:scale-95'
             }`}
           >
             {page}
@@ -86,10 +87,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
 
         {endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span className="text-slate-400">...</span>}
+            {endPage < totalPages - 1 && <span className="text-slate-400 dark:text-slate-600">...</span>}
             <button
               onClick={() => onPageChange(totalPages)}
-              className="px-3 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+              className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-150 hover:scale-105 active:scale-95"
             >
               {totalPages}
             </button>
@@ -99,7 +100,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 transition-all duration-150 hover:scale-110 active:scale-95"
         >
           <ChevronRight size={18} />
         </button>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 
@@ -36,31 +36,46 @@ const icons = {
   warning: AlertCircle,
 };
 
+function ToastItem({ toast, onRemove }) {
+  const [isExiting, setIsExiting] = useState(false);
+  const style = typeStyles[toast.type] || typeStyles.info;
+  const Icon = icons[toast.type] || Info;
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onRemove(toast.id);
+    }, 200);
+  };
+
+  return (
+    <div
+      className={`${style.bg} ${style.border} border rounded-lg p-4 flex items-start gap-3 max-w-sm pointer-events-auto
+        ${isExiting ? 'animate-slide-up-out' : 'animate-in fade-in slide-in-from-top-2 duration-300'}
+        transition-all`}
+    >
+      <Icon size={20} className={`flex-shrink-0 mt-0.5 ${style.icon}`} />
+      <p className={`text-sm font-medium ${style.text} flex-1`}>{toast.message}</p>
+      <button
+        onClick={handleClose}
+        className={`flex-shrink-0 ${style.icon} hover:opacity-70 active:scale-90 transition-all`}
+      >
+        <X size={18} />
+      </button>
+    </div>
+  );
+}
+
 export default function Toast() {
   const { toasts, removeToast } = useToast();
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2 pointer-events-none">
-      {toasts.map(toast => {
-        const style = typeStyles[toast.type] || typeStyles.info;
-        const Icon = icons[toast.type] || Info;
-
-        return (
-          <div
-            key={toast.id}
-            className={`${style.bg} ${style.border} border rounded-lg p-4 flex items-start gap-3 max-w-sm pointer-events-auto animate-in fade-in slide-in-from-top-2 duration-300`}
-          >
-            <Icon size={20} className={`flex-shrink-0 mt-0.5 ${style.icon}`} />
-            <p className={`text-sm font-medium ${style.text} flex-1`}>{toast.message}</p>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className={`flex-shrink-0 ${style.icon} hover:opacity-70 transition-opacity`}
-            >
-              <X size={18} />
-            </button>
-          </div>
-        );
-      })}
+      {toasts.map((toast, index) => (
+        <div key={toast.id} style={{ animationDelay: `${index * 50}ms` }}>
+          <ToastItem toast={toast} onRemove={removeToast} />
+        </div>
+      ))}
     </div>
   );
 }

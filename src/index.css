@@ -239,6 +239,95 @@
   .alert-info {
     @apply bg-brand-50/70 dark:bg-brand-900/20 border-brand-200/70 dark:border-brand-800/50 text-brand-800 dark:text-brand-200;
   }
+
+  /* Phase 5: Micro-interaction utilities */
+  .micro-button {
+    @apply transition-all duration-150;
+  }
+
+  .micro-button:hover {
+    @apply scale-[1.02];
+  }
+
+  .micro-button:active {
+    @apply scale-[0.95];
+  }
+
+  .micro-input-focus {
+    @apply transition-all duration-150;
+  }
+
+  .micro-input-underline {
+    @apply relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:bg-brand-600 dark:after:bg-brand-400 after:w-0 after:transition-all after:duration-200;
+  }
+
+  .micro-input-underline:focus-within::after {
+    @apply after:w-full;
+  }
+
+  .animate-success {
+    @apply animate-bounce-in;
+  }
+
+  .animate-error {
+    @apply animate-error-shake;
+  }
+
+  .animate-warning {
+    @apply animate-pulse;
+  }
+
+  /* Stagger animation delays for cascading effects */
+  .animate-delay-75 {
+    animation-delay: 75ms;
+  }
+
+  .animate-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .animate-delay-225 {
+    animation-delay: 225ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  /* Loading skeleton shimmer effect */
+  .shimmer-bg {
+    @apply bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 bg-[length:1000px_100%] animate-shimmer;
+  }
+
+  /* Modal and dropdown micro-interactions */
+  .modal-backdrop-enter {
+    @apply animate-fade-in;
+  }
+
+  .modal-content-enter {
+    @apply animate-scale-in;
+  }
+
+  .modal-content-exit {
+    @apply animate-fade-out;
+  }
+
+  .dropdown-enter {
+    @apply animate-slide-down;
+  }
+
+  .dropdown-exit {
+    @apply animate-slide-up-out;
+  }
+
+  /* Toast animations */
+  .toast-enter {
+    @apply animate-slide-in-left;
+  }
+
+  .toast-exit {
+    @apply animate-slide-up-out;
+  }
 }
 
 @layer utilities {
