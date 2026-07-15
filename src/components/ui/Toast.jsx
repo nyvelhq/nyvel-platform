@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import { useDragGesture } from '../../hooks/useGestures';
 
 const typeStyles = {
   success: {
@@ -38,8 +39,29 @@ const icons = {
 
 function ToastItem({ toast, onRemove }) {
   const [isExiting, setIsExiting] = useState(false);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const toastRef = useRef(null);
   const style = typeStyles[toast.type] || typeStyles.info;
   const Icon = icons[toast.type] || Info;
+
+  const { handleTouchStart, handleTouchMove, handleTouchEnd } = useDragGesture(
+    ({ x, progress }) => {
+      setDragOffset(x);
+      setIsDragging(true);
+    },
+    ({ x, completed }) => {
+      if (completed) {
+        setIsExiting(true);
+        setTimeout(() => {
+          onRemove(toast.id);
+        }, 200);
+      } else {
+        setDragOffset(0);
+        setIsDragging(false);
+      }
+    }
+  );
 
   const handleClose = () => {
     setIsExiting(true);
@@ -50,9 +72,17 @@ function ToastItem({ toast, onRemove }) {
 
   return (
     <div
+      ref={toastRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className={`${style.bg} ${style.border} border rounded-lg p-4 flex items-start gap-3 max-w-sm pointer-events-auto
         ${isExiting ? 'animate-slide-up-out' : 'animate-in fade-in slide-in-from-top-2 duration-300'}
-        transition-all`}
+        transition-all ${isDragging ? '' : 'transition-transform duration-200'}`}
+      style={{
+        transform: `translateX(${dragOffset}px)`,
+        opacity: isExiting ? 0 : Math.max(0.3, 1 - Math.abs(dragOffset) / 200),
+      }}
     >
       <Icon size={20} className={`flex-shrink-0 mt-0.5 ${style.icon}`} />
       <p className={`text-sm font-medium ${style.text} flex-1`}>{toast.message}</p>

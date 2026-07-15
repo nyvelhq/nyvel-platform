@@ -8,6 +8,7 @@ import {
 import NyvelMark from '../ui/NyvelMark';
 import ThemeToggle from '../ui/ThemeToggle';
 import { useAuth } from '../../App';
+import { useEdgeSwipe } from '../../hooks/useGestures';
 
 const companyNav = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/company/dashboard' },
@@ -171,6 +172,11 @@ export default function PlatformLayout({ children, title }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const userMenuRef = useRef(null);
   const notifRef = useRef(null);
+  const mainContentRef = useRef(null);
+
+  const { handleTouchStart, handleTouchEnd } = useEdgeSwipe(() => {
+    setSidebarOpen(true);
+  }, 50);
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -214,20 +220,25 @@ export default function PlatformLayout({ children, title }) {
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex animate-fade-in">
           <div
-            className="absolute inset-0 bg-black/50 dark:bg-black/60"
+            className="absolute inset-0 bg-black/50 dark:bg-black/60 animate-fade-in"
             onClick={() => setSidebarOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative flex flex-col">
+          <div className="relative flex flex-col animate-slide-in-left">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} isMobile={true} />
           </div>
         </div>
       )}
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div
+        ref={mainContentRef}
+        className="flex-1 flex flex-col min-w-0 overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {/* Top header */}
         <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 sm:px-6 gap-4 flex-shrink-0">
           {/* Mobile sidebar toggle */}

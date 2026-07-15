@@ -150,7 +150,7 @@ export default function TesterDashboard() {
 
           {/* Available tests */}
           {activeTab === 'available' && (
-            <div>
+            <div className="animate-fade-in">
               <div className="flex items-center justify-between mb-4 relative">
                 <p className="text-sm text-slate-500">{filteredTests.length} tests matching your profile</p>
                 <div className="relative" ref={filterRef}>
@@ -190,11 +190,12 @@ export default function TesterDashboard() {
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredTests.map((test) => (
+                {filteredTests.map((test, index) => (
                   <div
                     key={test.id}
                     onClick={() => navigate(`/tester/tests/${test.id}`)}
-                    className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all duration-200 cursor-pointer group"
+                    className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-brand-200 transition-all duration-200 cursor-pointer group animate-slide-in-up"
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
@@ -255,7 +256,7 @@ export default function TesterDashboard() {
 
           {/* My applications */}
           {activeTab === 'my' && (
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="animate-fade-in bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
               <table className="w-full data-table">
                 <thead>
@@ -270,8 +271,8 @@ export default function TesterDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {myApplications.map((app) => (
-                    <tr key={app.id}>
+                  {myApplications.map((app, index) => (
+                    <tr key={app.id} className="animate-table-row-in" style={{ animationDelay: `${index * 75}ms` }}>
                       <td>
                         <div>
                           <p className="font-medium text-slate-800">{app.testName}</p>
@@ -311,7 +312,7 @@ export default function TesterDashboard() {
 
           {/* Earnings chart */}
           {activeTab === 'earnings' && (
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <div className="animate-fade-in bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
               <h3 className="font-semibold text-slate-900 mb-1">Earnings History</h3>
               <p className="text-xs text-slate-500 mb-5">Last 6 months</p>
               <ResponsiveContainer width="100%" height={260}>
