@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
+import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -42,6 +43,7 @@ export default function AdminTests() {
     dateTo: '',
     statuses: [],
   });
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -153,6 +155,62 @@ export default function AdminTests() {
       setSortOrder('asc');
     }
     setCurrentPage(1);
+  };
+
+  const handleSelectTest = (testId) => {
+    const updated = new Set(selectedIds);
+    if (updated.has(testId)) {
+      updated.delete(testId);
+    } else {
+      updated.add(testId);
+    }
+    setSelectedIds(updated);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === paginatedTests.length && paginatedTests.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      const allIds = new Set(paginatedTests.map(t => safeProp(t, 'id', 'unknown')));
+      setSelectedIds(allIds);
+    }
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedIds.size === 0) return;
+    addToast(`Deleted ${selectedIds.size} tests`, 'success');
+    setSelectedIds(new Set());
+  };
+
+  const handleBatchExport = () => {
+    if (selectedIds.size === 0) return;
+    try {
+      const selected = filteredTests.filter(t => selectedIds.has(safeProp(t, 'id', 'unknown')));
+      const csv = [
+        ['ID', 'Test Name', 'Company', 'Type', 'Status', 'Progress'].join(','),
+        ...selected.map(test =>
+          [
+            safeProp(test, 'id', 'N/A'),
+            safeProp(test, 'name', 'N/A'),
+            safeProp(test, 'company', 'N/A'),
+            safeProp(test, 'type', 'N/A'),
+            safeProp(test, 'status', 'N/A'),
+            `${safeProp(test, 'progress', 0)}%`,
+          ].join(',')
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tests-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      addToast(`${selectedIds.size} tests exported successfully`, 'success');
+    } catch (err) {
+      addToast('Failed to export tests', 'error');
+      console.error('Export error:', err);
+    }
   };
 
   const handleExport = () => {
@@ -325,15 +383,32 @@ export default function AdminTests() {
           </div>
         </div>
 
+        {/* Batch Actions Bar */}
+        {!isLoading && (
+          <BatchActionsBar
+            selectedCount={selectedIds.size}
+            onClearSelection={() => setSelectedIds(new Set())}
+            onDelete={handleBatchDelete}
+            onExport={handleBatchExport}
+          />
+        )}
+
         {/* Tests Table */}
         {isLoading ? (
-          <SkeletonTable rows={itemsPerPage} columns={8} />
+          <SkeletonTable rows={itemsPerPage} columns={9} />
         ) : (
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full data-table">
                 <thead>
                   <tr>
+                    <th className="w-12">
+                      <SelectAllCheckbox
+                        checked={selectedIds.size === paginatedTests.length && paginatedTests.length > 0}
+                        indeterminate={selectedIds.size > 0 && selectedIds.size < paginatedTests.length}
+                        onToggle={handleSelectAll}
+                      />
+                    </th>
                     <th>ID</th>
                     <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
                       <div className="flex items-center gap-2">
@@ -377,7 +452,13 @@ export default function AdminTests() {
                       const validProgress = Math.min(Math.max(progress, 0), 100);
 
                       return (
-                        <tr key={testId}>
+                        <tr key={testId} className={selectedIds.has(testId) ? 'bg-blue-50' : ''}>
+                          <td className="w-12">
+                            <RowCheckbox
+                              checked={selectedIds.has(testId)}
+                              onToggle={() => handleSelectTest(testId)}
+                            />
+                          </td>
                           <td className="font-mono text-sm font-bold text-slate-600">{testId}</td>
                           <td className="font-medium text-slate-800">{testName}</td>
                           <td className="text-sm text-slate-600">{company}</td>

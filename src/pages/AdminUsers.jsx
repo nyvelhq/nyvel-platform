@@ -5,6 +5,7 @@ import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
+import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -32,6 +33,7 @@ export default function AdminUsers() {
     dateTo: '',
     statuses: [],
   });
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -144,6 +146,61 @@ export default function AdminUsers() {
       setSortOrder('asc');
     }
     setCurrentPage(1);
+  };
+
+  const handleSelectUser = (userId) => {
+    const updated = new Set(selectedIds);
+    if (updated.has(userId)) {
+      updated.delete(userId);
+    } else {
+      updated.add(userId);
+    }
+    setSelectedIds(updated);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.size === paginatedUsers.length && paginatedUsers.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      const allIds = new Set(paginatedUsers.map(u => safeProp(u, 'id', 'unknown')));
+      setSelectedIds(allIds);
+    }
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedIds.size === 0) return;
+    addToast(`Deleted ${selectedIds.size} users`, 'success');
+    setSelectedIds(new Set());
+  };
+
+  const handleBatchExport = () => {
+    if (selectedIds.size === 0) return;
+    try {
+      const selected = filteredUsers.filter(u => selectedIds.has(safeProp(u, 'id', 'unknown')));
+      const csv = [
+        ['Name', 'Type', 'Email', 'Status', 'Joined'].join(','),
+        ...selected.map(user =>
+          [
+            safeProp(user, 'name', 'N/A'),
+            safeProp(user, 'type', 'N/A'),
+            safeProp(user, 'email', 'N/A'),
+            safeProp(user, 'status', 'N/A'),
+            safeProp(user, 'joined', 'N/A'),
+          ].join(',')
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      addToast(`${selectedIds.size} users exported successfully`, 'success');
+    } catch (err) {
+      addToast('Failed to export users', 'error');
+      console.error('Export error:', err);
+    }
   };
 
   const handleExport = () => {
@@ -290,15 +347,32 @@ export default function AdminUsers() {
           </div>
         </div>
 
+        {/* Batch Actions Bar */}
+        {!isLoading && (
+          <BatchActionsBar
+            selectedCount={selectedIds.size}
+            onClearSelection={() => setSelectedIds(new Set())}
+            onDelete={handleBatchDelete}
+            onExport={handleBatchExport}
+          />
+        )}
+
         {/* Users Table */}
         {isLoading ? (
-          <SkeletonTable rows={itemsPerPage} columns={6} />
+          <SkeletonTable rows={itemsPerPage} columns={7} />
         ) : (
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full data-table">
                 <thead>
                   <tr>
+                    <th className="w-12">
+                      <SelectAllCheckbox
+                        checked={selectedIds.size === paginatedUsers.length && paginatedUsers.length > 0}
+                        indeterminate={selectedIds.size > 0 && selectedIds.size < paginatedUsers.length}
+                        onToggle={handleSelectAll}
+                      />
+                    </th>
                     <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
                       <div className="flex items-center gap-2">
                         Name
@@ -339,7 +413,13 @@ export default function AdminUsers() {
                       const isCompany = userType === 'Company';
 
                       return (
-                        <tr key={userId}>
+                        <tr key={userId} className={selectedIds.has(userId) ? 'bg-blue-50' : ''}>
+                          <td className="w-12">
+                            <RowCheckbox
+                              checked={selectedIds.has(userId)}
+                              onToggle={() => handleSelectUser(userId)}
+                            />
+                          </td>
                           <td className="font-medium text-slate-800">{userName}</td>
                           <td>
                             <Badge
