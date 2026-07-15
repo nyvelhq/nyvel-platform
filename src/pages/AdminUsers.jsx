@@ -3,6 +3,7 @@ import { Search, Star, AlertCircle, ArrowUpDown } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
+import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -24,6 +25,7 @@ export default function AdminUsers() {
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -167,23 +169,27 @@ export default function AdminUsers() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Companies</p>
-            <p className="font-display text-3xl font-bold text-violet-600">{stats.companies}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Active accounts</p>
+        {isLoading ? (
+          <SkeletonStats />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Companies</p>
+              <p className="font-display text-3xl font-bold text-violet-600">{stats.companies}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Active accounts</p>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Testers</p>
+              <p className="font-display text-3xl font-bold text-cyan-600">{stats.testers}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Verified testers</p>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Users</p>
+              <p className="font-display text-3xl font-bold text-emerald-600">{stats.activeUsers}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Online in last 30 days</p>
+            </div>
           </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Testers</p>
-            <p className="font-display text-3xl font-bold text-cyan-600">{stats.testers}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Verified testers</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Users</p>
-            <p className="font-display text-3xl font-bold text-emerald-600">{stats.activeUsers}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Online in last 30 days</p>
-          </div>
-        </div>
+        )}
 
         {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -250,117 +256,121 @@ export default function AdminUsers() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full data-table">
-              <thead>
-                <tr>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
-                    <div className="flex items-center gap-2">
-                      Name
-                      {sortBy === 'name' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
-                    <div className="flex items-center gap-2">
-                      Type
-                      {sortBy === 'type' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
-                    <div className="flex items-center gap-2">
-                      Email
-                      {sortBy === 'email' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
-                    <div className="flex items-center gap-2">
-                      Status
-                      {sortBy === 'status' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th>Joined</th>
-                  <th>Activity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedUsers.length > 0 ? (
-                  paginatedUsers.map((user) => {
-                    const userId = safeProp(user, 'id', 'unknown');
-                    const userName = safeProp(user, 'name', 'Unknown User');
-                    const userEmail = safeProp(user, 'email', 'N/A');
-                    const userType = safeProp(user, 'type', 'Unknown');
-                    const userStatus = safeProp(user, 'status', 'Inactive');
-                    const userJoined = safeProp(user, 'joined', 'N/A');
-                    const isCompany = userType === 'Company';
-
-                    return (
-                      <tr key={userId}>
-                        <td className="font-medium text-slate-800">{userName}</td>
-                        <td>
-                          <Badge
-                            label={userType}
-                            color={isCompany ? 'violet' : 'cyan'}
-                          />
-                        </td>
-                        <td className="text-sm text-slate-600">{userEmail}</td>
-                        <td>
-                          <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-                            userStatus === 'Active'
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : 'bg-slate-100 text-slate-600'
-                          }`}>
-                            {userStatus}
-                          </span>
-                        </td>
-                        <td className="text-sm text-slate-600">{userJoined}</td>
-                        <td>
-                          <div className="flex items-center gap-3 text-xs text-slate-600">
-                            {isCompany ? (
-                              <>
-                                <span>{safeProp(user, 'testsCreated', 0)} tests</span>
-                                <span className="text-slate-300">•</span>
-                                <span>{safeProp(user, 'testers', 0)} testers</span>
-                                {safeProp(user, 'plan') && (
-                                  <>
-                                    <span className="text-slate-300">•</span>
-                                    <Badge
-                                      label={safeProp(user, 'plan', 'Unknown')}
-                                      color={getPlanColor(safeProp(user, 'plan'))}
-                                    />
-                                  </>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex items-center gap-1">
-                                  <Star size={12} className="text-amber-500 fill-amber-500" />
-                                  <span>{(safeProp(user, 'rating', 0)).toFixed(1)}</span>
-                                </div>
-                                <span className="text-slate-300">•</span>
-                                <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
-                                <span className="text-slate-300">•</span>
-                                <span className="text-emerald-600 font-semibold">
-                                  {formatCurrency(safeProp(user, 'earnings', 0))}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
+        {isLoading ? (
+          <SkeletonTable rows={itemsPerPage} columns={6} />
+        ) : (
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full data-table">
+                <thead>
                   <tr>
-                    <td colSpan="6" className="text-center py-8 text-slate-500">
-                      {validatedUsers.length === 0 ? 'No users available' : 'No users found matching your criteria'}
-                    </td>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                      <div className="flex items-center gap-2">
+                        Name
+                        {sortBy === 'name' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
+                      <div className="flex items-center gap-2">
+                        Type
+                        {sortBy === 'type' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
+                      <div className="flex items-center gap-2">
+                        Email
+                        {sortBy === 'email' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                      <div className="flex items-center gap-2">
+                        Status
+                        {sortBy === 'status' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th>Joined</th>
+                    <th>Activity</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginatedUsers.length > 0 ? (
+                    paginatedUsers.map((user) => {
+                      const userId = safeProp(user, 'id', 'unknown');
+                      const userName = safeProp(user, 'name', 'Unknown User');
+                      const userEmail = safeProp(user, 'email', 'N/A');
+                      const userType = safeProp(user, 'type', 'Unknown');
+                      const userStatus = safeProp(user, 'status', 'Inactive');
+                      const userJoined = safeProp(user, 'joined', 'N/A');
+                      const isCompany = userType === 'Company';
+
+                      return (
+                        <tr key={userId}>
+                          <td className="font-medium text-slate-800">{userName}</td>
+                          <td>
+                            <Badge
+                              label={userType}
+                              color={isCompany ? 'violet' : 'cyan'}
+                            />
+                          </td>
+                          <td className="text-sm text-slate-600">{userEmail}</td>
+                          <td>
+                            <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                              userStatus === 'Active'
+                                ? 'bg-emerald-100 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}>
+                              {userStatus}
+                            </span>
+                          </td>
+                          <td className="text-sm text-slate-600">{userJoined}</td>
+                          <td>
+                            <div className="flex items-center gap-3 text-xs text-slate-600">
+                              {isCompany ? (
+                                <>
+                                  <span>{safeProp(user, 'testsCreated', 0)} tests</span>
+                                  <span className="text-slate-300">•</span>
+                                  <span>{safeProp(user, 'testers', 0)} testers</span>
+                                  {safeProp(user, 'plan') && (
+                                    <>
+                                      <span className="text-slate-300">•</span>
+                                      <Badge
+                                        label={safeProp(user, 'plan', 'Unknown')}
+                                        color={getPlanColor(safeProp(user, 'plan'))}
+                                      />
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <div className="flex items-center gap-1">
+                                    <Star size={12} className="text-amber-500 fill-amber-500" />
+                                    <span>{(safeProp(user, 'rating', 0)).toFixed(1)}</span>
+                                  </div>
+                                  <span className="text-slate-300">•</span>
+                                  <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
+                                  <span className="text-slate-300">•</span>
+                                  <span className="text-emerald-600 font-semibold">
+                                    {formatCurrency(safeProp(user, 'earnings', 0))}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center py-8 text-slate-500">
+                        {validatedUsers.length === 0 ? 'No users available' : 'No users found matching your criteria'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (

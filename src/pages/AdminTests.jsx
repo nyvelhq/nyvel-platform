@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
+import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -34,6 +35,7 @@ export default function AdminTests() {
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -192,28 +194,32 @@ export default function AdminTests() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Tests</p>
-            <p className="font-display text-3xl font-bold text-cyan-600">{stats.active}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Currently running</p>
+        {isLoading ? (
+          <SkeletonStats columns={4} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Tests</p>
+              <p className="font-display text-3xl font-bold text-cyan-600">{stats.active}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Currently running</p>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">In Progress</p>
+              <p className="font-display text-3xl font-bold text-amber-600">{stats.inProgress}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Awaiting completion</p>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Completed</p>
+              <p className="font-display text-3xl font-bold text-emerald-600">{stats.completed}</p>
+              <p className="text-xs text-slate-400 mt-1.5">Total finished</p>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Issues Reported</p>
+              <p className="font-display text-3xl font-bold text-red-600">{stats.totalIssues}</p>
+              <p className="text-xs text-slate-400 mt-1.5">{stats.totalCritical} critical</p>
+            </div>
           </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">In Progress</p>
-            <p className="font-display text-3xl font-bold text-amber-600">{stats.inProgress}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Awaiting completion</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Completed</p>
-            <p className="font-display text-3xl font-bold text-emerald-600">{stats.completed}</p>
-            <p className="text-xs text-slate-400 mt-1.5">Total finished</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Issues Reported</p>
-            <p className="font-display text-3xl font-bold text-red-600">{stats.totalIssues}</p>
-            <p className="text-xs text-slate-400 mt-1.5">{stats.totalCritical} critical</p>
-          </div>
-        </div>
+        )}
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -286,110 +292,114 @@ export default function AdminTests() {
         </div>
 
         {/* Tests Table */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full data-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
-                    <div className="flex items-center gap-2">
-                      Test Name
-                      {sortBy === 'name' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
-                    <div className="flex items-center gap-2">
-                      Company
-                      {sortBy === 'company' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th>Type</th>
-                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
-                    <div className="flex items-center gap-2">
-                      Status
-                      {sortBy === 'status' && <ArrowUpDown size={14} />}
-                    </div>
-                  </th>
-                  <th>Progress</th>
-                  <th>Testers</th>
-                  <th>Issues</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedTests.length > 0 ? (
-                  paginatedTests.map((test) => {
-                    const testId = safeProp(test, 'id', 'unknown');
-                    const testName = safeProp(test, 'name', 'Unknown Test');
-                    const company = safeProp(test, 'company', 'N/A');
-                    const type = safeProp(test, 'type', 'Unknown');
-                    const status = safeProp(test, 'status', 'Unknown');
-                    const progress = safeProp(test, 'progress', 0);
-                    const testers = safeProp(test, 'testers', 0);
-                    const target = safeProp(test, 'target', 0);
-                    const issues = safeProp(test, 'issues', 0);
-                    const critical = safeProp(test, 'critical', 0);
-
-                    // Validate progress is 0-100
-                    const validProgress = Math.min(Math.max(progress, 0), 100);
-
-                    return (
-                      <tr key={testId}>
-                        <td className="font-mono text-sm font-bold text-slate-600">{testId}</td>
-                        <td className="font-medium text-slate-800">{testName}</td>
-                        <td className="text-sm text-slate-600">{company}</td>
-                        <td>
-                          <Badge
-                            label={type}
-                            color={getTypeColor(type)}
-                          />
-                        </td>
-                        <td>
-                          <Badge
-                            label={status}
-                            color={getStatusColor(status)}
-                          />
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-brand-500 transition-all"
-                                style={{ width: `${validProgress}%` }}
-                              />
-                            </div>
-                            <span className="text-xs font-semibold text-slate-600 w-8">{validProgress}%</span>
-                          </div>
-                        </td>
-                        <td className="text-sm font-semibold text-slate-700">
-                          {testers}/{target}
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-1">
-                            {critical > 0 && (
-                              <>
-                                <AlertCircle size={14} className="text-red-500" />
-                                <span className="text-xs font-bold text-red-600">{critical}</span>
-                                <span className="text-slate-300">•</span>
-                              </>
-                            )}
-                            <span className="text-xs font-semibold text-slate-600">{issues}</span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
+        {isLoading ? (
+          <SkeletonTable rows={itemsPerPage} columns={8} />
+        ) : (
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full data-table">
+                <thead>
                   <tr>
-                    <td colSpan="8" className="text-center py-8 text-slate-500">
-                      {validatedTests.length === 0 ? 'No tests available' : 'No tests found matching your criteria'}
-                    </td>
+                    <th>ID</th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                      <div className="flex items-center gap-2">
+                        Test Name
+                        {sortBy === 'name' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
+                      <div className="flex items-center gap-2">
+                        Company
+                        {sortBy === 'company' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th>Type</th>
+                    <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                      <div className="flex items-center gap-2">
+                        Status
+                        {sortBy === 'status' && <ArrowUpDown size={14} />}
+                      </div>
+                    </th>
+                    <th>Progress</th>
+                    <th>Testers</th>
+                    <th>Issues</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {paginatedTests.length > 0 ? (
+                    paginatedTests.map((test) => {
+                      const testId = safeProp(test, 'id', 'unknown');
+                      const testName = safeProp(test, 'name', 'Unknown Test');
+                      const company = safeProp(test, 'company', 'N/A');
+                      const type = safeProp(test, 'type', 'Unknown');
+                      const status = safeProp(test, 'status', 'Unknown');
+                      const progress = safeProp(test, 'progress', 0);
+                      const testers = safeProp(test, 'testers', 0);
+                      const target = safeProp(test, 'target', 0);
+                      const issues = safeProp(test, 'issues', 0);
+                      const critical = safeProp(test, 'critical', 0);
+
+                      // Validate progress is 0-100
+                      const validProgress = Math.min(Math.max(progress, 0), 100);
+
+                      return (
+                        <tr key={testId}>
+                          <td className="font-mono text-sm font-bold text-slate-600">{testId}</td>
+                          <td className="font-medium text-slate-800">{testName}</td>
+                          <td className="text-sm text-slate-600">{company}</td>
+                          <td>
+                            <Badge
+                              label={type}
+                              color={getTypeColor(type)}
+                            />
+                          </td>
+                          <td>
+                            <Badge
+                              label={status}
+                              color={getStatusColor(status)}
+                            />
+                          </td>
+                          <td>
+                            <div className="flex items-center gap-2">
+                              <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-brand-500 transition-all"
+                                  style={{ width: `${validProgress}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-semibold text-slate-600 w-8">{validProgress}%</span>
+                            </div>
+                          </td>
+                          <td className="text-sm font-semibold text-slate-700">
+                            {testers}/{target}
+                          </td>
+                          <td>
+                            <div className="flex items-center gap-1">
+                              {critical > 0 && (
+                                <>
+                                  <AlertCircle size={14} className="text-red-500" />
+                                  <span className="text-xs font-bold text-red-600">{critical}</span>
+                                  <span className="text-slate-300">•</span>
+                                </>
+                              )}
+                              <span className="text-xs font-semibold text-slate-600">{issues}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="text-center py-8 text-slate-500">
+                        {validatedTests.length === 0 ? 'No tests available' : 'No tests found matching your criteria'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
