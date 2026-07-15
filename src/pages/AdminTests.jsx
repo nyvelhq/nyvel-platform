@@ -9,6 +9,7 @@ import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
 import { InlineEditCell } from '../components/admin/InlineEdit';
 import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
+import { ConfirmationModal } from '../components/admin/ConfirmationModal';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -39,6 +40,7 @@ export default function AdminTests() {
   });
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editedTests, setEditedTests] = useState({});
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -189,8 +191,41 @@ export default function AdminTests() {
 
   const handleBatchDelete = () => {
     if (selectedIds.size === 0) return;
-    addToast(`Deleted ${selectedIds.size} tests`, 'success');
-    setSelectedIds(new Set());
+    setConfirmModal({
+      isOpen: true,
+      action: 'delete',
+    });
+  };
+
+  const confirmBatchDelete = async () => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      addToast(`Deleted ${selectedIds.size} tests`, 'success');
+      setSelectedIds(new Set());
+      setConfirmModal({ isOpen: false, action: null });
+    } catch (err) {
+      addToast('Failed to delete tests', 'error');
+    }
+  };
+
+  const handleBatchStatusChange = (status) => {
+    if (selectedIds.size === 0) return;
+    setConfirmModal({
+      isOpen: true,
+      action: 'status',
+      status,
+    });
+  };
+
+  const confirmBatchStatusChange = async () => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      addToast(`Updated status to ${confirmModal.status} for ${selectedIds.size} tests`, 'success');
+      setSelectedIds(new Set());
+      setConfirmModal({ isOpen: false, action: null });
+    } catch (err) {
+      addToast('Failed to update status', 'error');
+    }
   };
 
   const handleBatchExport = () => {
@@ -421,8 +456,34 @@ export default function AdminTests() {
             onClearSelection={() => setSelectedIds(new Set())}
             onDelete={handleBatchDelete}
             onExport={handleBatchExport}
+            onStatusChange={handleBatchStatusChange}
+            statusOptions={['Active', 'In Progress', 'Completed']}
           />
         )}
+
+        {/* Confirmation Modal */}
+        <ConfirmationModal
+          isOpen={confirmModal.isOpen}
+          title={
+            confirmModal.action === 'delete'
+              ? 'Delete Tests?'
+              : 'Change Test Status?'
+          }
+          message={
+            confirmModal.action === 'delete'
+              ? 'This action cannot be undone. All selected tests will be permanently deleted.'
+              : `All selected tests will be marked as ${confirmModal.status}.`
+          }
+          confirmText={confirmModal.action === 'delete' ? 'Delete' : 'Update'}
+          onConfirm={
+            confirmModal.action === 'delete'
+              ? confirmBatchDelete
+              : confirmBatchStatusChange
+          }
+          onCancel={() => setConfirmModal({ isOpen: false, action: null })}
+          isDangerous={confirmModal.action === 'delete'}
+          itemCount={selectedIds.size}
+        />
 
         {/* Tests Table */}
         {isLoading ? (

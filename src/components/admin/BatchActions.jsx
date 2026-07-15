@@ -1,7 +1,9 @@
-import React from 'react';
-import { X, Trash2, Download, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Trash2, Download, CheckCircle, ChevronDown } from 'lucide-react';
 
-export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onExport, onStatusChange, isLoading = false }) {
+export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onExport, onStatusChange, statusOptions = [], isLoading = false }) {
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+
   if (selectedCount === 0) return null;
 
   return (
@@ -11,18 +13,36 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
           {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
         </p>
       </div>
-      <div className="flex gap-2">
-        {onStatusChange && (
-          <button
-            onClick={() => onStatusChange('Active')}
-            disabled={isLoading}
-            className="px-3 py-2 text-sm font-medium bg-emerald-50 text-emerald-700 rounded hover:bg-emerald-100 transition-all disabled:opacity-50"
-          >
-            <div className="flex items-center gap-1">
+      <div className="flex gap-2 flex-wrap">
+        {onStatusChange && statusOptions.length > 0 && (
+          <div className="relative">
+            <button
+              onClick={() => setShowStatusMenu(!showStatusMenu)}
+              disabled={isLoading}
+              className="px-3 py-2 text-sm font-medium bg-emerald-50 text-emerald-700 rounded hover:bg-emerald-100 transition-all disabled:opacity-50 flex items-center gap-1"
+            >
               <CheckCircle size={14} />
-              Mark Active
-            </div>
-          </button>
+              Change Status
+              <ChevronDown size={14} />
+            </button>
+            {showStatusMenu && (
+              <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-max">
+                {statusOptions.map(option => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      onStatusChange(option);
+                      setShowStatusMenu(false);
+                    }}
+                    disabled={isLoading}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 first:rounded-t-lg last:rounded-b-lg disabled:opacity-50"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
         {onExport && (
           <button
