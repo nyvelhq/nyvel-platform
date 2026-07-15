@@ -7,6 +7,7 @@ import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
 import { InlineEditCell } from '../components/admin/InlineEdit';
+import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -38,6 +39,22 @@ export default function AdminUsers() {
   const [editedUsers, setEditedUsers] = useState({});
   const { addToast } = useToast();
   const itemsPerPage = 10;
+
+  const handleRefresh = async () => {
+    setIsLoading(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setCurrentPage(1);
+      setSelectedIds(new Set());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const refreshState = useAutoRefresh(handleRefresh, {
+    autoRefreshEnabled: false,
+    refreshInterval: 30000,
+  });
 
   // Validate and filter users data
   const validatedUsers = useMemo(() => {
@@ -286,6 +303,15 @@ export default function AdminUsers() {
             </div>
           </div>
         )}
+
+        {/* Real-time Refresh */}
+        <RealTimeRefresh
+          isEnabled={refreshState.isEnabled}
+          onToggle={refreshState.onToggle}
+          lastUpdated={refreshState.lastUpdated}
+          onRefresh={refreshState.onRefresh}
+          isLoading={isLoading || refreshState.isLoading}
+        />
 
         {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row gap-4">
