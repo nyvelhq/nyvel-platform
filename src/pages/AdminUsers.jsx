@@ -4,6 +4,7 @@ import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
+import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { adminUsers } from '../data/mockData';
 import { validateUsers, safeProp, formatCurrency } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -26,6 +27,11 @@ export default function AdminUsers() {
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    statuses: [],
+  });
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -49,11 +55,31 @@ export default function AdminUsers() {
         const name = safeProp(user, 'name', '').toLowerCase();
         const email = safeProp(user, 'email', '').toLowerCase();
         const type = safeProp(user, 'type', '');
+        const status = safeProp(user, 'status', '');
+        const joined = safeProp(user, 'joined', '');
 
         const matchesSearch = name.includes(searchTerm.toLowerCase()) ||
                              email.includes(searchTerm.toLowerCase());
         const matchesType = filterType === 'all' || type.toLowerCase() === filterType.toLowerCase();
-        return matchesSearch && matchesType;
+
+        // Advanced filters
+        let matchesDateRange = true;
+        if (advancedFilters.dateFrom || advancedFilters.dateTo) {
+          const joinedDate = new Date(joined);
+          if (advancedFilters.dateFrom && joinedDate < new Date(advancedFilters.dateFrom)) {
+            matchesDateRange = false;
+          }
+          if (advancedFilters.dateTo && joinedDate > new Date(advancedFilters.dateTo)) {
+            matchesDateRange = false;
+          }
+        }
+
+        let matchesStatus = true;
+        if (advancedFilters.statuses.length > 0) {
+          matchesStatus = advancedFilters.statuses.includes(status);
+        }
+
+        return matchesSearch && matchesType && matchesDateRange && matchesStatus;
       });
 
       filtered.sort((a, b) => {
@@ -89,7 +115,7 @@ export default function AdminUsers() {
       console.error('Filter error:', err);
       return [];
     }
-  }, [validatedUsers, searchTerm, filterType, sortBy, sortOrder]);
+  }, [validatedUsers, searchTerm, filterType, sortBy, sortOrder, advancedFilters]);
 
   const stats = useMemo(() => {
     try {
@@ -206,7 +232,7 @@ export default function AdminUsers() {
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => {
                 setFilterType('all');
@@ -246,6 +272,15 @@ export default function AdminUsers() {
             >
               Testers
             </button>
+            <AdvancedFilters
+              onFilterChange={(filters) => {
+                setAdvancedFilters(filters);
+                setCurrentPage(1);
+              }}
+              filterOptions={{
+                statuses: ['Active', 'Inactive'],
+              }}
+            />
             <button
               onClick={handleExport}
               className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"

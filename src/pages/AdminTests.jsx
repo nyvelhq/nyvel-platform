@@ -5,6 +5,7 @@ import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
+import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
 import { useToast } from '../context/ToastContext';
@@ -36,6 +37,11 @@ export default function AdminTests() {
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dateFrom: '',
+    dateTo: '',
+    statuses: [],
+  });
   const { addToast } = useToast();
   const itemsPerPage = 10;
 
@@ -60,12 +66,31 @@ export default function AdminTests() {
         const company = safeProp(test, 'company', '').toLowerCase();
         const id = safeProp(test, 'id', '').toLowerCase();
         const status = safeProp(test, 'status', '');
+        const dueDate = safeProp(test, 'dueDate', '');
 
         const matchesSearch = name.includes(searchTerm.toLowerCase()) ||
                              company.includes(searchTerm.toLowerCase()) ||
                              id.includes(searchTerm.toLowerCase());
         const matchesStatus = filterStatus === 'all' || status === filterStatus;
-        return matchesSearch && matchesStatus;
+
+        // Advanced filters
+        let matchesDateRange = true;
+        if (advancedFilters.dateFrom || advancedFilters.dateTo) {
+          const testDate = new Date(dueDate);
+          if (advancedFilters.dateFrom && testDate < new Date(advancedFilters.dateFrom)) {
+            matchesDateRange = false;
+          }
+          if (advancedFilters.dateTo && testDate > new Date(advancedFilters.dateTo)) {
+            matchesDateRange = false;
+          }
+        }
+
+        let matchesAdvancedStatus = true;
+        if (advancedFilters.statuses.length > 0) {
+          matchesAdvancedStatus = advancedFilters.statuses.includes(status);
+        }
+
+        return matchesSearch && matchesStatus && matchesDateRange && matchesAdvancedStatus;
       });
 
       filtered.sort((a, b) => {
@@ -97,7 +122,7 @@ export default function AdminTests() {
       console.error('Filter error:', err);
       return [];
     }
-  }, [validatedTests, searchTerm, filterStatus, sortBy, sortOrder]);
+  }, [validatedTests, searchTerm, filterStatus, sortBy, sortOrder, advancedFilters]);
 
   const stats = useMemo(() => {
     try {
@@ -265,7 +290,7 @@ export default function AdminTests() {
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {['all', 'Active', 'In Progress', 'Completed'].map(status => (
               <button
                 key={status}
@@ -282,6 +307,15 @@ export default function AdminTests() {
                 {status}
               </button>
             ))}
+            <AdvancedFilters
+              onFilterChange={(filters) => {
+                setAdvancedFilters(filters);
+                setCurrentPage(1);
+              }}
+              filterOptions={{
+                statuses: ['Active', 'In Progress', 'Completed'],
+              }}
+            />
             <button
               onClick={handleExport}
               className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"
