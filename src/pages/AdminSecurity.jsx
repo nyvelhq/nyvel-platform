@@ -4,8 +4,6 @@ import PlatformLayout from '../components/platform/PlatformLayout';
 import { adminSecurityLog } from '../data/mockData';
 
 export default function AdminSecurity() {
-  const [selectedLog, setSelectedLog] = useState(null);
-
   const securityStatus = [
     { name: 'SSL Certificate', status: 'Valid', expiry: '2027-03-15', icon: Lock },
     { name: 'Two-Factor Auth', status: 'Enabled', coverage: '98%', icon: Shield },

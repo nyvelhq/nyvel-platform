@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Users, Search, Star, AlertCircle } from 'lucide-react';
+import { Search, Star, AlertCircle } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import { adminUsers } from '../data/mockData';

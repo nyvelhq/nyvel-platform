@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { adminReportsData } from '../data/mockData';
 
 export default function AdminReports() {
   const [timeRange, setTimeRange] = useState('6months');
-
-  const COLORS = ['#ef4444', '#a78bfa', '#fbbf24', '#94a3b8'];
 
   return (
     <PlatformLayout title="Reports">
