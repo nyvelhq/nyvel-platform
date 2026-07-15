@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle, ArrowUpDown } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
+import Pagination from '../components/ui/Pagination';
 import { adminTests } from '../data/mockData';
 import { validateTests, safeProp } from '../utils/validation';
+import { useToast } from '../context/ToastContext';
 
 const statusColors = {
   'Active': 'cyan',
@@ -29,6 +31,11 @@ export default function AdminTests() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const { addToast } = useToast();
+  const itemsPerPage = 10;
 
   // Validate tests data
   const validatedTests = useMemo(() => {
@@ -46,7 +53,7 @@ export default function AdminTests() {
 
   const filteredTests = useMemo(() => {
     try {
-      return validatedTests.filter(test => {
+      let filtered = validatedTests.filter(test => {
         const name = safeProp(test, 'name', '').toLowerCase();
         const company = safeProp(test, 'company', '').toLowerCase();
         const id = safeProp(test, 'id', '').toLowerCase();
@@ -58,11 +65,37 @@ export default function AdminTests() {
         const matchesStatus = filterStatus === 'all' || status === filterStatus;
         return matchesSearch && matchesStatus;
       });
+
+      filtered.sort((a, b) => {
+        let aVal, bVal;
+        switch (sortBy) {
+          case 'name':
+            aVal = safeProp(a, 'name', '').toLowerCase();
+            bVal = safeProp(b, 'name', '').toLowerCase();
+            break;
+          case 'company':
+            aVal = safeProp(a, 'company', '').toLowerCase();
+            bVal = safeProp(b, 'company', '').toLowerCase();
+            break;
+          case 'status':
+            aVal = safeProp(a, 'status', '').toLowerCase();
+            bVal = safeProp(b, 'status', '').toLowerCase();
+            break;
+          default:
+            return 0;
+        }
+
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      return filtered;
     } catch (err) {
       console.error('Filter error:', err);
       return [];
     }
-  }, [validatedTests, searchTerm, filterStatus]);
+  }, [validatedTests, searchTerm, filterStatus, sortBy, sortOrder]);
 
   const stats = useMemo(() => {
     try {
@@ -78,6 +111,51 @@ export default function AdminTests() {
       return { active: 0, completed: 0, inProgress: 0, totalIssues: 0, totalCritical: 0 };
     }
   }, [validatedTests]);
+
+  const totalPages = Math.ceil(filteredTests.length / itemsPerPage);
+  const paginatedTests = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredTests.slice(start, start + itemsPerPage);
+  }, [filteredTests, currentPage]);
+
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1);
+  };
+
+  const handleExport = () => {
+    try {
+      const csv = [
+        ['ID', 'Test Name', 'Company', 'Type', 'Status', 'Progress'].join(','),
+        ...filteredTests.map(test =>
+          [
+            safeProp(test, 'id', 'N/A'),
+            safeProp(test, 'name', 'N/A'),
+            safeProp(test, 'company', 'N/A'),
+            safeProp(test, 'type', 'N/A'),
+            safeProp(test, 'status', 'N/A'),
+            `${safeProp(test, 'progress', 0)}%`,
+          ].join(',')
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tests-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      addToast('Tests exported successfully', 'success');
+    } catch (err) {
+      addToast('Failed to export tests', 'error');
+      console.error('Export error:', err);
+    }
+  };
 
   const progressData = [
     { name: '0-25%', count: 1 },
@@ -174,7 +252,10 @@ export default function AdminTests() {
               type="text"
               placeholder="Search tests by ID, name, or company..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
@@ -182,7 +263,10 @@ export default function AdminTests() {
             {['all', 'Active', 'In Progress', 'Completed'].map(status => (
               <button
                 key={status}
-                onClick={() => setFilterStatus(status)}
+                onClick={() => {
+                  setFilterStatus(status);
+                  setCurrentPage(1);
+                }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   filterStatus === status
                     ? 'bg-slate-900 text-white'
@@ -192,6 +276,12 @@ export default function AdminTests() {
                 {status}
               </button>
             ))}
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"
+            >
+              Export
+            </button>
           </div>
         </div>
 
@@ -202,18 +292,33 @@ export default function AdminTests() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Test Name</th>
-                  <th>Company</th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                    <div className="flex items-center gap-2">
+                      Test Name
+                      {sortBy === 'name' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
+                    <div className="flex items-center gap-2">
+                      Company
+                      {sortBy === 'company' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
                   <th>Type</th>
-                  <th>Status</th>
+                  <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                    <div className="flex items-center gap-2">
+                      Status
+                      {sortBy === 'status' && <ArrowUpDown size={14} />}
+                    </div>
+                  </th>
                   <th>Progress</th>
                   <th>Testers</th>
                   <th>Issues</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTests.length > 0 ? (
-                  filteredTests.map((test) => {
+                {paginatedTests.length > 0 ? (
+                  paginatedTests.map((test) => {
                     const testId = safeProp(test, 'id', 'unknown');
                     const testName = safeProp(test, 'name', 'Unknown Test');
                     const company = safeProp(test, 'company', 'N/A');
@@ -286,10 +391,18 @@ export default function AdminTests() {
           </div>
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
+
         {/* Footer */}
-        <div className="flex items-center justify-between text-sm text-slate-600">
-          <p>Showing {filteredTests.length} of {adminTests.length} tests</p>
-          <p>Last updated: 1 minute ago</p>
+        <div className="text-sm text-slate-600">
+          <p>Showing {paginatedTests.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredTests.length)} of {filteredTests.length} tests</p>
         </div>
       </div>
     </PlatformLayout>
