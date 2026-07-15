@@ -27,25 +27,28 @@ export default function CompanyDashboard() {
     <PlatformLayout title="Dashboard">
       <div className="p-8 space-y-8">
         {/* Welcome bar */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/50">
           <div>
-            <h2 className="font-display text-xl font-bold text-slate-900">
+            <h1 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">
               Good morning, {user?.name?.split(' ')[0]} 👋
-            </h2>
-            <p className="text-sm text-slate-500 mt-0.5">
+            </h1>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               {user?.company} · {user?.plan} Plan
             </p>
           </div>
           <Button
             icon={<Plus size={16} />}
             onClick={() => navigate('/company/create-test')}
+            size="lg"
           >
             New Test
           </Button>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Overview</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <StatCard
             label="Active Tests"
             value={companyStats.activeTests}
@@ -79,72 +82,76 @@ export default function CompanyDashboard() {
             icon={CheckCircle}
             iconColor="green"
           />
+          </div>
         </div>
 
-        {/* Charts row */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Activity line chart */}
-          <div className="xl:col-span-2 bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h3 className="font-semibold text-slate-900">Test Activity</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Issues found & testers active over time</p>
-              </div>
-              <div className="flex items-center gap-4 text-xs text-slate-400">
-                <span className="flex items-center gap-1.5">
+        {/* Analytics Section */}
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Analytics</h2>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Activity line chart */}
+            <div className="xl:col-span-2 card p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Test Activity</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Issues found & testers active over time</p>
+                </div>
+              <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400">
+                <span className="flex items-center gap-2">
                   <span className="w-3 h-0.5 bg-brand-500 rounded-full inline-block" />
                   Issues
                 </span>
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-2">
                   <span className="w-3 h-0.5 bg-accent-400 rounded-full inline-block" />
                   Testers
                 </span>
               </div>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={activityChartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: 12 }}
-                />
-                <Line type="monotone" dataKey="issues" stroke="#17a897" strokeWidth={2.5} dot={{ fill: '#17a897', r: 4 }} activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="testers" stroke="#f59e0b" strokeWidth={2.5} dot={{ fill: '#f59e0b', r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
+              <ResponsiveContainer width="100%" height={240}>
+                <LineChart data={activityChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(203, 213, 225, 0.3)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.1)' }}
+                  />
+                  <Line type="monotone" dataKey="issues" stroke="#17a897" strokeWidth={3} dot={{ fill: '#17a897', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="testers" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
           </div>
 
-          {/* Issues by severity donut */}
-          <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-            <h3 className="font-semibold text-slate-900 mb-1">Issues by Severity</h3>
-            <p className="text-xs text-slate-500 mb-4">Across all active tests</p>
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie
-                  data={issuesBySeverity}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={52}
-                  outerRadius={78}
-                  paddingAngle={3}
-                  dataKey="value"
-                  isAnimationActive={false}
-                >
-                  {issuesBySeverity.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="grid grid-cols-2 gap-1.5 mt-3">
-              {issuesBySeverity.map((item) => (
-                <div key={item.name} className="flex items-center gap-1.5 text-xs text-slate-600">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                  <span>{item.name} ({item.value})</span>
-                </div>
-              ))}
+            {/* Issues by severity donut */}
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-1">Issues by Severity</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">Across all active tests</p>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie
+                    data={issuesBySeverity}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={52}
+                    outerRadius={78}
+                    paddingAngle={3}
+                    dataKey="value"
+                    isAnimationActive={false}
+                  >
+                    {issuesBySeverity.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontSize: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {issuesBySeverity.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                    <span>{item.name} ({item.value})</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
