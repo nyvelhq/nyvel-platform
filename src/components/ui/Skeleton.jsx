@@ -1,15 +1,5 @@
 import React from 'react';
 
-const shimmer = `
-  @keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
-  }
-  .animate-shimmer {
-    animation: shimmer 2s infinite;
-  }
-`;
-
 export function SkeletonCard() {
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5 animate-pulse">
