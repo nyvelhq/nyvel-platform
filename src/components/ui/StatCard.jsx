@@ -1,9 +1,14 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import AnimatedCounter from './AnimatedCounter';
 
 /**
  * StatCard — dashboard metric display with trend indicator
  * Renders: icon + value + label + optional trend
+ *
+ * When `animate` is true and `value` is numeric, the value rolls up via
+ * AnimatedCounter. Pass `format` (or prefix/suffix/decimals) to control
+ * how the animated number is rendered. Otherwise behaves exactly as before.
  */
 export default function StatCard({
   label,
@@ -14,7 +19,13 @@ export default function StatCard({
   iconColor = 'brand',
   formatter,
   invert = false,
+  animate = false,
+  format,
+  prefix,
+  suffix,
+  decimals,
 }) {
+  const canAnimate = animate && typeof value === 'number';
   const displayValue = formatter ? formatter(value) : value;
 
   // Semantic icon background colors (refined, more subtle)
@@ -81,7 +92,17 @@ export default function StatCard({
 
       <div>
         <p className="text-3xl sm:text-4xl font-bold font-display text-slate-900 dark:text-slate-50 leading-none">
-          {displayValue}
+          {canAnimate ? (
+            <AnimatedCounter
+              value={value}
+              format={format}
+              prefix={prefix}
+              suffix={suffix}
+              decimals={decimals}
+            />
+          ) : (
+            displayValue
+          )}
         </p>
         <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">{label}</p>
       </div>
