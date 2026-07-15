@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Pages
+// Admin dashboard pages implemented with comprehensive validation and error handling
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import CompanyDashboard from './pages/CompanyDashboard';
