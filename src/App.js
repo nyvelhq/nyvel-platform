@@ -10,6 +10,11 @@ import TesterDashboard from './pages/TesterDashboard';
 import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminTests from './pages/AdminTests';
+import AdminReports from './pages/AdminReports';
+import AdminSecurity from './pages/AdminSecurity';
+import AdminSettings from './pages/AdminSettings';
 import ComingSoon from './pages/ComingSoon';
 
 // Components & Providers
@@ -185,11 +190,11 @@ function AppRoutes() {
 
       {/* Admin routes */}
       <Route path="/admin/dashboard" element={guarded('admin', <AdminDashboard />)} />
-      <Route path="/admin/users" element={guarded('admin', <ComingSoon title="Users" />)} />
-      <Route path="/admin/tests" element={guarded('admin', <ComingSoon title="Tests" />)} />
-      <Route path="/admin/reports" element={guarded('admin', <ComingSoon title="Reports" />)} />
-      <Route path="/admin/security" element={guarded('admin', <ComingSoon title="Security" />)} />
-      <Route path="/admin/settings" element={guarded('admin', <ComingSoon title="Settings" />)} />
+      <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
+      <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
+      <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
+      <Route path="/admin/security" element={guarded('admin', <AdminSecurity />)} />
+      <Route path="/admin/settings" element={guarded('admin', <AdminSettings />)} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
