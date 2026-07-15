@@ -10,18 +10,20 @@
 
   body {
     @apply font-sans antialiased text-slate-900 dark:text-slate-50 bg-white dark:bg-slate-950 transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold;
+    @apply font-display font-semibold tracking-tight;
   }
 
-  h1 { @apply text-5xl sm:text-6xl lg:text-7xl; }
-  h2 { @apply text-3xl sm:text-4xl; }
-  h3 { @apply text-2xl sm:text-3xl; }
-  h4 { @apply text-xl sm:text-2xl; }
-  h5 { @apply text-lg sm:text-xl; }
-  h6 { @apply text-base sm:text-lg; }
+  h1 { @apply text-5xl sm:text-6xl lg:text-7xl font-bold; }
+  h2 { @apply text-3xl sm:text-4xl font-bold; }
+  h3 { @apply text-2xl sm:text-3xl font-semibold; }
+  h4 { @apply text-xl sm:text-2xl font-semibold; }
+  h5 { @apply text-lg sm:text-xl font-semibold; }
+  h6 { @apply text-base sm:text-lg font-semibold; }
 
   /* WCAG AAA compliant focus states for all interactive elements */
   *:focus-visible {
