@@ -11,6 +11,8 @@ import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/a
 import { InlineEditCell } from '../components/admin/InlineEdit';
 import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
+import DetailDrawer from '../components/admin/DetailDrawer';
+import Button from '../components/ui/Button';
 import { ColumnVisibilityToggle, useColumnVisibility } from '../components/admin/ColumnVisibility';
 import { HighlightedText, SearchCounter } from '../components/admin/SearchHighlight';
 import { adminUsers } from '../data/mockData';
@@ -43,6 +45,7 @@ export default function AdminUsers() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editedUsers, setEditedUsers] = useState({});
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
+  const [detailUser, setDetailUser] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const { addToast } = useToast();
 
@@ -455,6 +458,45 @@ export default function AdminUsers() {
           itemCount={selectedIds.size}
         />
 
+        {/* Row detail drawer */}
+        <DetailDrawer
+          open={detailUser !== null}
+          onClose={() => setDetailUser(null)}
+          title={safeProp(detailUser, 'name', 'Unknown User')}
+          subtitle={safeProp(detailUser, 'email', '')}
+          avatar={
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+              {safeProp(detailUser, 'name', '?')[0]}
+            </div>
+          }
+          fields={
+            detailUser
+              ? [
+                  { label: 'Type', value: <Badge label={safeProp(detailUser, 'type', 'Unknown')} color={safeProp(detailUser, 'type') === 'Company' ? 'violet' : 'cyan'} /> },
+                  { label: 'Status', value: <span className={safeProp(detailUser, 'status') === 'Active' ? 'badge badge-success' : 'badge badge-neutral'}>{safeProp(detailUser, 'status', 'Unknown')}</span> },
+                  { label: 'User ID', value: <span className="font-mono text-xs">{safeProp(detailUser, 'id', '—')}</span> },
+                  { label: 'Joined', value: safeProp(detailUser, 'joined', '—') },
+                  ...(safeProp(detailUser, 'type') === 'Company'
+                    ? [
+                        { label: 'Plan', value: <Badge label={safeProp(detailUser, 'plan', 'Unknown')} color={getPlanColor(safeProp(detailUser, 'plan'))} /> },
+                        { label: 'Tests Created', value: safeProp(detailUser, 'testsCreated', 0) },
+                        { label: 'Testers Engaged', value: safeProp(detailUser, 'testers', 0) },
+                      ]
+                    : [
+                        { label: 'Rating', value: `${(safeProp(detailUser, 'rating', 0)).toFixed(1)} / 5.0` },
+                        { label: 'Tests Completed', value: safeProp(detailUser, 'testsCompleted', 0) },
+                        { label: 'Total Earnings', value: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(safeProp(detailUser, 'earnings', 0))}</span> },
+                      ]),
+                ]
+              : []
+          }
+          footer={
+            <Button variant="secondary" onClick={() => setDetailUser(null)}>
+              Close
+            </Button>
+          }
+        />
+
         {/* Users Table */}
         {isLoading ? (
           <SkeletonTable rows={itemsPerPage} columns={7} />
@@ -519,7 +561,15 @@ export default function AdminUsers() {
                       const isCompany = userType === 'Company';
 
                       return (
-                        <tr key={userId} className={`table-row-enter ${selectedIds.has(userId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}>
+                        <tr
+                          key={userId}
+                          onClick={(e) => {
+                            // Interactive controls (checkbox, inline edit, links) keep their own behavior
+                            if (e.target.closest('button, input, select, a, [role="button"]')) return;
+                            setDetailUser(user);
+                          }}
+                          className={`table-row-enter cursor-pointer ${selectedIds.has(userId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}
+                        >
                           <td className="w-12">
                             <RowCheckbox
                               checked={selectedIds.has(userId)}

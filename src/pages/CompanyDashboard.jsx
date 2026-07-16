@@ -13,6 +13,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { StatusBadge, TypeBadge, SeverityBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import ScrollReveal from '../components/ScrollReveal';
+import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
 import {
@@ -23,6 +24,23 @@ export default function CompanyDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { companyTests } = useAppData();
+  const isDark = useDarkMode();
+
+  // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
+  const chart = {
+    axis: isDark ? '#64748b' : '#94a3b8',
+    grid: isDark ? 'rgba(51, 65, 85, 0.5)' : 'rgba(203, 213, 225, 0.3)',
+    brand: isDark ? '#38c4b0' : '#17a897',
+    accent: isDark ? '#fbbf24' : '#f59e0b',
+  };
+  const tooltipStyle = {
+    borderRadius: '8px',
+    border: `1px solid ${isDark ? '#334155' : '#cbd5e1'}`,
+    backgroundColor: isDark ? '#0f172a' : '#ffffff',
+    color: isDark ? '#f1f5f9' : '#0f172a',
+    fontSize: 12,
+    boxShadow: '0 4px 12px rgba(15, 23, 42, 0.1)',
+  };
 
   return (
     <PlatformLayout title="Dashboard">
@@ -54,6 +72,7 @@ export default function CompanyDashboard() {
               <StatCard
                 label="Active Tests"
                 value={companyStats.activeTests}
+                animate
                 trend={companyStats.trends.activeTests}
                 trendLabel=" this week"
                 icon={FlaskConical}
@@ -64,6 +83,7 @@ export default function CompanyDashboard() {
               <StatCard
                 label="Total Testers"
                 value={companyStats.totalTesters}
+                animate
                 trend={companyStats.trends.totalTesters}
                 trendLabel=" this month"
                 icon={Users}
@@ -74,6 +94,7 @@ export default function CompanyDashboard() {
               <StatCard
                 label="Open Issues"
                 value={companyStats.openIssues}
+                animate
                 trend={companyStats.trends.openIssues}
                 trendLabel=" since last week"
                 icon={AlertTriangle}
@@ -84,7 +105,9 @@ export default function CompanyDashboard() {
             <ScrollReveal animation="fade-in-page" staggerIndex={3} staggerDelay={100}>
               <StatCard
                 label="Completion Rate"
-                value={`${companyStats.completionRate}%`}
+                value={companyStats.completionRate}
+                animate
+                format={(n) => `${Math.round(n)}%`}
                 trend={companyStats.trends.completionRate}
                 trendLabel="%"
                 icon={CheckCircle}
@@ -118,14 +141,12 @@ export default function CompanyDashboard() {
             </div>
               <ResponsiveContainer width="100%" height={240}>
                 <LineChart data={activityChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(203, 213, 225, 0.3)" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                  <Tooltip
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.1)' }}
-                  />
-                  <Line type="monotone" dataKey="issues" stroke="#17a897" strokeWidth={3} dot={{ fill: '#17a897', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="testers" stroke="#f59e0b" strokeWidth={3} dot={{ fill: '#f59e0b', r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: chart.axis }} />
+                  <Line type="monotone" dataKey="issues" stroke={chart.brand} strokeWidth={3} dot={{ fill: chart.brand, r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="testers" stroke={chart.accent} strokeWidth={3} dot={{ fill: chart.accent, r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
           </div>
@@ -150,7 +171,7 @@ export default function CompanyDashboard() {
                       <Cell key={i} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontSize: 12 }} />
+                  <Tooltip contentStyle={tooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="grid grid-cols-2 gap-2 mt-4">
@@ -166,12 +187,12 @@ export default function CompanyDashboard() {
         </div>
 
         {/* Tests table */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-900">Recent Tests</h3>
+        <div className="card overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/70 dark:border-slate-700/50">
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Tests</h3>
             <button
               onClick={() => navigate('/company/tests')}
-              className="text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
+              className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium flex items-center gap-1"
             >
               View all <ExternalLink size={13} />
             </button>
@@ -203,17 +224,17 @@ export default function CompanyDashboard() {
                 {companyTests.map((test) => (
                   <tr
                     key={test.id}
-                    className="cursor-pointer hover:bg-slate-50"
+                    className="table-row-enter cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40"
                     onClick={() => navigate(`/company/tests/${test.id}`)}
                   >
                     <td>
-                      <span className="font-mono text-xs text-slate-400">{test.id}</span>
+                      <span className="font-mono text-xs text-slate-400 dark:text-slate-500">{test.id}</span>
                     </td>
                     <td>
-                      <span className="font-medium text-slate-800">{test.name}</span>
+                      <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                       <div className="flex gap-1 mt-1">
                         {test.platform.map((p) => (
-                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-medium">
+                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium">
                             {p}
                           </span>
                         ))}
@@ -223,13 +244,13 @@ export default function CompanyDashboard() {
                     <td><StatusBadge status={test.status} /></td>
                     <td>
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-slate-100 rounded-full h-1.5 w-16">
+                        <div className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 w-16">
                           <div
                             className="h-1.5 rounded-full bg-brand-500"
                             style={{ width: `${test.target ? (test.testers / test.target) * 100 : 0}%` }}
                           />
                         </div>
-                        <span className="text-xs text-slate-500 whitespace-nowrap">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                           {test.testers}/{test.target}
                         </span>
                       </div>
@@ -237,14 +258,14 @@ export default function CompanyDashboard() {
                     <td>
                       <SeverityBadge count={test.issues} type="bugs" />
                     </td>
-                    <td className="text-slate-500 text-xs whitespace-nowrap">{test.dueDate}</td>
+                    <td className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">{test.dueDate}</td>
                     <td>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/company/tests/${test.id}`);
                         }}
-                        className="text-brand-500 hover:text-brand-700 transition-colors"
+                        className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
                       >
                         <ExternalLink size={14} />
                       </button>

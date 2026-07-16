@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { MotionConfig } from 'framer-motion';
+import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
+import { duration, ease } from './motion/tokens';
 
 // Pages
 // Admin dashboard pages implemented with comprehensive validation and error handling
@@ -23,7 +24,6 @@ import ComingSoon from './pages/ComingSoon';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import PasswordGate from './components/ui/PasswordGate';
 import Toast from './components/ui/Toast';
-import PageTransitionWrapper from './components/PageTransitionWrapper';
 import { DataProvider } from './context/DataContext';
 import { ToastProvider } from './context/ToastContext';
 
@@ -168,8 +168,20 @@ function AppRoutes() {
   }
 
   return (
-    <PageTransitionWrapper>
-      <Routes>
+    // Route transitions: AnimatePresence crossfades between locations.
+    // The exiting page keeps rendering (Routes receives the animated
+    // location) while the next one fades in — no artificial delay like
+    // the old setTimeout-based wrapper. Opacity-only on purpose: a
+    // transformed page wrapper would become the containing block for
+    // position:fixed children (toasts, modals).
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: duration.slow, ease: ease.out } }}
+        exit={{ opacity: 0, transition: { duration: duration.fast, ease: ease.in } }}
+      >
+        <Routes location={location}>
         {/* Marketing */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -204,8 +216,9 @@ function AppRoutes() {
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </PageTransitionWrapper>
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

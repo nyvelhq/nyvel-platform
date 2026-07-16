@@ -13,6 +13,8 @@ import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/a
 import { InlineEditCell } from '../components/admin/InlineEdit';
 import { RealTimeRefresh, useAutoRefresh } from '../components/admin/RealTimeRefresh';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
+import DetailDrawer from '../components/admin/DetailDrawer';
+import Button from '../components/ui/Button';
 import { ColumnVisibilityToggle, useColumnVisibility } from '../components/admin/ColumnVisibility';
 import { HighlightedText, SearchCounter } from '../components/admin/SearchHighlight';
 import { adminTests } from '../data/mockData';
@@ -46,6 +48,7 @@ export default function AdminTests() {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [editedTests, setEditedTests] = useState({});
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
+  const [detailTest, setDetailTest] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const { addToast } = useToast();
   const isDark = useDarkMode();
@@ -522,6 +525,55 @@ export default function AdminTests() {
           itemCount={selectedIds.size}
         />
 
+        {/* Row detail drawer */}
+        <DetailDrawer
+          open={detailTest !== null}
+          onClose={() => setDetailTest(null)}
+          title={safeProp(detailTest, 'name', 'Unknown Test')}
+          subtitle={safeProp(detailTest, 'company', '')}
+          fields={
+            detailTest
+              ? [
+                  { label: 'Test ID', value: <span className="font-mono text-xs">{safeProp(detailTest, 'id', '—')}</span> },
+                  { label: 'Type', value: <Badge label={safeProp(detailTest, 'type', 'Unknown')} color={getTypeColor(safeProp(detailTest, 'type'))} /> },
+                  { label: 'Status', value: <span className={safeProp(detailTest, 'status') === 'Completed' ? 'badge badge-success' : 'badge badge-info'}>{safeProp(detailTest, 'status', 'Unknown')}</span> },
+                  {
+                    label: 'Progress',
+                    value: (
+                      <div className="flex items-center gap-2 justify-end">
+                        <div className="w-24 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div className="h-full bg-brand-500" style={{ width: `${Math.min(Math.max(safeProp(detailTest, 'progress', 0), 0), 100)}%` }} />
+                        </div>
+                        <span className="text-xs font-semibold">{safeProp(detailTest, 'progress', 0)}%</span>
+                      </div>
+                    ),
+                  },
+                  { label: 'Testers', value: `${safeProp(detailTest, 'testers', 0)} / ${safeProp(detailTest, 'target', 0)}` },
+                  {
+                    label: 'Issues',
+                    value: (
+                      <span>
+                        {safeProp(detailTest, 'issues', 0)}
+                        {safeProp(detailTest, 'critical', 0) > 0 && (
+                          <span className="ml-2 text-xs font-bold text-error-600 dark:text-error-400">
+                            {safeProp(detailTest, 'critical', 0)} critical
+                          </span>
+                        )}
+                      </span>
+                    ),
+                  },
+                  { label: 'Launched', value: safeProp(detailTest, 'launchDate', '—') },
+                  { label: 'Due', value: safeProp(detailTest, 'dueDate', '—') },
+                ]
+              : []
+          }
+          footer={
+            <Button variant="secondary" onClick={() => setDetailTest(null)}>
+              Close
+            </Button>
+          }
+        />
+
         {/* Tests Table */}
         {isLoading ? (
           <SkeletonTable rows={itemsPerPage} columns={9} />
@@ -587,7 +639,15 @@ export default function AdminTests() {
                       const validProgress = Math.min(Math.max(progress, 0), 100);
 
                       return (
-                        <tr key={testId} className={`table-row-enter ${selectedIds.has(testId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}>
+                        <tr
+                          key={testId}
+                          onClick={(e) => {
+                            // Interactive controls (checkbox, inline edit) keep their own behavior
+                            if (e.target.closest('button, input, select, a, [role="button"]')) return;
+                            setDetailTest(test);
+                          }}
+                          className={`table-row-enter cursor-pointer ${selectedIds.has(testId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}
+                        >
                           <td className="w-12">
                             <RowCheckbox
                               checked={selectedIds.has(testId)}
