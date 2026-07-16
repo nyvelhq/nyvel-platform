@@ -38,6 +38,7 @@ export const useAuth = () => {
 
 const STORAGE_KEY = 'nyvel_user';
 const ROLE_STORAGE_KEY = 'nyvel_users_by_role';
+const AUTH_FLAG_KEY = 'nyvel_authenticated';
 
 const mockUsers = {
   company: {
@@ -87,6 +88,18 @@ export function AuthProvider({ children }) {
     }
   });
 
+  // Single source of truth for "has this session cleared the site-wide
+  // gate" — shared by PasswordGate's own password entry AND by picking a
+  // role on LoginPage. Previously LoginPage's login() never set this flag,
+  // so completing sign-in bounced straight back into PasswordGate.
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    try {
+      return sessionStorage.getItem(AUTH_FLAG_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
   const persistUsersByRole = (next) => {
     setUsersByRole(next);
     try {
@@ -99,10 +112,24 @@ export function AuthProvider({ children }) {
   const login = (role) => {
     const nextUser = usersByRole[role] || mockUsers[role];
     setUser(nextUser);
+    setIsAuthenticated(true);
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+      sessionStorage.setItem(AUTH_FLAG_KEY, 'true');
     } catch {
       // sessionStorage unavailable — auth will not survive refresh
+    }
+  };
+
+  // Entering the site-wide password on PasswordGate also counts as
+  // clearing the gate — same flag login() sets, so neither path has to
+  // satisfy the other a second time.
+  const authenticate = () => {
+    setIsAuthenticated(true);
+    try {
+      sessionStorage.setItem(AUTH_FLAG_KEY, 'true');
+    } catch {
+      // no-op
     }
   };
 
@@ -129,7 +156,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, updateUser, authenticate }}>
       {children}
     </AuthContext.Provider>
   );
@@ -151,9 +178,7 @@ const guarded = (role, element) => (
 // Password gate wrapper that checks routes
 function AppRoutes() {
   const location = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem('nyvel_authenticated') === 'true';
-  });
+  const { isAuthenticated, authenticate } = useAuth();
 
   // Public routes that don't require password
   const publicRoutes = ['/', '/login'];
@@ -161,10 +186,7 @@ function AppRoutes() {
   const needsAuth = !isAuthenticated && !isPublicRoute;
 
   if (needsAuth) {
-    return <PasswordGate onAuthenticate={() => {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('nyvel_authenticated', 'true');
-    }} />;
+    return <PasswordGate onAuthenticate={authenticate} />;
   }
 
   return (
