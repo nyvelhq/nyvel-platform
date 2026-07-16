@@ -68,7 +68,7 @@ const mockUsers = {
   },
 };
 
-function AuthProvider({ children }) {
+export function AuthProvider({ children }) {
   const [usersByRole, setUsersByRole] = useState(() => {
     try {
       const saved = sessionStorage.getItem(ROLE_STORAGE_KEY);

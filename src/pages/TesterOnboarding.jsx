@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRight, User, Monitor, Code, Camera } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import Stepper from '../components/ui/Stepper';
 import { useAuth } from '../App';
+import { duration, ease } from '../motion/tokens';
+
+// Step content slides/fades in the direction of travel (forward = from the right)
+const stepVariants = {
+  enter: (dir) => ({ opacity: 0, x: dir > 0 ? 20 : -20 }),
+  center: { opacity: 1, x: 0, transition: { duration: duration.slow, ease: ease.out } },
+  exit: (dir) => ({ opacity: 0, x: dir > 0 ? -20 : 20, transition: { duration: duration.fast, ease: ease.in } }),
+};
 
 const deviceOptions = ['iPhone', 'iPad', 'Android Phone', 'Android Tablet', 'MacBook', 'Windows PC', 'Linux'];
 const osVersions = ['iOS 17', 'iOS 16', 'Android 14', 'Android 13', 'macOS Sonoma', 'Windows 11', 'Windows 10'];
@@ -22,6 +31,7 @@ export default function TesterOnboarding() {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     firstName: '', lastName: '', country: 'United States', city: '',
@@ -64,11 +74,14 @@ export default function TesterOnboarding() {
       <div className="p-6 max-w-2xl mx-auto">
         <Stepper steps={steps} currentStep={step} variant="compact" />
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <div className="card rounded-2xl p-6">
+          <AnimatePresence mode="wait" custom={direction} initial={false}>
+          <motion.div key={step} custom={direction} variants={stepVariants} initial="enter" animate="center" exit="exit">
+
           {/* Step 1 */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="font-display font-bold text-xl text-slate-900 mb-5">Tell us about yourself</h2>
+              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Tell us about yourself</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="form-label">First Name *</label>
@@ -108,14 +121,14 @@ export default function TesterOnboarding() {
           {/* Step 2 */}
           {step === 2 && (
             <div className="space-y-5">
-              <h2 className="font-display font-bold text-xl text-slate-900 mb-5">Your devices & setup</h2>
+              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Your devices & setup</h2>
               <div>
                 <label className="form-label">Devices you own (select all that apply)</label>
                 <div className="flex flex-wrap gap-2">
                   {deviceOptions.map((d) => (
                     <button key={d} type="button" onClick={() => toggleArr('devices', d)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
-                        ${form.devices.includes(d) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-brand-300'}`}>
+                        ${form.devices.includes(d) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-300 dark:hover:border-brand-700'}`}>
                       {d}
                     </button>
                   ))}
@@ -127,7 +140,7 @@ export default function TesterOnboarding() {
                   {osVersions.map((o) => (
                     <button key={o} type="button" onClick={() => toggleArr('osVersions', o)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
-                        ${form.osVersions.includes(o) ? 'bg-accent-500 border-accent-500 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-accent-300'}`}>
+                        ${form.osVersions.includes(o) ? 'bg-accent-500 border-accent-500 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-accent-300 dark:hover:border-accent-700'}`}>
                       {o}
                     </button>
                   ))}
@@ -139,7 +152,7 @@ export default function TesterOnboarding() {
                   {connectionTypes.map((c) => (
                     <button key={c} type="button" onClick={() => set('connection', c)}
                       className={`py-2 px-3 text-sm rounded-lg border font-medium transition-all text-left
-                        ${form.connection === c ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                        ${form.connection === c ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 dark:border-brand-400 text-brand-700 dark:text-brand-300' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'}`}>
                       {c}
                     </button>
                   ))}
@@ -151,14 +164,14 @@ export default function TesterOnboarding() {
           {/* Step 3 */}
           {step === 3 && (
             <div className="space-y-5">
-              <h2 className="font-display font-bold text-xl text-slate-900 mb-5">Skills & expertise</h2>
+              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Skills & expertise</h2>
               <div>
                 <label className="form-label">Testing specialties (select all that apply)</label>
                 <div className="flex flex-wrap gap-2">
                   {skillOptions.map((s) => (
                     <button key={s} type="button" onClick={() => toggleArr('skills', s)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
-                        ${form.skills.includes(s) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-brand-300'}`}>
+                        ${form.skills.includes(s) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-300 dark:hover:border-brand-700'}`}>
                       {s}
                     </button>
                   ))}
@@ -170,7 +183,7 @@ export default function TesterOnboarding() {
                   {['< 1 year', '1-3 years', '3-5 years', '5+ years'].map((y) => (
                     <button key={y} type="button" onClick={() => set('yearsExp', y)}
                       className={`py-2 text-xs rounded-lg border font-medium transition-all
-                        ${form.yearsExp === y ? 'bg-brand-50 border-brand-500 text-brand-700' : 'bg-white border-slate-200 text-slate-600'}`}>
+                        ${form.yearsExp === y ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 dark:border-brand-400 text-brand-700 dark:text-brand-300' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
                       {y}
                     </button>
                   ))}
@@ -182,7 +195,7 @@ export default function TesterOnboarding() {
           {/* Step 4 */}
           {step === 4 && (
             <div className="space-y-5">
-              <h2 className="font-display font-bold text-xl text-slate-900 mb-5">Almost done!</h2>
+              <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Almost done!</h2>
               <div>
                 <label className="form-label">Short Bio</label>
                 <textarea
@@ -198,23 +211,26 @@ export default function TesterOnboarding() {
                 <input className="form-input" placeholder="https://linkedin.com/in/your-name" value={form.linkedin} onChange={(e) => set('linkedin', e.target.value)} />
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-sm text-emerald-800">
+              <div className="bg-success-50/70 dark:bg-success-900/20 border border-success-200/70 dark:border-success-800/50 rounded-xl p-4 text-sm text-success-800 dark:text-success-200">
                 <p className="font-semibold mb-1">✅ Your profile is ready to launch</p>
-                <p className="text-emerald-700 text-xs">
+                <p className="text-success-700 dark:text-success-300 text-xs">
                   Once submitted, you'll be able to browse available tests and start earning. Your profile will be reviewed and verified within 24 hours.
                 </p>
               </div>
             </div>
           )}
 
+          </motion.div>
+          </AnimatePresence>
+
           {/* Navigation */}
-          <div className="flex justify-between mt-6 pt-5 border-t border-slate-100">
+          <div className="flex justify-between mt-6 pt-5 border-t border-slate-200/70 dark:border-slate-700/50">
             {step > 1 ? (
-              <Button variant="secondary" onClick={() => setStep((s) => s - 1)}>Back</Button>
+              <Button variant="secondary" onClick={() => { setDirection(-1); setStep((s) => s - 1); }}>Back</Button>
             ) : <div />}
             {step < 4 ? (
               <Button
-                onClick={() => setStep((s) => s + 1)}
+                onClick={() => { setDirection(1); setStep((s) => s + 1); }}
                 disabled={step === 1 && (!form.firstName || !form.lastName)}
                 iconRight={<ChevronRight size={16} />}
               >
