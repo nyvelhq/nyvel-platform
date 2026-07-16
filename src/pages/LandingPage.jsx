@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { testTypes } from '../data/mockData';
 import Button from '../components/ui/Button';
 import { ArrowRight } from 'lucide-react';
+import ScrollReveal from '../components/ScrollReveal';
 
 const typeColorMap = {
   red: 'bg-red-50 border-red-100 text-red-700',
@@ -37,33 +38,34 @@ export default function LandingPage() {
       {/* Test Types Section */}
       <section id="test-types" className="py-24 bg-white scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <span className="section-eyebrow mb-4">Test Types</span>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mt-2">
-              A test for every{' '}
-              <span className="gradient-text">use case</span>
-            </h2>
-            <p className="mt-4 text-lg text-slate-500 max-w-xl mx-auto">
-              From rapid bug hunts to longitudinal studies — Nyvel has a purpose-built test type for your exact need.
-            </p>
-          </div>
+          <ScrollReveal animation="fade-in-page">
+            <div className="text-center mb-14">
+              <span className="section-eyebrow mb-4">Test Types</span>
+              <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mt-2">
+                A test for every{' '}
+                <span className="gradient-text">use case</span>
+              </h2>
+              <p className="mt-4 text-lg text-slate-500 max-w-xl mx-auto">
+                From rapid bug hunts to longitudinal studies — Nyvel has a purpose-built test type for your exact need.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {testTypes.map((type) => {
+            {testTypes.map((type, i) => {
               const colorClass = typeColorMap[type.color] || typeColorMap.violet;
               return (
-                <div
-                  key={type.name}
-                  className="card-interactive p-6 group"
-                >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 border ${colorClass}`}>
-                    {type.icon}
+                <ScrollReveal key={type.name} animation="slide-in-up" staggerIndex={i % 4} staggerDelay={80} threshold={0.15}>
+                  <div className="card-interactive p-6 group">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 border ${colorClass}`}>
+                      {type.icon}
+                    </div>
+                    <h3 className="font-display font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors">
+                      {type.name}
+                    </h3>
+                    <p className="text-sm text-slate-500 leading-relaxed">{type.desc}</p>
                   </div>
-                  <h3 className="font-display font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors">
-                    {type.name}
-                  </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed">{type.desc}</p>
-                </div>
+                </ScrollReveal>
               );
             })}
           </div>
@@ -74,29 +76,33 @@ export default function LandingPage() {
       <section id="security" className="py-16 bg-slate-50 border-y border-slate-100 scroll-mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <h3 className="font-display text-2xl font-bold text-slate-900 mb-2">
-                Security and confidentiality, built in
-              </h3>
-              <p className="text-slate-500 text-sm max-w-lg">
-                Every tester signs an NDA before touching your product. Data is encrypted
-                in transit and at rest, and our data handling is designed to support GDPR
-                and CCPA requirements.
-              </p>
-            </div>
+            <ScrollReveal animation="fade-up" threshold={0.3}>
+              <div>
+                <h3 className="font-display text-2xl font-bold text-slate-900 mb-2">
+                  Security and confidentiality, built in
+                </h3>
+                <p className="text-slate-500 text-sm max-w-lg">
+                  Every tester signs an NDA before touching your product. Data is encrypted
+                  in transit and at rest, and our data handling is designed to support GDPR
+                  and CCPA requirements.
+                </p>
+              </div>
+            </ScrollReveal>
             <div className="flex items-center gap-8 flex-shrink-0">
               {[
                 { k: 'NDA', label: 'Tester NDAs' },
                 { k: 'Enc', label: 'Encrypted data' },
                 { k: 'GDPR', label: 'GDPR-aligned' },
                 { k: 'CCPA', label: 'CCPA-aligned' },
-              ].map((item) => (
-                <div key={item.k} className="text-center">
-                  <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center mb-1 shadow-sm">
-                    <span className="text-xs font-bold text-brand-600">{item.k}</span>
+              ].map((item, i) => (
+                <ScrollReveal key={item.k} animation="fade-up" staggerIndex={i} staggerDelay={80} threshold={0.3}>
+                  <div className="text-center">
+                    <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center mb-1 shadow-sm">
+                      <span className="text-xs font-bold text-brand-600">{item.k}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium">{item.label}</p>
                   </div>
-                  <p className="text-xs text-slate-500 font-medium">{item.label}</p>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -110,7 +116,7 @@ export default function LandingPage() {
       <section className="py-24 bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-slate opacity-50 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-brand-600/25 blur-[100px] rounded-full" />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 text-center">
+        <ScrollReveal animation="fade-up" threshold={0.3} className="relative z-10 max-w-3xl mx-auto px-4 text-center">
           <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-5">
             Ready to ship your best product yet?
           </h2>
@@ -136,7 +142,7 @@ export default function LandingPage() {
               Talk to Sales
             </Button>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
 
       <Footer />

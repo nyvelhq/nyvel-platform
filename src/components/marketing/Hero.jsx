@@ -1,8 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ShieldCheck, UserCheck, Layers, Timer, X } from 'lucide-react';
 import { tickerItems } from '../../data/mockData';
 import Button from '../ui/Button';
+import { duration, ease } from '../../motion/tokens';
+
+const bannerVariants = {
+  hidden: { opacity: 0, height: 0 },
+  visible: { opacity: 1, height: 'auto', transition: { duration: duration.slow, ease: ease.out } },
+  exit: { opacity: 0, height: 0, transition: { duration: duration.fast, ease: ease.in } },
+};
 
 const statItems = [
   { value: 'QA-led', label: 'Testing run by professionals', icon: UserCheck },
@@ -20,29 +28,39 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col bg-slate-950 overflow-hidden">
       {/* Announcement Banner */}
-      {showBanner && (
-        <div className="bg-accent-500/20 border-b border-accent-500/30 px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 max-w-2xl">
-            <span className="text-accent-400 font-bold text-lg">✨</span>
-            <p className="text-slate-100 text-sm sm:text-base">
-              <span className="font-semibold">Just launched:</span> Testers in 42 countries. Create your test in 5 minutes.{' '}
-              <button 
-                onClick={() => navigate('/login?role=company')}
-                className="font-bold text-accent-400 hover:text-accent-300 underline transition-colors"
-              >
-                Try free
-              </button>
-            </p>
-          </div>
-          <button
-            onClick={() => setShowBanner(false)}
-            className="text-slate-400 hover:text-slate-200 transition-colors flex-shrink-0"
-            aria-label="Close announcement"
+      <AnimatePresence>
+        {showBanner && (
+          <motion.div
+            className="overflow-hidden"
+            variants={bannerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
-            <X size={18} />
-          </button>
-        </div>
-      )}
+            <div className="bg-accent-500/20 border-b border-accent-500/30 px-4 py-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3 max-w-2xl">
+                <span className="text-accent-400 font-bold text-lg">✨</span>
+                <p className="text-slate-100 text-sm sm:text-base">
+                  <span className="font-semibold">Just launched:</span> Testers in 42 countries. Create your test in 5 minutes.{' '}
+                  <button
+                    onClick={() => navigate('/login?role=company')}
+                    className="font-bold text-accent-400 hover:text-accent-300 underline transition-colors"
+                  >
+                    Try free
+                  </button>
+                </p>
+              </div>
+              <button
+                onClick={() => setShowBanner(false)}
+                className="text-slate-400 hover:text-slate-200 transition-colors flex-shrink-0"
+                aria-label="Close announcement"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Grid background */}
       <div className="absolute inset-0 bg-grid-slate opacity-100 pointer-events-none" />

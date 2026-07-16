@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Briefcase, User, ArrowRight } from 'lucide-react';
+import { duration, ease } from '../../motion/tokens';
+
+const stepsVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: ease.out } },
+  exit: { opacity: 0, y: -12, transition: { duration: duration.fast, ease: ease.in } },
+};
 
 const companySteps = [
   {
@@ -83,25 +91,34 @@ export default function HowItWorks() {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {steps.map((step, idx) => (
-            <div key={step.num} className="relative group">
-              {/* Connector arrow */}
-              {idx < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 left-full z-10 -translate-x-1/2">
-                  <ArrowRight size={18} className="text-slate-700" />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            variants={stepsVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto"
+          >
+            {steps.map((step, idx) => (
+              <div key={step.num} className="relative group">
+                {/* Connector arrow */}
+                {idx < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-8 left-full z-10 -translate-x-1/2">
+                    <ArrowRight size={18} className="text-slate-700" />
+                  </div>
+                )}
+                <div className="glass-card rounded-2xl p-6 h-full hover:border-brand-500/30 transition-colors">
+                  <div className={`font-mono text-4xl font-bold mb-4 ${tab === 'company' ? 'text-brand-500/40' : 'text-accent-500/40'}`}>
+                    {step.num}
+                  </div>
+                  <h3 className="font-display font-bold text-white text-base mb-3">{step.title}</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
                 </div>
-              )}
-              <div className="glass-card rounded-2xl p-6 h-full hover:border-brand-500/30 transition-colors">
-                <div className={`font-mono text-4xl font-bold mb-4 ${tab === 'company' ? 'text-brand-500/40' : 'text-accent-500/40'}`}>
-                  {step.num}
-                </div>
-                <h3 className="font-display font-bold text-white text-base mb-3">{step.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{step.desc}</p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, BarChart3, Shield, Globe, Clock, Zap } from 'lucide-react';
+import ScrollReveal from '../ScrollReveal';
 
 const features = [
   {
@@ -58,33 +59,36 @@ export default function Features() {
     <section id="features" className="py-24 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
-          <span className="section-eyebrow mb-4">Platform Capabilities</span>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mt-2">
-            Everything you need to ship{' '}
-            <span className="gradient-text">with confidence</span>
-          </h2>
-          <p className="mt-5 text-lg text-slate-500 max-w-2xl mx-auto">
-            From tester recruiting to structured reporting, Nyvel handles the complexity
-            so your team can focus on building.
-          </p>
-        </div>
+        <ScrollReveal animation="fade-in-page">
+          <div className="text-center mb-16">
+            <span className="section-eyebrow mb-4">Platform Capabilities</span>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-slate-900 mt-2">
+              Everything you need to ship{' '}
+              <span className="gradient-text">with confidence</span>
+            </h2>
+            <p className="mt-5 text-lg text-slate-500 max-w-2xl mx-auto">
+              From tester recruiting to structured reporting, Nyvel handles the complexity
+              so your team can focus on building.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map(({ icon: Icon, color, title, desc }) => {
+          {features.map(({ icon: Icon, color, title, desc }, i) => {
             const c = colorMap[color];
             return (
-              <div
-                key={title}
-                className={`group relative bg-white rounded-2xl border border-slate-100 p-7 hover:shadow-lg transition-all duration-300 ${c.border}`}
-              >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-colors ${c.wrap}`}>
-                  <Icon size={22} className={c.icon} />
+              <ScrollReveal key={title} animation="slide-in-up" staggerIndex={i % 3} staggerDelay={90} threshold={0.15}>
+                <div
+                  className={`group relative bg-white rounded-2xl border border-slate-100 p-7 hover:shadow-lg transition-all duration-300 ${c.border}`}
+                >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-colors ${c.wrap}`}>
+                    <Icon size={22} className={c.icon} />
+                  </div>
+                  <h3 className="font-display font-bold text-lg text-slate-900 mb-2">{title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
                 </div>
-                <h3 className="font-display font-bold text-lg text-slate-900 mb-2">{title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
-              </div>
+              </ScrollReveal>
             );
           })}
         </div>
