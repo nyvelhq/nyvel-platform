@@ -4,6 +4,9 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
+import SegmentedControl from '../components/ui/SegmentedControl';
+import useDarkMode from '../hooks/useDarkMode';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
@@ -45,6 +48,22 @@ export default function AdminTests() {
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, action: null });
   const [pageSize, setPageSize] = useState(10);
   const { addToast } = useToast();
+  const isDark = useDarkMode();
+
+  // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
+  const chart = {
+    axis: isDark ? '#64748b' : '#94a3b8',
+    grid: isDark ? '#1e293b' : '#f1f5f9',
+    brand: isDark ? '#38c4b0' : '#17a897',
+    error: isDark ? '#f87171' : '#ef4444',
+  };
+  const tooltipStyle = {
+    borderRadius: '10px',
+    border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+    fontSize: 12,
+    background: isDark ? '#0f172a' : '#ffffff',
+    color: isDark ? '#f1f5f9' : '#0f172a',
+  };
 
   const testColumns = [
     { key: 'id', label: 'ID' },
@@ -333,19 +352,19 @@ export default function AdminTests() {
       <div className="p-6 space-y-6">
         {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="alert alert-error" role="alert">
+            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-red-900">{error}</p>
-              <p className="text-sm text-red-700 mt-1">Please try refreshing the page or contact support if the issue persists.</p>
+              <p className="font-semibold">{error}</p>
+              <p className="text-sm mt-1 opacity-90">Please try refreshing the page or contact support if the issue persists.</p>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div>
-          <h2 className="font-display text-xl font-bold text-slate-900">All Tests</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Monitor and manage platform-wide testing campaigns</p>
+        <div className="animate-fade-up">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">All Tests</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Monitor and manage platform-wide testing campaigns</p>
         </div>
 
         {/* Stats */}
@@ -353,53 +372,47 @@ export default function AdminTests() {
           <SkeletonStats columns={4} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Tests</p>
-              <p className="font-display text-3xl font-bold text-cyan-600">{stats.active}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Currently running</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">In Progress</p>
-              <p className="font-display text-3xl font-bold text-amber-600">{stats.inProgress}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Awaiting completion</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Completed</p>
-              <p className="font-display text-3xl font-bold text-emerald-600">{stats.completed}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Total finished</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Issues Reported</p>
-              <p className="font-display text-3xl font-bold text-red-600">{stats.totalIssues}</p>
-              <p className="text-xs text-slate-400 mt-1.5">{stats.totalCritical} critical</p>
-            </div>
+            {[
+              { label: 'Active Tests', value: stats.active, sub: 'Currently running', color: 'text-cyan-600 dark:text-cyan-400' },
+              { label: 'In Progress', value: stats.inProgress, sub: 'Awaiting completion', color: 'text-amber-600 dark:text-amber-400' },
+              { label: 'Completed', value: stats.completed, sub: 'Total finished', color: 'text-emerald-600 dark:text-emerald-400' },
+              { label: 'Issues Reported', value: stats.totalIssues, sub: `${stats.totalCritical} critical`, color: 'text-error-600 dark:text-error-400' },
+            ].map(({ label, value, sub, color }, i) => (
+              <div key={label} className="card p-5 animate-fade-up" style={{ animationDelay: `${80 + i * 70}ms` }}>
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+                <p className={`font-display text-3xl font-bold ${color}`}>
+                  <AnimatedCounter value={value} />
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>
+              </div>
+            ))}
           </div>
         )}
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <h3 className="font-semibold text-slate-900 mb-4">Tests by Completion %</h3>
+          <div className="card p-5 animate-fade-up" style={{ animationDelay: '360ms' }}>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Tests by Completion %</h3>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={progressData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-                <Bar dataKey="count" fill="#17a897" radius={[5, 5, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: chart.axis }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: chart.axis }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: isDark ? 'rgba(148,163,184,0.08)' : 'rgba(148,163,184,0.12)' }} contentStyle={tooltipStyle} labelStyle={{ color: chart.axis }} />
+                <Bar dataKey="count" fill={chart.brand} radius={[5, 5, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-            <h3 className="font-semibold text-slate-900 mb-4">Issues by Severity</h3>
+          <div className="card p-5 animate-fade-up" style={{ animationDelay: '430ms' }}>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Issues by Severity</h3>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={issuesData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="type" tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: 12 }} />
-                <Bar dataKey="count" fill="#ef4444" radius={[5, 5, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                <XAxis dataKey="type" tick={{ fontSize: 11, fill: chart.axis }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: chart.axis }} axisLine={false} tickLine={false} />
+                <Tooltip cursor={{ fill: isDark ? 'rgba(148,163,184,0.08)' : 'rgba(148,163,184,0.12)' }} contentStyle={tooltipStyle} labelStyle={{ color: chart.axis }} />
+                <Bar dataKey="count" fill={chart.error} radius={[5, 5, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -426,7 +439,7 @@ export default function AdminTests() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="form-input pl-9 text-sm"
             />
             <SearchCounter
               searchTerm={searchTerm}
@@ -435,22 +448,20 @@ export default function AdminTests() {
             />
           </div>
           <div className="flex gap-2 flex-wrap">
-            {['all', 'Active', 'In Progress', 'Completed'].map(status => (
-              <button
-                key={status}
-                onClick={() => {
-                  setFilterStatus(status);
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  filterStatus === status
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {status}
-              </button>
-            ))}
+            <SegmentedControl
+              ariaLabel="Filter by test status"
+              value={filterStatus}
+              onChange={(v) => {
+                setFilterStatus(v);
+                setCurrentPage(1);
+              }}
+              options={[
+                { value: 'all', label: 'All' },
+                { value: 'Active', label: 'Active' },
+                { value: 'In Progress', label: 'In Progress' },
+                { value: 'Completed', label: 'Completed' },
+              ]}
+            />
             <AdvancedFilters
               onFilterChange={(filters) => {
                 setAdvancedFilters(filters);
@@ -468,7 +479,7 @@ export default function AdminTests() {
             />
             <button
               onClick={handleExport}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-success-50/70 dark:bg-success-900/20 text-success-700 dark:text-success-300 border border-success-200/70 dark:border-success-800/50 hover:bg-success-100 dark:hover:bg-success-900/40 transition-all"
             >
               Export
             </button>
@@ -515,7 +526,7 @@ export default function AdminTests() {
         {isLoading ? (
           <SkeletonTable rows={itemsPerPage} columns={9} />
         ) : (
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full data-table">
                 <thead>
@@ -529,7 +540,7 @@ export default function AdminTests() {
                     </th>
                     {visibleColumns.includes('id') && <th>ID</th>}
                     {visibleColumns.includes('name') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('name')}>
                         <div className="flex items-center gap-2">
                           Test Name
                           {sortBy === 'name' && <ArrowUpDown size={14} />}
@@ -537,7 +548,7 @@ export default function AdminTests() {
                       </th>
                     )}
                     {visibleColumns.includes('company') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('company')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('company')}>
                         <div className="flex items-center gap-2">
                           Company
                           {sortBy === 'company' && <ArrowUpDown size={14} />}
@@ -546,7 +557,7 @@ export default function AdminTests() {
                     )}
                     {visibleColumns.includes('type') && <th>Type</th>}
                     {visibleColumns.includes('status') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('status')}>
                         <div className="flex items-center gap-2">
                           Status
                           {sortBy === 'status' && <ArrowUpDown size={14} />}
@@ -576,7 +587,7 @@ export default function AdminTests() {
                       const validProgress = Math.min(Math.max(progress, 0), 100);
 
                       return (
-                        <tr key={testId} className={selectedIds.has(testId) ? 'bg-blue-50' : ''}>
+                        <tr key={testId} className={`table-row-enter ${selectedIds.has(testId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}>
                           <td className="w-12">
                             <RowCheckbox
                               checked={selectedIds.has(testId)}
@@ -584,7 +595,7 @@ export default function AdminTests() {
                             />
                           </td>
                           {visibleColumns.includes('id') && (
-                            <td className="font-mono text-sm font-bold text-slate-600">
+                            <td className="font-mono text-sm font-bold text-slate-600 dark:text-slate-400">
                               <HighlightedText text={testId} searchTerm={searchTerm} />
                             </td>
                           )}
@@ -598,7 +609,7 @@ export default function AdminTests() {
                             </td>
                           )}
                           {visibleColumns.includes('company') && (
-                            <td className="text-sm text-slate-600">
+                            <td className="text-sm text-slate-600 dark:text-slate-400">
                               <HighlightedText text={company} searchTerm={searchTerm} />
                             </td>
                           )}
@@ -627,18 +638,18 @@ export default function AdminTests() {
                           {visibleColumns.includes('progress') && (
                             <td>
                               <div className="flex items-center gap-2">
-                                <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div className="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                   <div
                                     className="h-full bg-brand-500 transition-all"
                                     style={{ width: `${validProgress}%` }}
                                   />
                                 </div>
-                                <span className="text-xs font-semibold text-slate-600 w-8">{validProgress}%</span>
+                                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 w-8">{validProgress}%</span>
                               </div>
                             </td>
                           )}
                           {visibleColumns.includes('testers') && (
-                            <td className="text-sm font-semibold text-slate-700">
+                            <td className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                               {testers}/{target}
                             </td>
                           )}
@@ -647,12 +658,12 @@ export default function AdminTests() {
                               <div className="flex items-center gap-1">
                                 {critical > 0 && (
                                   <>
-                                    <AlertCircle size={14} className="text-red-500" />
-                                    <span className="text-xs font-bold text-red-600">{critical}</span>
-                                    <span className="text-slate-300">•</span>
+                                    <AlertCircle size={14} className="text-error-500 dark:text-error-400" />
+                                    <span className="text-xs font-bold text-error-600 dark:text-error-400">{critical}</span>
+                                    <span className="text-slate-300 dark:text-slate-600">•</span>
                                   </>
                                 )}
-                                <span className="text-xs font-semibold text-slate-600">{issues}</span>
+                                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">{issues}</span>
                               </div>
                             </td>
                           )}
@@ -661,7 +672,7 @@ export default function AdminTests() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="8" className="text-center py-8 text-slate-500">
+                      <td colSpan="8" className="text-center py-8 text-slate-500 dark:text-slate-400">
                         {validatedTests.length === 0 ? 'No tests available' : 'No tests found matching your criteria'}
                       </td>
                     </tr>
@@ -685,7 +696,7 @@ export default function AdminTests() {
         )}
 
         {/* Footer */}
-        <div className="text-sm text-slate-600">
+        <div className="text-sm text-slate-600 dark:text-slate-400">
           <p>Showing {paginatedTests.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredTests.length)} of {filteredTests.length} tests</p>
         </div>
       </div>

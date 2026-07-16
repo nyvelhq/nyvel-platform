@@ -28,7 +28,7 @@ export function RealTimeRefresh({ isEnabled, onToggle, lastUpdated, onRefresh, i
   };
 
   return (
-    <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg">
+    <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 rounded-lg">
       {/* Auto Refresh Toggle */}
       <div className="flex items-center gap-2">
         <label className="flex items-center gap-2 cursor-pointer">
@@ -39,7 +39,7 @@ export function RealTimeRefresh({ isEnabled, onToggle, lastUpdated, onRefresh, i
             disabled={isLoading}
             className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
           />
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
             Auto refresh
           </span>
         </label>
@@ -66,7 +66,7 @@ export function RealTimeRefresh({ isEnabled, onToggle, lastUpdated, onRefresh, i
       <button
         onClick={onRefresh}
         disabled={isLoading}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-white border border-slate-300 rounded hover:bg-slate-50 transition-all disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
         title="Refresh now"
       >
         <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} />

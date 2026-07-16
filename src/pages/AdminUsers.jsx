@@ -3,6 +3,8 @@ import { Search, Star, AlertCircle, ArrowUpDown } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
+import AnimatedCounter from '../components/ui/AnimatedCounter';
+import SegmentedControl from '../components/ui/SegmentedControl';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
 import { BatchActionsBar, SelectAllCheckbox, RowCheckbox } from '../components/admin/BatchActions';
@@ -314,19 +316,19 @@ export default function AdminUsers() {
       <div className="p-6 space-y-6">
         {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="alert alert-error" role="alert">
+            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-red-900">{error}</p>
-              <p className="text-sm text-red-700 mt-1">Please try refreshing the page or contact support if the issue persists.</p>
+              <p className="font-semibold">{error}</p>
+              <p className="text-sm mt-1 opacity-90">Please try refreshing the page or contact support if the issue persists.</p>
             </div>
           </div>
         )}
 
         {/* Header */}
-        <div>
-          <h2 className="font-display text-xl font-bold text-slate-900">Platform Users</h2>
-          <p className="text-sm text-slate-500 mt-0.5">Manage companies and testers across the platform</p>
+        <div className="animate-fade-up">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Platform Users</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Manage companies and testers across the platform</p>
         </div>
 
         {/* Stats */}
@@ -334,21 +336,19 @@ export default function AdminUsers() {
           <SkeletonStats />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Companies</p>
-              <p className="font-display text-3xl font-bold text-violet-600">{stats.companies}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Active accounts</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Total Testers</p>
-              <p className="font-display text-3xl font-bold text-cyan-600">{stats.testers}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Verified testers</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Active Users</p>
-              <p className="font-display text-3xl font-bold text-emerald-600">{stats.activeUsers}</p>
-              <p className="text-xs text-slate-400 mt-1.5">Online in last 30 days</p>
-            </div>
+            {[
+              { label: 'Total Companies', value: stats.companies, sub: 'Active accounts', color: 'text-violet-600 dark:text-violet-400' },
+              { label: 'Total Testers', value: stats.testers, sub: 'Verified testers', color: 'text-cyan-600 dark:text-cyan-400' },
+              { label: 'Active Users', value: stats.activeUsers, sub: 'Online in last 30 days', color: 'text-emerald-600 dark:text-emerald-400' },
+            ].map(({ label, value, sub, color }, i) => (
+              <div key={label} className="card p-5 animate-fade-up" style={{ animationDelay: `${80 + i * 70}ms` }}>
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+                <p className={`font-display text-3xl font-bold ${color}`}>
+                  <AnimatedCounter value={value} />
+                </p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>
+              </div>
+            ))}
           </div>
         )}
 
@@ -373,7 +373,7 @@ export default function AdminUsers() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="form-input pl-9 text-sm"
             />
             <SearchCounter
               searchTerm={searchTerm}
@@ -382,45 +382,19 @@ export default function AdminUsers() {
             />
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => {
-                setFilterType('all');
+            <SegmentedControl
+              ariaLabel="Filter by user type"
+              value={filterType}
+              onChange={(v) => {
+                setFilterType(v);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filterType === 'all'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => {
-                setFilterType('company');
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filterType === 'company'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              Companies
-            </button>
-            <button
-              onClick={() => {
-                setFilterType('tester');
-                setCurrentPage(1);
-              }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filterType === 'tester'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              Testers
-            </button>
+              options={[
+                { value: 'all', label: 'All' },
+                { value: 'company', label: 'Companies' },
+                { value: 'tester', label: 'Testers' },
+              ]}
+            />
             <AdvancedFilters
               onFilterChange={(filters) => {
                 setAdvancedFilters(filters);
@@ -438,7 +412,7 @@ export default function AdminUsers() {
             />
             <button
               onClick={handleExport}
-              className="px-4 py-2 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-success-50/70 dark:bg-success-900/20 text-success-700 dark:text-success-300 border border-success-200/70 dark:border-success-800/50 hover:bg-success-100 dark:hover:bg-success-900/40 transition-all"
             >
               Export
             </button>
@@ -485,7 +459,7 @@ export default function AdminUsers() {
         {isLoading ? (
           <SkeletonTable rows={itemsPerPage} columns={7} />
         ) : (
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full data-table">
                 <thead>
@@ -498,7 +472,7 @@ export default function AdminUsers() {
                       />
                     </th>
                     {visibleColumns.includes('name') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('name')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('name')}>
                         <div className="flex items-center gap-2">
                           Name
                           {sortBy === 'name' && <ArrowUpDown size={14} />}
@@ -506,7 +480,7 @@ export default function AdminUsers() {
                       </th>
                     )}
                     {visibleColumns.includes('type') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('type')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('type')}>
                         <div className="flex items-center gap-2">
                           Type
                           {sortBy === 'type' && <ArrowUpDown size={14} />}
@@ -514,7 +488,7 @@ export default function AdminUsers() {
                       </th>
                     )}
                     {visibleColumns.includes('email') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('email')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('email')}>
                         <div className="flex items-center gap-2">
                           Email
                           {sortBy === 'email' && <ArrowUpDown size={14} />}
@@ -522,7 +496,7 @@ export default function AdminUsers() {
                       </th>
                     )}
                     {visibleColumns.includes('status') && (
-                      <th className="cursor-pointer hover:bg-slate-50" onClick={() => handleSort('status')}>
+                      <th className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40" onClick={() => handleSort('status')}>
                         <div className="flex items-center gap-2">
                           Status
                           {sortBy === 'status' && <ArrowUpDown size={14} />}
@@ -545,7 +519,7 @@ export default function AdminUsers() {
                       const isCompany = userType === 'Company';
 
                       return (
-                        <tr key={userId} className={selectedIds.has(userId) ? 'bg-blue-50' : ''}>
+                        <tr key={userId} className={`table-row-enter ${selectedIds.has(userId) ? 'bg-brand-50/50 dark:bg-brand-900/20' : ''}`}>
                           <td className="w-12">
                             <RowCheckbox
                               checked={selectedIds.has(userId)}
@@ -570,7 +544,7 @@ export default function AdminUsers() {
                             </td>
                           )}
                           {visibleColumns.includes('email') && (
-                            <td className="text-sm text-slate-600">
+                            <td className="text-sm text-slate-600 dark:text-slate-400">
                               <HighlightedText text={userEmail} searchTerm={searchTerm} />
                             </td>
                           )}
@@ -588,19 +562,19 @@ export default function AdminUsers() {
                             </td>
                           )}
                           {visibleColumns.includes('joined') && (
-                            <td className="text-sm text-slate-600">{userJoined}</td>
+                            <td className="text-sm text-slate-600 dark:text-slate-400">{userJoined}</td>
                           )}
                           {visibleColumns.includes('activity') && (
                             <td>
-                              <div className="flex items-center gap-3 text-xs text-slate-600">
+                              <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
                                 {isCompany ? (
                                   <>
                                     <span>{safeProp(user, 'testsCreated', 0)} tests</span>
-                                    <span className="text-slate-300">•</span>
+                                    <span className="text-slate-300 dark:text-slate-600">•</span>
                                     <span>{safeProp(user, 'testers', 0)} testers</span>
                                     {safeProp(user, 'plan') && (
                                       <>
-                                        <span className="text-slate-300">•</span>
+                                        <span className="text-slate-300 dark:text-slate-600">•</span>
                                         <Badge
                                           label={safeProp(user, 'plan', 'Unknown')}
                                           color={getPlanColor(safeProp(user, 'plan'))}
@@ -614,10 +588,10 @@ export default function AdminUsers() {
                                       <Star size={12} className="text-amber-500 fill-amber-500" />
                                       <span>{(safeProp(user, 'rating', 0)).toFixed(1)}</span>
                                     </div>
-                                    <span className="text-slate-300">•</span>
+                                    <span className="text-slate-300 dark:text-slate-600">•</span>
                                     <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
-                                    <span className="text-slate-300">•</span>
-                                    <span className="text-emerald-600 font-semibold">
+                                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                                       {formatCurrency(safeProp(user, 'earnings', 0))}
                                     </span>
                                   </>
@@ -630,7 +604,7 @@ export default function AdminUsers() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-slate-500">
+                      <td colSpan="6" className="text-center py-8 text-slate-500 dark:text-slate-400">
                         {validatedUsers.length === 0 ? 'No users available' : 'No users found matching your criteria'}
                       </td>
                     </tr>
@@ -654,7 +628,7 @@ export default function AdminUsers() {
         )}
 
         {/* Footer */}
-        <div className="text-sm text-slate-600">
+        <div className="text-sm text-slate-600 dark:text-slate-400">
           <p>Showing {paginatedUsers.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users</p>
         </div>
       </div>

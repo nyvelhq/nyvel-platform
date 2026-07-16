@@ -34,6 +34,8 @@ module.exports = {
           500: '#f59e0b',
           600: '#d97706',
           700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
         },
         // Semantic status colors (WCAG AAA compliant)
         success: {
@@ -57,6 +59,8 @@ module.exports = {
           500: '#d97706',
           600: '#b45309',
           700: '#92400e',
+          800: '#78350f',
+          900: '#451a03',
         },
         error: {
           50: '#fef2f2',

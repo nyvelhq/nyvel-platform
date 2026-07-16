@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Users, FlaskConical, DollarSign, Activity, ArrowRight } from 'lucide-react';
-import { spring } from '../motion/tokens';
+import SegmentedControl from '../components/ui/SegmentedControl';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer
@@ -113,31 +112,17 @@ export default function AdminDashboard() {
                 <h3 className="font-semibold text-slate-900 dark:text-slate-100">Platform Growth</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Last 6 months</p>
               </div>
-              <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1" role="tablist" aria-label="Chart metric">
-                {['users', 'tests', 'revenue'].map((v) => (
-                  <button
-                    key={v}
-                    role="tab"
-                    aria-selected={chartView === v}
-                    onClick={() => setChartView(v)}
-                    className={`relative px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors duration-200
-                      ${chartView === v
-                        ? 'text-slate-800 dark:text-slate-100'
-                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
-                  >
-                    {chartView === v && (
-                      // Shared-element pill — springs between tabs via layoutId
-                      <motion.span
-                        layoutId="admin-chart-pill"
-                        className="absolute inset-0 rounded-md bg-white dark:bg-slate-700 shadow-elevation-xs"
-                        transition={spring.snappy}
-                        aria-hidden="true"
-                      />
-                    )}
-                    <span className="relative z-10">{v}</span>
-                  </button>
-                ))}
-              </div>
+              <SegmentedControl
+                ariaLabel="Chart metric"
+                size="sm"
+                value={chartView}
+                onChange={setChartView}
+                options={[
+                  { value: 'users', label: 'Users' },
+                  { value: 'tests', label: 'Tests' },
+                  { value: 'revenue', label: 'Revenue' },
+                ]}
+              />
             </div>
             <ResponsiveContainer width="100%" height={220}>
               {chartView === 'revenue' ? (

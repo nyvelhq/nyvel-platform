@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Save, Bell, Lock, Globe, Zap, AlertCircle } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
+import ToggleSwitch from '../components/ui/ToggleSwitch';
 import {
   validatePlatformName,
   validateRateLimit,
@@ -114,16 +115,19 @@ export default function AdminSettings() {
     }
   }, [errors]);
 
+  // Shared row shell for toggle lists
+  const settingRow = 'flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg';
+
   return (
     <PlatformLayout title="Settings">
       <div className="p-6 space-y-6">
         {/* Error Alert */}
         {Object.keys(errors).length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+          <div className="alert alert-error" role="alert">
+            <AlertCircle size={20} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-semibold text-red-900">Validation Errors</p>
-              <ul className="text-sm text-red-700 mt-2 space-y-1">
+              <p className="font-semibold">Validation Errors</p>
+              <ul className="text-sm mt-2 space-y-1 opacity-90">
                 {Object.entries(errors).map(([key, error]) => (
                   error && <li key={key}>• {error}</li>
                 ))}
@@ -133,10 +137,10 @@ export default function AdminSettings() {
         )}
 
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between animate-fade-up">
           <div>
-            <h2 className="font-display text-xl font-bold text-slate-900">Platform Settings</h2>
-            <p className="text-sm text-slate-500 mt-0.5">Configure platform behavior, features, and constraints</p>
+            <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Platform Settings</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Configure platform behavior, features, and constraints</p>
           </div>
           <Button
             variant="primary"
@@ -149,15 +153,16 @@ export default function AdminSettings() {
         </div>
 
         {/* Platform Settings */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Globe size={20} className="text-brand-600" />
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '80ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <Globe size={20} className="text-brand-600 dark:text-brand-400" aria-hidden="true" />
             Platform Configuration
           </h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Platform Name</label>
+              <label className="form-label" htmlFor="platform-name">Platform Name</label>
               <input
+                id="platform-name"
                 type="text"
                 value={settings.platform.name}
                 onChange={(e) => updateSetting('platform', 'name', e.target.value)}
@@ -165,22 +170,19 @@ export default function AdminSettings() {
                   const error = validatePlatformName(settings.platform.name);
                   setErrors(prev => ({ ...prev, platformName: error }));
                 }}
-                className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
-                  errors.platformName
-                    ? 'border-red-300 focus:ring-red-500'
-                    : 'border-slate-200 focus:ring-brand-500'
-                }`}
+                className={`form-input text-sm ${errors.platformName ? 'error' : ''}`}
               />
               {errors.platformName && (
-                <p className="text-sm text-red-600 mt-1">{errors.platformName}</p>
+                <p className="form-error">{errors.platformName}</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Default Timezone</label>
+              <label className="form-label" htmlFor="platform-timezone">Default Timezone</label>
               <select
+                id="platform-timezone"
                 value={settings.platform.timezone}
                 onChange={(e) => updateSetting('platform', 'timezone', e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="form-select text-sm"
               >
                 <option>UTC</option>
                 <option>EST</option>
@@ -191,128 +193,94 @@ export default function AdminSettings() {
                 <option>IST</option>
               </select>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-200/70 dark:border-slate-700/50">
               <div>
-                <p className="font-medium text-slate-700">Maintenance Mode</p>
-                <p className="text-xs text-slate-500 mt-1">Temporarily disable platform access</p>
+                <p className="font-medium text-slate-700 dark:text-slate-300">Maintenance Mode</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Temporarily disable platform access</p>
               </div>
-              <button
-                onClick={() => toggleSetting('platform', 'maintenanceMode')}
-                className={`w-12 h-6 rounded-full transition-all ${
-                  settings.platform.maintenanceMode
-                    ? 'bg-red-500'
-                    : 'bg-slate-300'
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-all ${
-                    settings.platform.maintenanceMode ? 'translate-x-6' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={settings.platform.maintenanceMode}
+                onChange={() => toggleSetting('platform', 'maintenanceMode')}
+                danger
+                ariaLabel="Maintenance mode"
+              />
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-200/70 dark:border-slate-700/50">
               <div>
-                <p className="font-medium text-slate-700">Allow New Signups</p>
-                <p className="text-xs text-slate-500 mt-1">Enable registration for new users</p>
+                <p className="font-medium text-slate-700 dark:text-slate-300">Allow New Signups</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Enable registration for new users</p>
               </div>
-              <button
-                onClick={() => toggleSetting('platform', 'allowSignups')}
-                className={`w-12 h-6 rounded-full transition-all ${
-                  settings.platform.allowSignups
-                    ? 'bg-emerald-500'
-                    : 'bg-slate-300'
-                }`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-white transition-all ${
-                    settings.platform.allowSignups ? 'translate-x-6' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
+              <ToggleSwitch
+                checked={settings.platform.allowSignups}
+                onChange={() => toggleSetting('platform', 'allowSignups')}
+                ariaLabel="Allow new signups"
+              />
             </div>
           </div>
         </div>
 
         {/* Notification Settings */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Bell size={20} className="text-cyan-600" />
-            Notifications & Alerts
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '150ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <Bell size={20} className="text-cyan-600 dark:text-cyan-400" aria-hidden="true" />
+            Notifications &amp; Alerts
           </h3>
           <div className="space-y-3">
             {Object.entries(settings.notifications).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-slate-700 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </p>
-                </div>
-                <button
-                  onClick={() => toggleSetting('notifications', key)}
-                  className={`w-10 h-6 rounded-full transition-all ${
-                    value ? 'bg-emerald-500' : 'bg-slate-300'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white transition-all ${
-                      value ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
-                  />
-                </button>
+              <div key={key} className={settingRow}>
+                <p className="font-medium text-slate-700 dark:text-slate-300 capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </p>
+                <ToggleSwitch
+                  checked={value}
+                  onChange={() => toggleSetting('notifications', key)}
+                  ariaLabel={key.replace(/([A-Z])/g, ' $1').trim()}
+                />
               </div>
             ))}
           </div>
         </div>
 
         {/* Feature Toggles */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Zap size={20} className="text-amber-600" />
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '220ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <Zap size={20} className="text-amber-600 dark:text-amber-400" aria-hidden="true" />
             Feature Flags
           </h3>
           <div className="space-y-3">
             {Object.entries(settings.features).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-slate-700 capitalize">
-                    {key.replace(/([A-Z])/g, ' $1').trim()}
-                  </p>
-                </div>
-                <button
-                  onClick={() => toggleSetting('features', key)}
-                  className={`w-10 h-6 rounded-full transition-all ${
-                    value ? 'bg-emerald-500' : 'bg-slate-300'
-                  }`}
-                >
-                  <div
-                    className={`w-5 h-5 rounded-full bg-white transition-all ${
-                      value ? 'translate-x-4' : 'translate-x-0.5'
-                    }`}
-                  />
-                </button>
+              <div key={key} className={settingRow}>
+                <p className="font-medium text-slate-700 dark:text-slate-300 capitalize">
+                  {key.replace(/([A-Z])/g, ' $1').trim()}
+                </p>
+                <ToggleSwitch
+                  checked={value}
+                  onChange={() => toggleSetting('features', key)}
+                  ariaLabel={key.replace(/([A-Z])/g, ' $1').trim()}
+                />
               </div>
             ))}
           </div>
         </div>
 
         {/* Platform Limits */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-            <Lock size={20} className="text-red-600" />
-            Platform Limits & Quotas
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '290ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <Lock size={20} className="text-error-600 dark:text-error-400" aria-hidden="true" />
+            Platform Limits &amp; Quotas
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {Object.entries(settings.limits).map(([key, value]) => (
               <div key={key}>
-                <label className="block text-sm font-medium text-slate-700 mb-2 capitalize">
+                <label className="form-label capitalize" htmlFor={`limit-${key}`}>
                   {key.replace(/([A-Z])/g, ' $1').trim()}
                 </label>
                 <input
+                  id={`limit-${key}`}
                   type="text"
                   value={value}
                   onChange={(e) => updateSetting('limits', key, e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="form-input text-sm"
                 />
               </div>
             ))}
@@ -320,12 +288,13 @@ export default function AdminSettings() {
         </div>
 
         {/* Advanced Settings */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 className="font-semibold text-slate-900 mb-4">Advanced Settings</h3>
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '360ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Advanced Settings</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">API Rate Limit (requests/min)</label>
+              <label className="form-label" htmlFor="api-rate-limit">API Rate Limit (requests/min)</label>
               <input
+                id="api-rate-limit"
                 type="number"
                 value={settings.advanced.apiRateLimit}
                 onChange={(e) => updateSetting('advanced', 'apiRateLimit', Number(e.target.value))}
@@ -333,22 +302,19 @@ export default function AdminSettings() {
                   const error = validateRateLimit(settings.advanced.apiRateLimit);
                   setErrors(prev => ({ ...prev, apiRateLimit: error }));
                 }}
-                className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
-                  errors.apiRateLimit
-                    ? 'border-red-300 focus:ring-red-500'
-                    : 'border-slate-200 focus:ring-brand-500'
-                }`}
+                className={`form-input text-sm ${errors.apiRateLimit ? 'error' : ''}`}
                 min="1"
                 max="100000"
               />
               {errors.apiRateLimit && (
-                <p className="text-sm text-red-600 mt-1">{errors.apiRateLimit}</p>
+                <p className="form-error">{errors.apiRateLimit}</p>
               )}
-              <p className="text-xs text-slate-500 mt-1">Valid range: 1 - 100,000 requests/min</p>
+              <p className="form-help">Valid range: 1 - 100,000 requests/min</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Webhook Timeout (seconds)</label>
+              <label className="form-label" htmlFor="webhook-timeout">Webhook Timeout (seconds)</label>
               <input
+                id="webhook-timeout"
                 type="number"
                 value={settings.advanced.webhookTimeout}
                 onChange={(e) => updateSetting('advanced', 'webhookTimeout', Number(e.target.value))}
@@ -356,22 +322,19 @@ export default function AdminSettings() {
                   const error = validateTimeout(settings.advanced.webhookTimeout);
                   setErrors(prev => ({ ...prev, webhookTimeout: error }));
                 }}
-                className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
-                  errors.webhookTimeout
-                    ? 'border-red-300 focus:ring-red-500'
-                    : 'border-slate-200 focus:ring-brand-500'
-                }`}
+                className={`form-input text-sm ${errors.webhookTimeout ? 'error' : ''}`}
                 min="1"
                 max="3600"
               />
               {errors.webhookTimeout && (
-                <p className="text-sm text-red-600 mt-1">{errors.webhookTimeout}</p>
+                <p className="form-error">{errors.webhookTimeout}</p>
               )}
-              <p className="text-xs text-slate-500 mt-1">Valid range: 1 - 3600 seconds (1 hour max)</p>
+              <p className="form-help">Valid range: 1 - 3600 seconds (1 hour max)</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Max Concurrent Tests</label>
+              <label className="form-label" htmlFor="max-concurrent-tests">Max Concurrent Tests</label>
               <input
+                id="max-concurrent-tests"
                 type="number"
                 value={settings.advanced.maxConcurrentTests}
                 onChange={(e) => updateSetting('advanced', 'maxConcurrentTests', Number(e.target.value))}
@@ -379,51 +342,46 @@ export default function AdminSettings() {
                   const error = validateConcurrentTests(settings.advanced.maxConcurrentTests);
                   setErrors(prev => ({ ...prev, maxConcurrentTests: error }));
                 }}
-                className={`w-full px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 ${
-                  errors.maxConcurrentTests
-                    ? 'border-red-300 focus:ring-red-500'
-                    : 'border-slate-200 focus:ring-brand-500'
-                }`}
+                className={`form-input text-sm ${errors.maxConcurrentTests ? 'error' : ''}`}
                 min="1"
                 max="100000"
               />
               {errors.maxConcurrentTests && (
-                <p className="text-sm text-red-600 mt-1">{errors.maxConcurrentTests}</p>
+                <p className="form-error">{errors.maxConcurrentTests}</p>
               )}
-              <p className="text-xs text-slate-500 mt-1">Valid range: 1 - 100,000 tests</p>
+              <p className="form-help">Valid range: 1 - 100,000 tests</p>
             </div>
           </div>
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-red-50 rounded-xl border border-red-200 shadow-sm p-6">
-          <h3 className="font-semibold text-red-900 mb-4">Danger Zone</h3>
+        <div className="rounded-xl border border-error-200/70 dark:border-error-800/50 bg-error-50/50 dark:bg-error-900/15 p-6 animate-fade-up" style={{ animationDelay: '430ms' }}>
+          <h3 className="font-semibold text-error-900 dark:text-error-200 mb-4">Danger Zone</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-red-900">Clear Cache</p>
-                <p className="text-xs text-red-700 mt-1">Remove all cached data</p>
+                <p className="font-medium text-error-900 dark:text-error-200">Clear Cache</p>
+                <p className="text-xs text-error-700 dark:text-error-300 mt-1">Remove all cached data</p>
               </div>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
-                Clear Cache
-              </button>
+              <Button variant="danger" size="sm">Clear Cache</Button>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-red-200">
+            <div className="flex items-center justify-between pt-2 border-t border-error-200/70 dark:border-error-800/50">
               <div>
-                <p className="font-medium text-red-900">Reset Analytics</p>
-                <p className="text-xs text-red-700 mt-1">Clear all analytics data (irreversible)</p>
+                <p className="font-medium text-error-900 dark:text-error-200">Reset Analytics</p>
+                <p className="text-xs text-error-700 dark:text-error-300 mt-1">Clear all analytics data (irreversible)</p>
               </div>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
-                Reset
-              </button>
+              <Button variant="danger" size="sm">Reset</Button>
             </div>
           </div>
         </div>
 
         {/* Status */}
         {saved && (
-          <div className="fixed bottom-6 right-6 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          <div
+            className="fixed bottom-6 right-6 bg-success-600 text-white px-6 py-3 rounded-lg shadow-elevation-lg flex items-center gap-2 animate-bounce-in"
+            role="status"
+          >
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse" aria-hidden="true" />
             Settings saved successfully!
           </div>
         )}
