@@ -13,6 +13,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { StatusBadge, TypeBadge, SeverityBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import ScrollReveal from '../components/ScrollReveal';
+import TableScrollArea from '../components/ui/TableScrollArea';
 import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
@@ -206,7 +207,7 @@ export default function CompanyDashboard() {
               onAction={() => navigate('/company/create-test')}
             />
           ) : (
-          <div className="overflow-x-auto">
+          <TableScrollArea>
             <table className="w-full data-table">
               <thead>
                 <tr>
@@ -274,7 +275,7 @@ export default function CompanyDashboard() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScrollArea>
           )}
         </div>
       </div>

@@ -19,11 +19,14 @@ const companyNav = [
   { label: 'Settings', icon: Settings, href: '/company/settings' },
 ];
 
+// Available Tests, My Applications, and Earnings are tabs on the Tester
+// Dashboard itself (not separate pages) — link straight to the tab
+// instead of a placeholder that duplicates working functionality.
 const testerNav = [
   { label: 'Dashboard', icon: LayoutDashboard, href: '/tester/dashboard' },
-  { label: 'Available Tests', icon: Search, href: '/tester/tests' },
-  { label: 'My Applications', icon: CheckCircle, href: '/tester/applications' },
-  { label: 'Earnings', icon: DollarSign, href: '/tester/earnings' },
+  { label: 'Available Tests', icon: Search, href: '/tester/dashboard?tab=available' },
+  { label: 'My Applications', icon: CheckCircle, href: '/tester/dashboard?tab=my' },
+  { label: 'Earnings', icon: DollarSign, href: '/tester/dashboard?tab=earnings' },
   { label: 'My Profile', icon: User, href: '/tester/profile' },
   { label: 'Settings', icon: Settings, href: '/tester/settings' },
 ];
@@ -101,7 +104,15 @@ function Sidebar({ isOpen, onClose, isMobile = false }) {
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {nav.map(({ label, icon: Icon, href }) => {
-          const isActive = location.pathname === href;
+          // href may carry a ?tab= query (tester dashboard tab links) —
+          // compare path and tab param separately so exactly one item
+          // is active rather than none (query strings never matched
+          // location.pathname) or several (a bare path matching every
+          // tab variant of the same page).
+          const [hrefPath, hrefQuery] = href.split('?');
+          const hrefTab = hrefQuery ? new URLSearchParams(hrefQuery).get('tab') : null;
+          const currentTab = new URLSearchParams(location.search).get('tab');
+          const isActive = location.pathname === hrefPath && currentTab === hrefTab;
           return (
             <Link
               key={label}

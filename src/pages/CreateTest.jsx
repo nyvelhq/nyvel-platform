@@ -34,6 +34,12 @@ const steps = [
   { id: 3, label: 'Review & Launch', icon: Eye },
 ];
 
+// "a, b and c" — readable English list for the missing-fields hint
+const joinReadable = (items) => {
+  if (items.length <= 1) return items[0] || '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+};
+
 export default function CreateTest() {
   const navigate = useNavigate();
   const { addCompanyTest } = useAppData();
@@ -87,6 +93,18 @@ export default function CreateTest() {
       ...f,
       [key]: f[key].includes(val) ? f[key].filter((v) => v !== val) : [...f[key], val],
     }));
+
+  // Named so the disabled Continue button can explain itself instead of
+  // just going gray with no indication of what's missing.
+  const step1Missing = [];
+  if (!form.name) step1Missing.push('a test name');
+  if (!form.type) step1Missing.push('a test type');
+  if (!form.startDate) step1Missing.push('a start date');
+  if (!form.endDate) step1Missing.push('an end date');
+  const step1DateOrderInvalid = form.startDate && form.endDate && form.endDate < form.startDate;
+  const step1CanContinue = step1Missing.length === 0 && !step1DateOrderInvalid;
+
+  const step2CanContinue = form.platforms.length > 0 && !errors.compensation;
 
   const handleLaunch = async () => {
     setLaunching(true);
@@ -191,10 +209,15 @@ export default function CreateTest() {
               <p className="text-xs text-error-600 dark:text-error-400 -mt-3">End date must be on or after the start date.</p>
             )}
 
-            <div className="flex justify-end pt-2">
+            <div className="flex flex-col items-end gap-2 pt-2">
+              {step1Missing.length > 0 && (
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Enter {joinReadable(step1Missing)} to continue.
+                </p>
+              )}
               <Button
                 onClick={() => goToStep(2)}
-                disabled={!form.name || !form.type || !form.startDate || !form.endDate || form.endDate < form.startDate}
+                disabled={!step1CanContinue}
                 iconRight={<ChevronRight size={16} />}
               >
                 Continue
@@ -306,15 +329,20 @@ export default function CreateTest() {
               </label>
             </div>
 
-            <div className="flex justify-between pt-2">
+            <div className="flex items-end justify-between pt-2">
               <Button variant="secondary" onClick={() => goToStep(1)}>Back</Button>
-              <Button
-                onClick={() => goToStep(3)}
-                disabled={form.platforms.length === 0 || !!errors.compensation}
-                iconRight={<ChevronRight size={16} />}
-              >
-                Review Test
-              </Button>
+              <div className="flex flex-col items-end gap-2">
+                {form.platforms.length === 0 && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Select at least one platform to continue.</p>
+                )}
+                <Button
+                  onClick={() => goToStep(3)}
+                  disabled={!step2CanContinue}
+                  iconRight={<ChevronRight size={16} />}
+                >
+                  Review Test
+                </Button>
+              </div>
             </div>
           </div>
         )}

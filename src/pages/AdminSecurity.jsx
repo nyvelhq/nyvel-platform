@@ -40,7 +40,9 @@ export default function AdminSecurity() {
         {/* Header */}
         <div>
           <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Security & Compliance</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Monitor platform security, threats, and audit logs</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+            Read-only monitoring view. Resolving individual threats and exporting the audit log aren't wired up yet.
+          </p>
         </div>
 
         {/* Security Status Overview */}

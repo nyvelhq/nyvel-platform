@@ -6,6 +6,8 @@ import { Badge } from '../components/ui/Badge';
 import Pagination from '../components/ui/Pagination';
 import AnimatedCounter from '../components/ui/AnimatedCounter';
 import SegmentedControl from '../components/ui/SegmentedControl';
+import EmptyState from '../components/ui/EmptyState';
+import TableScrollArea from '../components/ui/TableScrollArea';
 import useDarkMode from '../hooks/useDarkMode';
 import { SkeletonStats, SkeletonTable } from '../components/ui/Skeleton';
 import { AdvancedFilters } from '../components/admin/AdvancedFilters';
@@ -579,7 +581,7 @@ export default function AdminTests() {
           <SkeletonTable rows={itemsPerPage} columns={9} />
         ) : (
           <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
+            <TableScrollArea>
               <table className="w-full data-table">
                 <thead>
                   <tr>
@@ -732,14 +734,29 @@ export default function AdminTests() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="8" className="text-center py-8 text-slate-500 dark:text-slate-400">
-                        {validatedTests.length === 0 ? 'No tests available' : 'No tests found matching your criteria'}
+                      <td colSpan={visibleColumns.length + 1}>
+                        {validatedTests.length === 0 ? (
+                          <EmptyState title="No tests available" />
+                        ) : (
+                          <EmptyState
+                            icon={Search}
+                            title="No tests found"
+                            description="Nothing matches your current search and filters."
+                            actionLabel="Clear Filters"
+                            actionVariant="secondary"
+                            onAction={() => {
+                              setSearchTerm('');
+                              setFilterStatus('all');
+                              setAdvancedFilters({ dateFrom: '', dateTo: '', statuses: [] });
+                            }}
+                          />
+                        )}
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
-            </div>
+            </TableScrollArea>
           </div>
         )}
 

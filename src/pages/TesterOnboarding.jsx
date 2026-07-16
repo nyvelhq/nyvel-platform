@@ -20,6 +20,12 @@ const osVersions = ['iOS 17', 'iOS 16', 'Android 14', 'Android 13', 'macOS Sonom
 const skillOptions = ['Mobile Testing', 'Web Testing', 'API Testing', 'Accessibility', 'Performance', 'Security', 'Gaming', 'Fintech', 'Healthcare', 'E-Commerce'];
 const connectionTypes = ['5G', 'LTE/4G', 'WiFi (Fast)', 'WiFi (Standard)', 'Limited/Rural'];
 
+// "a, b and c" — readable English list for the missing-fields hint
+const joinReadable = (items) => {
+  if (items.length <= 1) return items[0] || '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+};
+
 const steps = [
   { id: 1, label: 'Personal Info', icon: User },
   { id: 2, label: 'Devices & Setup', icon: Monitor },
@@ -47,6 +53,10 @@ export default function TesterOnboarding() {
       ...f,
       [key]: f[key].includes(val) ? f[key].filter((v) => v !== val) : [...f[key], val],
     }));
+
+  const step1Missing = [];
+  if (!form.firstName) step1Missing.push('your first name');
+  if (!form.lastName) step1Missing.push('your last name');
 
   const handleComplete = async () => {
     setSubmitting(true);
@@ -224,18 +234,25 @@ export default function TesterOnboarding() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex justify-between mt-6 pt-5 border-t border-slate-200/70 dark:border-slate-700/50">
+          <div className="flex items-end justify-between mt-6 pt-5 border-t border-slate-200/70 dark:border-slate-700/50">
             {step > 1 ? (
               <Button variant="secondary" onClick={() => { setDirection(-1); setStep((s) => s - 1); }}>Back</Button>
             ) : <div />}
             {step < 4 ? (
-              <Button
-                onClick={() => { setDirection(1); setStep((s) => s + 1); }}
-                disabled={step === 1 && (!form.firstName || !form.lastName)}
-                iconRight={<ChevronRight size={16} />}
-              >
-                Continue
-              </Button>
+              <div className="flex flex-col items-end gap-2">
+                {step === 1 && step1Missing.length > 0 && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Enter {joinReadable(step1Missing)} to continue.
+                  </p>
+                )}
+                <Button
+                  onClick={() => { setDirection(1); setStep((s) => s + 1); }}
+                  disabled={step === 1 && step1Missing.length > 0}
+                  iconRight={<ChevronRight size={16} />}
+                >
+                  Continue
+                </Button>
+              </div>
             ) : (
               <Button onClick={handleComplete} loading={submitting}>
                 {submitting ? 'Setting up...' : 'Complete Profile'}

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, DollarSign, Clock, Star, ExternalLink, Filter, UserCheck, X, Search } from 'lucide-react';
 import EmptyState from '../components/ui/EmptyState';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -18,7 +18,27 @@ export default function TesterDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { availableTests, myApplications, applyToTest, hasApplied } = useAppData();
-  const [activeTab, setActiveTab] = useState('available');
+  const [searchParams, setSearchParams] = useSearchParams();
+  // Sidebar links to "Available Tests" / "My Applications" / "Earnings"
+  // point here with ?tab=... instead of to separate placeholder pages —
+  // this tab state is the single source of truth those pages would
+  // otherwise have duplicated. The URL is the source of truth: clicking
+  // a sidebar link while already on this page doesn't remount the
+  // component, so the tab has to react to searchParams changing, not
+  // just read it once on mount.
+  const validTabs = ['available', 'my', 'earnings'];
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTabState] = useState(validTabs.includes(tabParam) ? tabParam : 'available');
+
+  useEffect(() => {
+    setActiveTabState(validTabs.includes(tabParam) ? tabParam : 'available');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabParam]);
+
+  const setActiveTab = (tab) => {
+    setActiveTabState(tab);
+    setSearchParams(tab === 'available' ? {} : { tab }, { replace: true });
+  };
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [typeFilter, setTypeFilter] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);

@@ -12,6 +12,10 @@ export function ColumnVisibilityToggle({ columns, visibleColumns, onChange, stor
   }, [storageKey, onChange]);
 
   const handleToggle = (columnKey) => {
+    // Never let the last visible column be unchecked — an empty table
+    // body with no recovery hint besides remembering this menu exists
+    // is a real dead end, not just an inconvenience.
+    if (visibleColumns.length === 1 && visibleColumns.includes(columnKey)) return;
     const updated = visibleColumns.includes(columnKey)
       ? visibleColumns.filter(c => c !== columnKey)
       : [...visibleColumns, columnKey];
@@ -25,9 +29,12 @@ export function ColumnVisibilityToggle({ columns, visibleColumns, onChange, stor
     localStorage.setItem(storageKey, JSON.stringify(allColumns));
   };
 
+  // Same guardrail as handleToggle — keep the first column so the table
+  // always has at least one visible column to recover from.
   const handleHideAll = () => {
-    onChange([]);
-    localStorage.setItem(storageKey, JSON.stringify([]));
+    const kept = columns[0] ? [columns[0].key] : [];
+    onChange(kept);
+    localStorage.setItem(storageKey, JSON.stringify(kept));
   };
 
   const visibleCount = visibleColumns.length;
@@ -51,28 +58,33 @@ export function ColumnVisibilityToggle({ columns, visibleColumns, onChange, stor
         <div className="absolute right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-20 min-w-max">
           {/* Header */}
           <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-            <p className="text-sm font-semibold text-slate-900">Show/Hide Columns</p>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Show/Hide Columns</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {visibleCount} of {totalCount} visible
             </p>
           </div>
 
           {/* Column List */}
           <div className="max-h-64 overflow-y-auto">
-            {columns.map(column => (
-              <label
-                key={column.key}
-                className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={visibleColumns.includes(column.key)}
-                  onChange={() => handleToggle(column.key)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-slate-700 dark:text-slate-300">{column.label}</span>
-              </label>
-            ))}
+            {columns.map(column => {
+              const isLastVisible = visibleColumns.length === 1 && visibleColumns.includes(column.key);
+              return (
+                <label
+                  key={column.key}
+                  title={isLastVisible ? 'At least one column must stay visible' : undefined}
+                  className={`flex items-center gap-3 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 ${isLastVisible ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.includes(column.key)}
+                    onChange={() => handleToggle(column.key)}
+                    disabled={isLastVisible}
+                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:cursor-not-allowed"
+                  />
+                  <span className="text-sm text-slate-700 dark:text-slate-300">{column.label}</span>
+                </label>
+              );
+            })}
           </div>
 
           {/* Footer */}

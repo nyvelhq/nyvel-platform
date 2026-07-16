@@ -221,11 +221,15 @@ function AppRoutes() {
         <Route path="/tester/dashboard" element={guarded('tester', <TesterDashboard />)} />
         <Route path="/tester/onboarding" element={guarded('tester', <TesterOnboarding />)} />
         <Route path="/tester/profile" element={guarded('tester', <TesterProfile />)} />
-        <Route path="/tester/tests" element={guarded('tester', <ComingSoon title="Available Tests" />)} />
+        {/* Available Tests / My Applications / Earnings are tabs on the
+            Tester Dashboard, not separate pages — redirect any direct
+            or bookmarked hit on the old standalone routes there instead
+            of showing a placeholder for something that already works. */}
+        <Route path="/tester/tests" element={<Navigate to="/tester/dashboard?tab=available" replace />} />
         <Route path="/tester/tests/:id" element={guarded('tester', <ComingSoon title="Test Details" />)} />
-        <Route path="/tester/applications" element={guarded('tester', <ComingSoon title="My Applications" />)} />
+        <Route path="/tester/applications" element={<Navigate to="/tester/dashboard?tab=my" replace />} />
         <Route path="/tester/applications/:id" element={guarded('tester', <ComingSoon title="Application Details" />)} />
-        <Route path="/tester/earnings" element={guarded('tester', <ComingSoon title="Earnings" />)} />
+        <Route path="/tester/earnings" element={<Navigate to="/tester/dashboard?tab=earnings" replace />} />
         <Route path="/tester/settings" element={guarded('tester', <ComingSoon title="Settings" />)} />
 
         {/* Admin routes */}

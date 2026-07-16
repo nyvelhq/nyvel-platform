@@ -1,21 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, Briefcase, Edit, CheckCircle, Monitor } from 'lucide-react';
+import { Star, MapPin, Briefcase, Edit, CheckCircle, Monitor, Check, X } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import { Badge, StatusBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
+import TableScrollArea from '../components/ui/TableScrollArea';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
+import { useToast } from '../context/ToastContext';
 import { testerStats } from '../data/mockData';
 
 const fallbackSkills = ['Mobile Testing', 'Web Testing', 'API Testing', 'Fintech', 'E-Commerce', 'Accessibility'];
 const fallbackDevices = ['iPhone 15 Pro (iOS 17)', 'Samsung Galaxy S24 (Android 14)', 'MacBook Pro M3', 'Windows 11 PC'];
 const certifications = ['Nyvel Verified Tester', 'Fintech Testing Certified', 'Accessibility Specialist'];
+const fallbackBio = 'Experienced QA engineer and beta tester with 5+ years testing mobile and web applications across fintech, e-commerce, and healthcare. Passionate about finding edge cases and delivering detailed, actionable bug reports.';
 
 export default function TesterProfile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { myApplications } = useAppData();
+  const { addToast } = useToast();
   const navigate = useNavigate();
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioDraft, setBioDraft] = useState('');
+
+  const startEditingBio = () => {
+    setBioDraft(user?.bio || fallbackBio);
+    setIsEditingBio(true);
+  };
+
+  const saveBio = () => {
+    updateUser({ bio: bioDraft });
+    setIsEditingBio(false);
+    addToast('Bio updated', 'success');
+  };
 
   const skills = user?.skills?.length ? user.skills : fallbackSkills;
   const devices = user?.devices?.length ? [...user.devices, ...(user.osVersions || [])] : fallbackDevices;
@@ -68,10 +85,39 @@ export default function TesterProfile() {
               </Button>
             </div>
 
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl">
-              {user?.bio ||
-                'Experienced QA engineer and beta tester with 5+ years testing mobile and web applications across fintech, e-commerce, and healthcare. Passionate about finding edge cases and delivering detailed, actionable bug reports.'}
-            </p>
+            {isEditingBio ? (
+              <div className="max-w-2xl space-y-2">
+                <textarea
+                  autoFocus
+                  rows={3}
+                  className="form-input text-sm resize-none"
+                  value={bioDraft}
+                  onChange={(e) => setBioDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') setIsEditingBio(false);
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" icon={<Check size={14} />} onClick={saveBio}>Save</Button>
+                  <Button size="sm" variant="secondary" icon={<X size={14} />} onClick={() => setIsEditingBio(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={startEditingBio}
+                onKeyDown={(e) => { if (e.key === 'Enter') startEditingBio(); }}
+                className="group flex items-start gap-2 max-w-2xl cursor-pointer rounded-lg -mx-2 px-2 py-1 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+              >
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+                  {user?.bio || fallbackBio}
+                </p>
+                <Edit size={13} className="text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors mt-1 flex-shrink-0" aria-hidden="true" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -134,7 +180,7 @@ export default function TesterProfile() {
           <div className="px-5 py-4 border-b border-slate-200/70 dark:border-slate-700/50">
             <h3 className="font-semibold text-slate-900 dark:text-slate-100">Test History</h3>
           </div>
-          <div className="overflow-x-auto">
+          <TableScrollArea>
             <table className="w-full data-table">
               <thead>
                 <tr>
@@ -158,7 +204,7 @@ export default function TesterProfile() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScrollArea>
         </div>
       </div>
     </PlatformLayout>

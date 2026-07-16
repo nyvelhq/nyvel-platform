@@ -80,29 +80,37 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
   );
 }
 
+// Wrapped in a padded label rather than enlarging the checkbox itself —
+// keeps the visual size right for a dense table while giving mobile a
+// tap target closer to the 44px minimum (labels forward clicks to the
+// input they wrap, so this doesn't change the click behavior).
 export function SelectAllCheckbox({ checked, indeterminate, onToggle, disabled = false }) {
   return (
-    <input
-      type="checkbox"
-      checked={checked}
-      ref={(el) => {
-        if (el) el.indeterminate = indeterminate;
-      }}
-      onChange={onToggle}
-      disabled={disabled}
-      className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
-    />
+    <label className="inline-flex items-center justify-center w-11 h-11 -m-[14px] cursor-pointer">
+      <input
+        type="checkbox"
+        checked={checked}
+        ref={(el) => {
+          if (el) el.indeterminate = indeterminate;
+        }}
+        onChange={onToggle}
+        disabled={disabled}
+        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
+      />
+    </label>
   );
 }
 
 export function RowCheckbox({ checked, onToggle, disabled = false }) {
   return (
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={onToggle}
-      disabled={disabled}
-      className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
-    />
+    <label className="inline-flex items-center justify-center w-11 h-11 -m-[14px] cursor-pointer">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        disabled={disabled}
+        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
+      />
+    </label>
   );
 }
