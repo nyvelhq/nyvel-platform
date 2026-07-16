@@ -7,9 +7,9 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
   if (selectedCount === 0) return null;
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center gap-4">
+    <div className="bg-brand-50 dark:bg-brand-950/30 border border-brand-200 dark:border-brand-800/50 rounded-lg p-4 mb-4 flex items-center gap-4">
       <div className="flex-1">
-        <p className="text-sm font-semibold text-blue-900">
+        <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
           {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
         </p>
       </div>
@@ -19,14 +19,14 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
             <button
               onClick={() => setShowStatusMenu(!showStatusMenu)}
               disabled={isLoading}
-              className="px-3 py-2 text-sm font-medium bg-emerald-50 text-emerald-700 rounded hover:bg-emerald-100 transition-all disabled:opacity-50 flex items-center gap-1"
+              className="px-3 py-2 text-sm font-medium bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 rounded hover:bg-success-100 dark:hover:bg-success-900/50 transition-all disabled:opacity-50 flex items-center gap-1"
             >
               <CheckCircle size={14} />
               Change Status
               <ChevronDown size={14} />
             </button>
             {showStatusMenu && (
-              <div className="absolute top-full mt-1 left-0 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-max">
+              <div className="absolute top-full mt-1 left-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg dark:shadow-elevation-dark-md z-10 min-w-max">
                 {statusOptions.map(option => (
                   <button
                     key={option}
@@ -35,7 +35,7 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
                       setShowStatusMenu(false);
                     }}
                     disabled={isLoading}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 first:rounded-t-lg last:rounded-b-lg disabled:opacity-50"
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 first:rounded-t-lg last:rounded-b-lg disabled:opacity-50"
                   >
                     {option}
                   </button>
@@ -48,7 +48,7 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
           <button
             onClick={onExport}
             disabled={isLoading}
-            className="px-3 py-2 text-sm font-medium bg-slate-100 text-slate-700 rounded hover:bg-slate-200 transition-all disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-all disabled:opacity-50"
           >
             <div className="flex items-center gap-1">
               <Download size={14} />
@@ -60,7 +60,7 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
           <button
             onClick={onDelete}
             disabled={isLoading}
-            className="px-3 py-2 text-sm font-medium bg-red-50 text-red-700 rounded hover:bg-red-100 transition-all disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium bg-error-50 dark:bg-error-900/30 text-error-700 dark:text-error-300 rounded hover:bg-error-100 dark:hover:bg-error-900/50 transition-all disabled:opacity-50"
           >
             <div className="flex items-center gap-1">
               <Trash2 size={14} />
@@ -71,7 +71,7 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
         <button
           onClick={onClearSelection}
           disabled={isLoading}
-          className="px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-all disabled:opacity-50"
+          className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all disabled:opacity-50"
         >
           <X size={16} />
         </button>
@@ -90,7 +90,7 @@ export function SelectAllCheckbox({ checked, indeterminate, onToggle, disabled =
       }}
       onChange={onToggle}
       disabled={disabled}
-      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50 cursor-pointer"
+      className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
     />
   );
 }
@@ -102,7 +102,7 @@ export function RowCheckbox({ checked, onToggle, disabled = false }) {
       checked={checked}
       onChange={onToggle}
       disabled={disabled}
-      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50 cursor-pointer"
+      className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-600 dark:text-brand-500 focus:ring-brand-500 disabled:opacity-50 cursor-pointer"
     />
   );
 }

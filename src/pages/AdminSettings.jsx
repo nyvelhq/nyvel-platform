@@ -3,6 +3,8 @@ import { Save, Bell, Lock, Globe, Zap, AlertCircle } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import ToggleSwitch from '../components/ui/ToggleSwitch';
+import { ConfirmationModal } from '../components/admin/ConfirmationModal';
+import { useToast } from '../context/ToastContext';
 import {
   validatePlatformName,
   validateRateLimit,
@@ -10,6 +12,21 @@ import {
   validateConcurrentTests,
   safeProp,
 } from '../utils/validation';
+
+const dangerActions = {
+  clearCache: {
+    title: 'Clear Cache?',
+    message: 'This removes all cached data platform-wide. Users may see a brief performance dip while the cache rebuilds.',
+    confirmText: 'Clear Cache',
+    successMessage: 'Cache cleared',
+  },
+  resetAnalytics: {
+    title: 'Reset Analytics?',
+    message: 'This permanently deletes all analytics data collected so far. This action cannot be undone.',
+    confirmText: 'Reset Analytics',
+    successMessage: 'Analytics data reset',
+  },
+};
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -48,6 +65,9 @@ export default function AdminSettings() {
 
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState({});
+  const [dangerAction, setDangerAction] = useState(null);
+  const [dangerLoading, setDangerLoading] = useState(false);
+  const { addToast } = useToast();
 
   const validateSettings = useCallback(() => {
     const newErrors = {};
@@ -114,6 +134,17 @@ export default function AdminSettings() {
       console.error('Error updating setting:', err);
     }
   }, [errors]);
+
+  const confirmDangerAction = useCallback(async () => {
+    setDangerLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      addToast(dangerActions[dangerAction].successMessage, 'success');
+      setDangerAction(null);
+    } finally {
+      setDangerLoading(false);
+    }
+  }, [dangerAction, addToast]);
 
   // Shared row shell for toggle lists
   const settingRow = 'flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg';
@@ -363,17 +394,28 @@ export default function AdminSettings() {
                 <p className="font-medium text-error-900 dark:text-error-200">Clear Cache</p>
                 <p className="text-xs text-error-700 dark:text-error-300 mt-1">Remove all cached data</p>
               </div>
-              <Button variant="danger" size="sm">Clear Cache</Button>
+              <Button variant="danger" size="sm" onClick={() => setDangerAction('clearCache')}>Clear Cache</Button>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-error-200/70 dark:border-error-800/50">
               <div>
                 <p className="font-medium text-error-900 dark:text-error-200">Reset Analytics</p>
                 <p className="text-xs text-error-700 dark:text-error-300 mt-1">Clear all analytics data (irreversible)</p>
               </div>
-              <Button variant="danger" size="sm">Reset</Button>
+              <Button variant="danger" size="sm" onClick={() => setDangerAction('resetAnalytics')}>Reset</Button>
             </div>
           </div>
         </div>
+
+        <ConfirmationModal
+          isOpen={dangerAction !== null}
+          title={dangerAction ? dangerActions[dangerAction].title : ''}
+          message={dangerAction ? dangerActions[dangerAction].message : ''}
+          confirmText={dangerAction ? dangerActions[dangerAction].confirmText : ''}
+          onConfirm={confirmDangerAction}
+          onCancel={() => setDangerAction(null)}
+          isDangerous
+          isLoading={dangerLoading}
+        />
 
         {/* Status */}
         {saved && (

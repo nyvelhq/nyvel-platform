@@ -36,7 +36,7 @@ export function InlineEditCell({ value, onSave, isEditing = false, type = 'text'
     return (
       <div
         onClick={() => setIsEdit(true)}
-        className="cursor-pointer px-2 py-1 rounded hover:bg-slate-100 transition-colors text-sm text-slate-700"
+        className="cursor-pointer px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-sm text-slate-700 dark:text-slate-300"
       >
         {type === 'select' && (
           <span className="font-medium">{options.find(o => o.value === value)?.label || value}</span>
@@ -54,7 +54,7 @@ export function InlineEditCell({ value, onSave, isEditing = false, type = 'text'
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-2 py-1 text-sm border border-brand-300 dark:border-brand-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
         >
           {options.map(option => (
             <option key={option.value} value={option.value}>
@@ -69,19 +69,19 @@ export function InlineEditCell({ value, onSave, isEditing = false, type = 'text'
           value={tempValue}
           onChange={(e) => setTempValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-2 py-1 text-sm border border-brand-300 dark:border-brand-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 rounded focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       )}
       <button
         onClick={handleSave}
-        className="p-1 text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
+        className="p-1 text-success-600 dark:text-success-400 hover:bg-success-50 dark:hover:bg-success-900/30 rounded transition-colors"
         title="Save (Enter)"
       >
         <Check size={16} />
       </button>
       <button
         onClick={handleCancel}
-        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+        className="p-1 text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30 rounded transition-colors"
         title="Cancel (Esc)"
       >
         <X size={16} />

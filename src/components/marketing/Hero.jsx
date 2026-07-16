@@ -27,11 +27,15 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex flex-col bg-slate-950 overflow-hidden">
-      {/* Announcement Banner */}
+      {/* Announcement Banner — pt-36 clears the fixed Navbar (measured at
+          134px unscrolled: py-5 on this project's custom 8px spacing scale
+          is 40px, not Tailwind's default 20px, plus the logo row). The
+          banner is in normal flow, so without this it renders directly
+          underneath the nav rather than below it. */}
       <AnimatePresence>
         {showBanner && (
           <motion.div
-            className="overflow-hidden"
+            className="overflow-hidden pt-36"
             variants={bannerVariants}
             initial="hidden"
             animate="visible"
