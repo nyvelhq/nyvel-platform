@@ -435,7 +435,7 @@ export default function AdminTests() {
         {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-3 text-slate-400" />
+            <Search size={16} className="absolute left-1.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search tests by ID, name, or company..."
