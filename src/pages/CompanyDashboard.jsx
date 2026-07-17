@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FlaskConical, Users, AlertTriangle, CheckCircle, Plus, ExternalLink,
@@ -14,6 +14,7 @@ import { StatusBadge, TypeBadge, SeverityBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import ScrollReveal from '../components/ScrollReveal';
 import TableScrollArea from '../components/ui/TableScrollArea';
+import TestDetailDrawer from '../components/company/TestDetailDrawer';
 import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
@@ -26,6 +27,7 @@ export default function CompanyDashboard() {
   const navigate = useNavigate();
   const { companyTests } = useAppData();
   const isDark = useDarkMode();
+  const [detailTest, setDetailTest] = useState(null);
 
   // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
   const chart = {
@@ -226,7 +228,7 @@ export default function CompanyDashboard() {
                   <tr
                     key={test.id}
                     className="table-row-enter cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40"
-                    onClick={() => navigate(`/company/tests/${test.id}`)}
+                    onClick={() => setDetailTest(test)}
                   >
                     <td>
                       <span className="font-mono text-xs text-slate-400 dark:text-slate-500">{test.id}</span>
@@ -264,7 +266,7 @@ export default function CompanyDashboard() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/company/tests/${test.id}`);
+                          setDetailTest(test);
                         }}
                         className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
                       >
@@ -279,6 +281,8 @@ export default function CompanyDashboard() {
           )}
         </div>
       </div>
+
+      <TestDetailDrawer test={detailTest} onClose={() => setDetailTest(null)} />
     </PlatformLayout>
   );
 }

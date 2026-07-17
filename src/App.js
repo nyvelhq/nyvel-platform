@@ -8,6 +8,7 @@ import { duration, ease } from './motion/tokens';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import CompanyDashboard from './pages/CompanyDashboard';
+import CompanyTests from './pages/CompanyTests';
 import CreateTest from './pages/CreateTest';
 import TesterDashboard from './pages/TesterDashboard';
 import TesterOnboarding from './pages/TesterOnboarding';
@@ -211,7 +212,7 @@ function AppRoutes() {
         {/* Company routes */}
         <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
         <Route path="/company/create-test" element={guarded('company', <CreateTest />)} />
-        <Route path="/company/tests" element={guarded('company', <ComingSoon title="My Tests" />)} />
+        <Route path="/company/tests" element={guarded('company', <CompanyTests />)} />
         <Route path="/company/tests/:id" element={guarded('company', <ComingSoon title="Test Details" />)} />
         <Route path="/company/testers" element={guarded('company', <ComingSoon title="Testers" />)} />
         <Route path="/company/reports" element={guarded('company', <ComingSoon title="Reports" />)} />
