@@ -5,10 +5,12 @@ import AnimatedCounter from '../components/ui/AnimatedCounter';
 import SegmentedControl from '../components/ui/SegmentedControl';
 import useDarkMode from '../hooks/useDarkMode';
 import { adminReportsData } from '../data/mockData';
+import { useToast } from '../context/ToastContext';
 
 export default function AdminReports() {
   const [timeRange, setTimeRange] = useState('6months');
   const isDark = useDarkMode();
+  const { addToast } = useToast();
 
   // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
   const chart = {
@@ -60,6 +62,32 @@ export default function AdminReports() {
     },
   ];
 
+  const handleExport = () => {
+    try {
+      const csv = [
+        ['Metric', 'Value', 'Note'].join(','),
+        ...kpis.map(({ label, value, format, note }) => [label, format(value), note].join(',')),
+        '',
+        ...summary.flatMap(({ title, rows }) => [
+          [title].join(','),
+          ...rows.map(({ label, value }) => [label, value].join(',')),
+        ]),
+      ].join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reports-${timeRange}-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      addToast('Report exported successfully', 'success');
+    } catch (err) {
+      addToast('Failed to export report', 'error');
+      console.error('Export error:', err);
+    }
+  };
+
   return (
     <PlatformLayout title="Reports">
       <div className="p-6 space-y-6">
@@ -69,17 +97,25 @@ export default function AdminReports() {
             <h2 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">Analytics &amp; Reports</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Platform performance and business metrics</p>
           </div>
-          <SegmentedControl
-            ariaLabel="Report time range"
-            value={timeRange}
-            onChange={setTimeRange}
-            options={[
-              { value: '7days', label: '7D' },
-              { value: '30days', label: '30D' },
-              { value: '6months', label: '6M' },
-              { value: '1year', label: '1Y' },
-            ]}
-          />
+          <div className="flex items-center gap-2">
+            <SegmentedControl
+              ariaLabel="Report time range"
+              value={timeRange}
+              onChange={setTimeRange}
+              options={[
+                { value: '7days', label: '7D' },
+                { value: '30days', label: '30D' },
+                { value: '6months', label: '6M' },
+                { value: '1year', label: '1Y' },
+              ]}
+            />
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-success-50/70 dark:bg-success-900/20 text-success-700 dark:text-success-300 border border-success-200/70 dark:border-success-800/50 hover:bg-success-100 dark:hover:bg-success-900/40 transition-all"
+            >
+              Export
+            </button>
+          </div>
         </div>
 
         {/* Key Metrics */}

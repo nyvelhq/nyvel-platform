@@ -162,6 +162,10 @@ export default function AdminTests() {
             aVal = safeProp(a, 'status', '').toLowerCase();
             bVal = safeProp(b, 'status', '').toLowerCase();
             break;
+          case 'critical':
+            aVal = safeProp(a, 'critical', 0);
+            bVal = safeProp(b, 'critical', 0);
+            break;
           default:
             return 0;
         }
@@ -207,6 +211,13 @@ export default function AdminTests() {
       setSortOrder('asc');
     }
     setCurrentPage(1);
+  };
+
+  const handleDrillIntoIssues = () => {
+    setSortBy('critical');
+    setSortOrder('desc');
+    setCurrentPage(1);
+    document.getElementById('tests-table')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const handleSelectTest = (testId) => {
@@ -381,9 +392,15 @@ export default function AdminTests() {
               { label: 'Active Tests', value: stats.active, sub: 'Currently running', color: 'text-cyan-600 dark:text-cyan-400' },
               { label: 'In Progress', value: stats.inProgress, sub: 'Awaiting completion', color: 'text-amber-600 dark:text-amber-400' },
               { label: 'Completed', value: stats.completed, sub: 'Total finished', color: 'text-emerald-600 dark:text-emerald-400' },
-              { label: 'Issues Reported', value: stats.totalIssues, sub: `${stats.totalCritical} critical`, color: 'text-error-600 dark:text-error-400' },
-            ].map(({ label, value, sub, color }, i) => (
-              <div key={label} className="card p-5 animate-fade-up" style={{ animationDelay: `${80 + i * 70}ms` }}>
+              { label: 'Issues Reported', value: stats.totalIssues, sub: `${stats.totalCritical} critical`, color: 'text-error-600 dark:text-error-400', onClick: handleDrillIntoIssues },
+            ].map(({ label, value, sub, color, onClick }, i) => (
+              <div
+                key={label}
+                onClick={onClick}
+                className={`card p-5 animate-fade-up ${onClick ? 'cursor-pointer hover:border-error-300 dark:hover:border-error-700 transition-colors' : ''}`}
+                style={{ animationDelay: `${80 + i * 70}ms` }}
+                title={onClick ? 'View tests sorted by critical issues' : undefined}
+              >
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
                 <p className={`font-display text-3xl font-bold ${color}`}>
                   <AnimatedCounter value={value} />
@@ -580,7 +597,7 @@ export default function AdminTests() {
         {isLoading ? (
           <SkeletonTable rows={itemsPerPage} columns={9} />
         ) : (
-          <div className="card overflow-hidden">
+          <div id="tests-table" className="card overflow-hidden">
             <TableScrollArea>
               <table className="w-full data-table">
                 <thead>
