@@ -112,6 +112,9 @@ module.exports = {
         'count-up': 'countUp 0.8s ease-out forwards',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-in-left': 'slideInLeft 0.3s ease-out forwards',
+        // Hero entrance — two collapsed beats (see Navbar/Hero design handoff)
+        'fade-1': 'heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards',
+        'fade-2': 'heroFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) 160ms forwards',
         // Phase 5 micro-interactions
         'scale-in': 'scaleIn 0.2s ease-out forwards',
         'slide-down': 'slideDown 0.15s ease-out forwards',
@@ -143,6 +146,10 @@ module.exports = {
         },
         fadeUp: {
           '0%': { opacity: '0', transform: 'translateY(24px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        heroFadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         fadeIn: {

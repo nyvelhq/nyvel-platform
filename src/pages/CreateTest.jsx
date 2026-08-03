@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronRight, FlaskConical, Users, Eye } from 'lucide-react';
+import { ChevronRight, FlaskConical, Users, Eye, Circle, CheckCircle2, Square, CheckSquare, RotateCcw, Check } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import Stepper from '../components/ui/Stepper';
@@ -34,6 +34,18 @@ const steps = [
   { id: 3, label: 'Review & Launch', icon: Eye },
 ];
 
+// Shared selection indicator — radio-style (single-select) or checkbox-style
+// (multi-select), teal-filled + check when selected, empty grey outline when not.
+// Used by both the Step 1 test-type cards and the Step 2 platform/expertise
+// cards so both steps share one selection affordance instead of two.
+function SelectIcon({ selected, multi = false, size = 20 }) {
+  const className = selected ? 'text-brand-600 dark:text-brand-400 flex-shrink-0' : 'text-slate-300 dark:text-slate-600 flex-shrink-0';
+  if (multi) {
+    return selected ? <CheckSquare size={size} className={className} /> : <Square size={size} className={className} />;
+  }
+  return selected ? <CheckCircle2 size={size} className={className} /> : <Circle size={size} className={className} />;
+}
+
 // "a, b and c" — readable English list for the missing-fields hint
 const joinReadable = (items) => {
   if (items.length <= 1) return items[0] || '';
@@ -50,8 +62,10 @@ export default function CreateTest() {
     setStep(next);
   };
   const [launching, setLaunching] = useState(false);
+  const [launched, setLaunched] = useState(false);
+  const [launchedName, setLaunchedName] = useState('');
   const [errors, setErrors] = useState({});
-  const [form, setForm] = useState({
+  const initialForm = {
     name: '',
     type: '',
     description: '',
@@ -65,7 +79,8 @@ export default function CreateTest() {
     compensation: 35,
     nda: true,
     briefing: '',
-  });
+  };
+  const [form, setForm] = useState(initialForm);
 
   const set = (key, val) => {
     setForm((f) => ({ ...f, [key]: val }));
@@ -108,7 +123,7 @@ export default function CreateTest() {
 
   const handleLaunch = async () => {
     setLaunching(true);
-    await new Promise((res) => setTimeout(res, 1200));
+    await new Promise((res) => setTimeout(res, 1100));
 
     const selectedType = testTypeOptions.find((t) => t.id === form.type);
     addCompanyTest({
@@ -124,7 +139,16 @@ export default function CreateTest() {
       platform: form.platforms,
     });
 
-    navigate('/company/dashboard');
+    setLaunchedName(form.name || 'Your test');
+    setLaunching(false);
+    setLaunched(true);
+  };
+
+  const resetWizard = () => {
+    setForm(initialForm);
+    setErrors({});
+    setLaunched(false);
+    goToStep(1);
   };
 
   return (
@@ -132,6 +156,25 @@ export default function CreateTest() {
       <div className="p-6 max-w-3xl mx-auto">
         <Stepper steps={steps} currentStep={step} />
 
+        {launched ? (
+          <div className="card rounded-2xl p-10 flex flex-col items-center text-center">
+            <div className="w-[52px] h-[52px] rounded-full bg-success-50 dark:bg-success-900/20 text-success-600 dark:text-success-400 flex items-center justify-center mb-4">
+              <Check size={26} strokeWidth={2.5} />
+            </div>
+            <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-1.5">Test launched</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed mb-6">
+              {launchedName} is live. Matching testers are being notified now — first results usually arrive within 24 hours.
+            </p>
+            <div className="flex items-center gap-3">
+              <Button variant="secondary" icon={<RotateCcw size={14} />} onClick={resetWizard}>
+                Create another test
+              </Button>
+              <Button onClick={() => navigate('/company/dashboard')}>
+                Go to Dashboard
+              </Button>
+            </div>
+          </div>
+        ) : (
         <AnimatePresence mode="wait" custom={direction} initial={false}>
         <motion.div key={step} custom={direction} variants={stepVariants} initial="enter" animate="center" exit="exit">
 
@@ -155,25 +198,29 @@ export default function CreateTest() {
             <div>
               <label className="form-label">Test Type *</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {testTypeOptions.map((t) => (
+                {testTypeOptions.map((t) => {
+                  const selected = form.type === t.id;
+                  return (
                   <button
                     key={t.id}
                     type="button"
                     onClick={() => set('type', t.id)}
-                    className={`flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all
-                      ${form.type === t.id
+                    className={`flex items-start gap-3 p-3 rounded-xl border-[1.5px] text-left transition-all
+                      ${selected
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40 dark:border-brand-400'
-                        : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                        : 'border-slate-200 dark:border-slate-700 hover:border-brand-200 dark:hover:border-brand-800/60'}`}
                   >
+                    <SelectIcon selected={selected} />
                     <span className="text-2xl leading-none">{t.icon}</span>
                     <div>
-                      <p className={`text-xs font-semibold ${form.type === t.id ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                      <p className={`text-xs font-semibold ${selected ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
                         {t.label}
                       </p>
                       <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.desc}</p>
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -249,39 +296,51 @@ export default function CreateTest() {
 
             <div>
               <label className="form-label">Target Platforms *</label>
-              <div className="flex flex-wrap gap-2">
-                {platforms.map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => toggleArray('platforms', p)}
-                    className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all
-                      ${form.platforms.includes(p)
-                        ? 'bg-brand-600 border-brand-600 text-white'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-300 dark:hover:border-brand-700'}`}
-                  >
-                    {p}
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {platforms.map((p) => {
+                  const selected = form.platforms.includes(p);
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => toggleArray('platforms', p)}
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-[1.5px] text-left transition-all
+                        ${selected
+                          ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40 dark:border-brand-400'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-brand-200 dark:hover:border-brand-800/60'}`}
+                    >
+                      <SelectIcon selected={selected} multi size={18} />
+                      <span className={`text-sm font-semibold ${selected ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {p}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div>
               <label className="form-label">Tester Expertise</label>
-              <div className="flex flex-wrap gap-2">
-                {expertiseOptions.map((e) => (
-                  <button
-                    key={e}
-                    type="button"
-                    onClick={() => toggleArray('expertise', e)}
-                    className={`px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all
-                      ${form.expertise.includes(e)
-                        ? 'bg-accent-500 border-accent-500 text-white'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-accent-300 dark:hover:border-accent-700'}`}
-                  >
-                    {e}
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {expertiseOptions.map((e) => {
+                  const selected = form.expertise.includes(e);
+                  return (
+                    <button
+                      key={e}
+                      type="button"
+                      onClick={() => toggleArray('expertise', e)}
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border-[1.5px] text-left transition-all
+                        ${selected
+                          ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40 dark:border-brand-400'
+                          : 'border-slate-200 dark:border-slate-700 hover:border-brand-200 dark:hover:border-brand-800/60'}`}
+                    >
+                      <SelectIcon selected={selected} multi size={18} />
+                      <span className={`text-sm font-semibold ${selected ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {e}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -389,6 +448,7 @@ export default function CreateTest() {
         )}
         </motion.div>
         </AnimatePresence>
+        )}
       </div>
     </PlatformLayout>
   );

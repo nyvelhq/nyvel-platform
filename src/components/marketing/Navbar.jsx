@@ -131,7 +131,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-slate-300 hover:text-white hover:bg-white/10"
+              className="!text-slate-300 hover:!text-white hover:bg-white/10"
               onClick={() => navigate('/login')}
             >
               Sign In
@@ -168,7 +168,7 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            className="md:hidden bg-slate-950/98 border-t border-white/10 overflow-hidden"
+            className="md:hidden bg-slate-950/95 border-t border-white/10 overflow-hidden"
             variants={mobileMenuVariants}
             initial="hidden"
             animate="visible"
@@ -186,7 +186,7 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="pt-3 border-t border-white/10 flex flex-col gap-2">
-                <Button variant="ghost" className="w-full text-slate-300" onClick={() => navigate('/login')}>
+                <Button variant="ghost" className="w-full !text-slate-300" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
                 <Button variant="secondary" className="w-full text-slate-900" onClick={() => navigate('/login?role=tester')}>

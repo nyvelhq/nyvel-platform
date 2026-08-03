@@ -282,7 +282,7 @@ export default function PlatformLayout({ children, title }) {
               >
                 <Bell size={20} />
                 <span
-                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500"
+                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-500 ring-2 ring-white dark:ring-slate-900"
                   aria-hidden="true"
                 />
               </button>

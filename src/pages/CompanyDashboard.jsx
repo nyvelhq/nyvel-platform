@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FlaskConical, Users, AlertTriangle, CheckCircle, Plus, ExternalLink,
+  FlaskConical, Users, AlertTriangle, CheckCircle, Plus, ExternalLink, X,
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -28,6 +28,23 @@ export default function CompanyDashboard() {
   const { companyTests } = useAppData();
   const isDark = useDarkMode();
   const [detailTest, setDetailTest] = useState(null);
+  const [severityFilter, setSeverityFilter] = useState(null);
+
+  const toggleSeverityFilter = (name) => {
+    setSeverityFilter((current) => (current === name ? null : name));
+  };
+
+  const severityTotal = useMemo(
+    () => issuesBySeverity.reduce((sum, s) => sum + s.value, 0),
+    []
+  );
+  const filteredSeverityEntry = severityFilter
+    ? issuesBySeverity.find((s) => s.name === severityFilter)
+    : null;
+
+  const visibleTests = severityFilter
+    ? companyTests.filter((t) => t.severity === severityFilter)
+    : companyTests;
 
   // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
   const chart = {
@@ -77,7 +94,7 @@ export default function CompanyDashboard() {
                 value={companyStats.activeTests}
                 animate
                 trend={companyStats.trends.activeTests}
-                trendLabel=" this week"
+                trendCaption="vs. last week"
                 icon={FlaskConical}
                 iconColor="violet"
               />
@@ -88,7 +105,7 @@ export default function CompanyDashboard() {
                 value={companyStats.totalTesters}
                 animate
                 trend={companyStats.trends.totalTesters}
-                trendLabel=" this month"
+                trendCaption="vs. last month"
                 icon={Users}
                 iconColor="cyan"
               />
@@ -99,7 +116,7 @@ export default function CompanyDashboard() {
                 value={companyStats.openIssues}
                 animate
                 trend={companyStats.trends.openIssues}
-                trendLabel=" since last week"
+                trendCaption="vs. last week"
                 icon={AlertTriangle}
                 iconColor="amber"
                 invert
@@ -113,6 +130,7 @@ export default function CompanyDashboard() {
                 format={(n) => `${Math.round(n)}%`}
                 trend={companyStats.trends.completionRate}
                 trendLabel="%"
+                trendCaption="vs. last month"
                 icon={CheckCircle}
                 iconColor="green"
               />
@@ -157,33 +175,59 @@ export default function CompanyDashboard() {
             {/* Issues by severity donut */}
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-1">Issues by Severity</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">Across all active tests</p>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={issuesBySeverity}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={52}
-                    outerRadius={78}
-                    paddingAngle={3}
-                    dataKey="value"
-                    isAnimationActive={false}
-                  >
-                    {issuesBySeverity.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
-                </PieChart>
-              </ResponsiveContainer>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">Click a severity to filter the table below</p>
+              <div className="relative cursor-pointer">
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={issuesBySeverity}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={52}
+                      outerRadius={78}
+                      paddingAngle={3}
+                      dataKey="value"
+                      isAnimationActive={false}
+                      onClick={(entry) => toggleSeverityFilter(entry.name)}
+                    >
+                      {issuesBySeverity.map((entry, i) => (
+                        <Cell
+                          key={i}
+                          fill={entry.color}
+                          opacity={severityFilter && severityFilter !== entry.name ? 0.25 : 1}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={tooltipStyle} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50 leading-none">
+                    {filteredSeverityEntry ? filteredSeverityEntry.value : severityTotal}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {filteredSeverityEntry ? `${filteredSeverityEntry.name.toLowerCase()} issues` : 'total issues'}
+                  </p>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {issuesBySeverity.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                    <span>{item.name} ({item.value})</span>
-                  </div>
-                ))}
+                {issuesBySeverity.map((item) => {
+                  const active = severityFilter === item.name;
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => toggleSeverityFilter(item.name)}
+                      className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md border text-left transition-colors ${
+                        active
+                          ? 'border-brand-500 bg-brand-50/70 dark:bg-brand-900/20 text-slate-900 dark:text-slate-100 font-semibold'
+                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:border-slate-200 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                      <span>{item.name} ({item.value})</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -192,7 +236,18 @@ export default function CompanyDashboard() {
         {/* Tests table */}
         <div className="card overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200/70 dark:border-slate-700/50">
-            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Tests</h3>
+            <div className="flex items-center gap-3">
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100">Recent Tests</h3>
+              {severityFilter && (
+                <button
+                  onClick={() => setSeverityFilter(null)}
+                  className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border border-accent-500/35 bg-accent-500/10 text-accent-700 dark:text-accent-400"
+                >
+                  Filtered: {severityFilter}
+                  <X size={12} />
+                </button>
+              )}
+            </div>
             <button
               onClick={() => navigate('/company/tests')}
               className="text-sm text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-medium flex items-center gap-1"
@@ -207,6 +262,14 @@ export default function CompanyDashboard() {
               description="Launch your first test to start collecting real-world feedback from vetted testers."
               actionLabel="Create Your First Test"
               onAction={() => navigate('/company/create-test')}
+            />
+          ) : visibleTests.length === 0 ? (
+            <EmptyState
+              icon={FlaskConical}
+              title="No tests at this severity"
+              description="Nothing in your recent tests carries a severity of this level right now."
+              actionLabel="Clear filter"
+              onAction={() => setSeverityFilter(null)}
             />
           ) : (
           <TableScrollArea>
@@ -224,10 +287,19 @@ export default function CompanyDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {companyTests.map((test) => (
+                {companyTests.map((test) => {
+                  const dimmed = severityFilter !== null && test.severity !== severityFilter;
+                  const tinted = severityFilter !== null && test.severity === severityFilter;
+                  return (
                   <tr
                     key={test.id}
-                    className="table-row-enter cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                    className={`table-row-enter cursor-pointer transition-opacity duration-200 ${
+                      dimmed
+                        ? 'opacity-35 hover:opacity-60'
+                        : tinted
+                        ? 'bg-brand-50/40 dark:bg-brand-900/10 hover:bg-brand-50/70 dark:hover:bg-brand-900/20'
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                    }`}
                     onClick={() => setDetailTest(test)}
                   >
                     <td>
@@ -274,7 +346,8 @@ export default function CompanyDashboard() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </TableScrollArea>

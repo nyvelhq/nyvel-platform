@@ -21,9 +21,68 @@ const statItems = [
 
 const ticker = [...tickerItems, ...tickerItems];
 
+const LEDGER_TARGETS = { testers: 1284, tests: 342, bugs: 14, hours: 6 };
+
+function useLedgerCountUp(active) {
+  const [values, setValues] = React.useState({ testers: 0, tests: 0, bugs: 0, hours: 0 });
+
+  React.useEffect(() => {
+    if (!active) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setValues(LEDGER_TARGETS);
+      return;
+    }
+    let raf;
+    const start = performance.now();
+    const totalDuration = 900;
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / totalDuration);
+      const p = easeOutCubic(t);
+      setValues({
+        testers: Math.round(LEDGER_TARGETS.testers * p),
+        tests: Math.round(LEDGER_TARGETS.tests * p),
+        bugs: Math.round(LEDGER_TARGETS.bugs * p),
+        hours: Math.round(LEDGER_TARGETS.hours * p),
+      });
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active]);
+
+  return values;
+}
+
 export default function Hero() {
   const navigate = useNavigate();
   const [showBanner, setShowBanner] = React.useState(true);
+  const ledgerRef = React.useRef(null);
+  const [ledgerVisible, setLedgerVisible] = React.useState(false);
+  const ledgerCounts = useLedgerCountUp(ledgerVisible);
+
+  React.useEffect(() => {
+    const el = ledgerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setLedgerVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const ledgerMetrics = [
+    { label: 'Testers active now', value: ledgerCounts.testers.toLocaleString() },
+    { label: 'Tests completed this week', value: ledgerCounts.tests.toLocaleString() },
+    { label: 'Median bugs found / test', value: String(ledgerCounts.bugs) },
+    { label: 'Avg. hours to first report', value: `${ledgerCounts.hours}h` },
+  ];
 
   return (
     <section className="relative min-h-screen flex flex-col bg-slate-950 overflow-hidden">
@@ -75,7 +134,7 @@ export default function Hero() {
 
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-20 pb-40">
         {/* Tagline — Above headline like ProMentor */}
-        <div className="animate-fade-up mb-6" style={{ animationDelay: '0ms' }}>
+        <div className="animate-fade-1 mb-6">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-2 h-2 rounded-full bg-accent-400" />
             <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-accent-400">
@@ -85,10 +144,7 @@ export default function Hero() {
         </div>
 
         {/* Headline — Emotional benefit with accent color */}
-        <h1
-          className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white text-center leading-[1.05] tracking-tight max-w-5xl animate-fade-up"
-          style={{ animationDelay: '100ms', opacity: 0, animationFillMode: 'forwards' }}
-        >
+        <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white text-center leading-[1.05] tracking-tight max-w-5xl animate-fade-1">
           Ship confidently,
           <br />
           tested by someone
@@ -98,17 +154,14 @@ export default function Hero() {
         </h1>
 
         {/* Subheadline — Reassuring benefit */}
-        <p
-          className="mt-6 text-lg sm:text-xl text-slate-400 text-center max-w-2xl animate-fade-up"
-          style={{ animationDelay: '150ms', opacity: 0, animationFillMode: 'forwards' }}
-        >
+        <p className="mt-6 text-lg sm:text-xl text-slate-400 text-center max-w-2xl animate-fade-1">
           Get real-world feedback from vetted testers before launch. Professional QA review included.
         </p>
 
-        {/* Key Benefits — Checkmarks */}
+        {/* Key Benefits — Checkmarks — beat 2 (fades in with CTAs, trust line, Quality Ledger) */}
         <div
-          className="mt-8 space-y-2 text-center max-w-xl animate-fade-up"
-          style={{ animationDelay: '200ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-8 space-y-2 text-center max-w-xl animate-fade-2"
+          style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
             <span className="text-accent-400 font-bold text-lg">✓</span>
@@ -126,8 +179,8 @@ export default function Hero() {
 
         {/* Primary CTA — Make it prominent and larger */}
         <div
-          className="mt-12 flex flex-col sm:flex-row gap-3 items-center animate-fade-up"
-          style={{ animationDelay: '300ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-12 flex flex-col sm:flex-row gap-3 items-center animate-fade-2"
+          style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           <Button
             size="xl"
@@ -149,36 +202,43 @@ export default function Hero() {
 
         {/* Trust indicators below CTA */}
         <div
-          className="mt-6 text-center animate-fade-up"
-          style={{ animationDelay: '400ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-6 text-center animate-fade-2"
+          style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           <p className="text-xs text-slate-500 font-medium">
             14-day free trial. No credit card required. Cancel anytime.
           </p>
         </div>
 
-        {/* Live Ticker — labelled as an illustrative preview */}
+        {/* Quality Ledger — replaces the old standalone activity ticker with
+            real-time-feeling platform metrics; the ticker is demoted to a
+            secondary strip underneath. */}
         <div
-          className="mt-16 w-full max-w-5xl animate-fade-up"
-          style={{ animationDelay: '500ms', opacity: 0, animationFillMode: 'forwards' }}
+          ref={ledgerRef}
+          className="mt-14 w-full max-w-3xl animate-fade-2 text-left"
+          style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           <div className="border border-white/10 rounded-xl overflow-hidden bg-slate-900/60 backdrop-blur-sm">
-            <div className="flex items-center gap-3 px-4 py-2 border-b border-white/10 bg-slate-900/40">
-              <div className="flex gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-              </div>
-              <span className="text-xs text-slate-500 font-mono">platform activity · live demo</span>
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-slate-900/40">
+              <span className="font-display font-bold text-sm text-slate-200">Quality Ledger</span>
+              <span className="font-mono text-[11px] text-slate-500">real-time platform metrics</span>
               <span className="ml-auto flex items-center gap-1.5 text-xs text-accent-400 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
                 LIVE
               </span>
             </div>
-            <div className="ticker-wrap py-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-white/10">
+              {ledgerMetrics.map((m) => (
+                <div key={m.label} className="px-4 py-5">
+                  <p className="font-display font-bold text-2xl sm:text-3xl text-white">{m.value}</p>
+                  <p className="text-xs text-slate-400 mt-1.5 font-medium">{m.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="ticker-wrap py-2.5 border-t border-white/10">
               <div className="ticker-inner">
                 {ticker.map((item, i) => (
-                  <span key={i} className="text-sm text-slate-300 mx-8 font-mono whitespace-nowrap">
+                  <span key={i} className="text-xs text-slate-500 mx-7 font-mono whitespace-nowrap">
                     {item}
                   </span>
                 ))}
@@ -189,8 +249,8 @@ export default function Hero() {
 
         {/* Value-prop row */}
         <div
-          className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8 w-full max-w-4xl animate-fade-up"
-          style={{ animationDelay: '600ms', opacity: 0, animationFillMode: 'forwards' }}
+          className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-8 w-full max-w-4xl animate-fade-2"
+          style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           {statItems.map(({ value, label, icon: Icon }) => (
             <div key={label} className="text-center group">

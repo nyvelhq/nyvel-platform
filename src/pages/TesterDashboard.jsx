@@ -104,31 +104,32 @@ export default function TesterDashboard() {
           </div>
         )}
 
-        {/* Profile strip */}
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+        {/* Profile strip — same "surface" elevation tier as the stat cards
+            below (was a dark gradient card, a different visual system) */}
+        <div className="card rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
             {user?.name?.split(' ').map((n) => n[0]).join('') || 'MJ'}
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1 flex-wrap">
-              <h2 className="font-display font-bold text-white text-xl">{user?.name}</h2>
-              <div className="flex items-center gap-1 bg-amber-500/20 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                <Star size={12} className="text-amber-400 fill-amber-400" />
-                <span className="text-xs font-bold text-amber-400">{user?.rating}</span>
+              <h2 className="font-display font-bold text-slate-900 dark:text-slate-50 text-xl">{user?.name}</h2>
+              <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-full">
+                <Star size={12} className="text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                <span className="text-xs font-bold text-amber-700 dark:text-amber-400">{user?.rating}</span>
               </div>
               <Badge label="Top Tester" color="violet" />
             </div>
-            <p className="text-slate-400 text-sm">{user?.email}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{user?.email}</p>
           </div>
           <div className="flex gap-6 text-center flex-shrink-0">
             <div>
-              <p className="text-2xl font-bold font-display text-white">{user?.testsCompleted}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Tests Done</p>
+              <p className="text-2xl font-bold font-display text-slate-900 dark:text-slate-50">{user?.testsCompleted}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tests Done</p>
             </div>
-            <div className="w-px bg-white/10" />
+            <div className="w-px bg-slate-200 dark:bg-slate-700" />
             <div>
               <p className="text-2xl font-bold font-display gradient-text">${testerStats.totalEarned.toLocaleString()}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Total Earned</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total Earned</p>
             </div>
           </div>
         </div>
@@ -184,7 +185,7 @@ export default function TesterDashboard() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative px-4 py-2.5 text-sm font-medium transition-colors
                   ${activeTab === tab.id
-                    ? 'text-brand-600 dark:text-brand-400'
+                    ? 'text-brand-700 dark:text-brand-400'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
               >
                 {tab.label}
@@ -243,7 +244,9 @@ export default function TesterDashboard() {
                 </div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredTests.map((test, index) => (
+                {filteredTests.map((test, index) => {
+                  const isUrgent = test.slots <= 3;
+                  return (
                   <div
                     key={test.id}
                     onClick={() => navigate(`/tester/tests/${test.id}`)}
@@ -270,6 +273,12 @@ export default function TesterDashboard() {
                       {test.platforms.map((p) => (
                         <Badge key={p} label={p} color="slate" />
                       ))}
+                      {isUrgent && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                          <Clock size={11} />
+                          {test.slots} spot{test.slots === 1 ? '' : 's'} left
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 mb-4">
@@ -281,10 +290,10 @@ export default function TesterDashboard() {
                       <span>Deadline: {test.deadline}</span>
                     </div>
 
-                    {/* Slots bar */}
+                    {/* Slots bar — switches to amber when the test is urgent */}
                     <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mb-4">
                       <div
-                        className="h-1.5 rounded-full bg-accent-500 transition-all"
+                        className={`h-1.5 rounded-full transition-all ${isUrgent ? 'bg-amber-500' : 'bg-accent-500'}`}
                         style={{ width: `${test.slotsTotal ? ((test.slotsTotal - test.slots) / test.slotsTotal) * 100 : 0}%` }}
                       />
                     </div>
@@ -292,7 +301,7 @@ export default function TesterDashboard() {
                     <Button
                       className="w-full"
                       size="sm"
-                      variant={hasApplied(test.id) ? 'secondary' : 'outline'}
+                      variant={hasApplied(test.id) ? 'secondary' : 'primary'}
                       disabled={hasApplied(test.id)}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -302,7 +311,8 @@ export default function TesterDashboard() {
                       {hasApplied(test.id) ? 'Applied ✓' : 'Apply Now'}
                     </Button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

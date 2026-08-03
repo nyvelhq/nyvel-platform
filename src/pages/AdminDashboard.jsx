@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Users, FlaskConical, DollarSign, Activity, ArrowRight } from 'lucide-react';
 import SegmentedControl from '../components/ui/SegmentedControl';
 import {
@@ -36,6 +36,16 @@ export default function AdminDashboard() {
   const [chartView, setChartView] = useState('users');
   const navigate = useNavigate();
   const isDark = useDarkMode();
+
+  const activityGroups = useMemo(() => {
+    const order = ['Today', 'Earlier This Week'];
+    return order
+      .map((label) => ({
+        label,
+        items: recentPlatformActivity.filter((item) => item.group === label),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, []);
 
   // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants).
   const chart = {
@@ -169,14 +179,39 @@ export default function AdminDashboard() {
           {/* Recent activity */}
           <div className="card p-5 animate-fade-up" style={{ animationDelay: '430ms' }}>
             <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Live Activity</h3>
-            <div className="space-y-3">
-              {recentPlatformActivity.map((item) => (
-                <div key={item.id} className="flex items-start gap-3 group">
-                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${activityDot[item.type] || activityDot.company}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight">{item.event}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight truncate">{item.detail}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{item.time}</p>
+            <div className="space-y-4">
+              {activityGroups.map((group) => (
+                <div key={group.label} className="space-y-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    {group.label}
+                  </p>
+                  <div className="space-y-3">
+                    {group.items.map((item) => {
+                      const isAlert = item.type === 'alert';
+                      return (
+                        <div
+                          key={item.id}
+                          className={`flex items-start gap-3 group rounded-lg ${
+                            isAlert ? 'bg-error-50/60 dark:bg-error-900/10 p-2 -mx-2' : ''
+                          }`}
+                        >
+                          <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${activityDot[item.type] || activityDot.company}`} />
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className={`text-xs leading-tight ${
+                                isAlert
+                                  ? 'font-bold text-error-800 dark:text-error-300'
+                                  : 'font-semibold text-slate-800 dark:text-slate-200'
+                              }`}
+                            >
+                              {item.event}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight truncate">{item.detail}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{item.time}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

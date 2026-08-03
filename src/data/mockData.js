@@ -24,6 +24,7 @@ export const companyTests = [
     dueDate: '2026-07-18',
     issues: 47,
     criticalIssues: 3,
+    severity: 'Critical',
     platform: ['iOS', 'Android'],
   },
   {
@@ -36,6 +37,7 @@ export const companyTests = [
     dueDate: '2026-07-12',
     issues: 12,
     criticalIssues: 1,
+    severity: 'High',
     platform: ['Web'],
   },
   {
@@ -48,6 +50,7 @@ export const companyTests = [
     dueDate: '2026-07-10',
     issues: 3,
     criticalIssues: 0,
+    severity: 'Low',
     platform: ['API'],
   },
   {
@@ -60,6 +63,7 @@ export const companyTests = [
     dueDate: '2026-07-22',
     issues: 8,
     criticalIssues: 2,
+    severity: 'High',
     platform: ['Web', 'iOS', 'Android'],
   },
   {
@@ -72,6 +76,7 @@ export const companyTests = [
     dueDate: '2026-06-28',
     issues: 19,
     criticalIssues: 0,
+    severity: 'Medium',
     platform: ['Web', 'Mobile'],
   },
   {
@@ -84,6 +89,7 @@ export const companyTests = [
     dueDate: '2026-06-15',
     issues: 31,
     criticalIssues: 4,
+    severity: 'Critical',
     platform: ['Web'],
   },
 ];
@@ -143,7 +149,7 @@ export const availableTests = [
     compensation: 55,
     deadline: '2026-07-18',
     duration: '1–2 hours',
-    slots: 5,
+    slots: 2,
     slotsTotal: 15,
     platforms: ['Web'],
     tags: ['SaaS', 'Dashboard', 'Analytics'],
@@ -249,12 +255,14 @@ export const platformGrowthData = [
 ];
 
 export const recentPlatformActivity = [
-  { id: 1, event: 'New company registered', detail: 'PayServe Inc. joined as Enterprise', time: '2 min ago', type: 'company' },
-  { id: 2, event: 'Test launched', detail: 'NV-1044: E-Commerce Bug Hunt (25 slots)', time: '8 min ago', type: 'test' },
-  { id: 3, event: 'Payout processed', detail: '$4,200 disbursed to 84 testers', time: '15 min ago', type: 'payment' },
-  { id: 4, event: 'Critical bug reported', detail: 'NV-1041: Crash on checkout — iOS 17', time: '23 min ago', type: 'alert' },
-  { id: 5, event: 'Test completed', detail: 'NV-1020: Onboarding Study — 98% satisfaction', time: '1 hr ago', type: 'test' },
-  { id: 6, event: '500 new testers joined', detail: 'Primary source: referral campaign', time: '2 hr ago', type: 'tester' },
+  { id: 1, event: 'New company registered', detail: 'PayServe Inc. joined as Enterprise', time: '2 min ago', type: 'company', group: 'Today' },
+  { id: 2, event: 'Test launched', detail: 'NV-1044: E-Commerce Bug Hunt (25 slots)', time: '8 min ago', type: 'test', group: 'Today' },
+  { id: 3, event: 'Payout processed', detail: '$4,200 disbursed to 84 testers', time: '15 min ago', type: 'payment', group: 'Today' },
+  { id: 4, event: 'Critical bug reported', detail: 'NV-1041: Crash on checkout — iOS 17', time: '23 min ago', type: 'alert', group: 'Today' },
+  { id: 5, event: 'Test completed', detail: 'NV-1020: Onboarding Study — 98% satisfaction', time: '1 hr ago', type: 'test', group: 'Today' },
+  { id: 6, event: '500 new testers joined', detail: 'Primary source: referral campaign', time: '2 hr ago', type: 'tester', group: 'Today' },
+  { id: 7, event: 'New company onboarded', detail: 'Fintech Corp · Professional plan', time: 'Mon', type: 'company', group: 'Earlier This Week' },
+  { id: 8, event: 'Test published', detail: 'Global QA · 48 testers requested', time: 'Mon', type: 'test', group: 'Earlier This Week' },
 ];
 
 export const topCompanies = [
