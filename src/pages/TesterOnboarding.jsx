@@ -35,16 +35,30 @@ const steps = [
 
 export default function TesterOnboarding() {
   const navigate = useNavigate();
-  const { updateUser } = useAuth();
+  const { user, updateUser } = useAuth();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({
-    firstName: '', lastName: '', country: 'United States', city: '',
-    age: '', occupation: '',
-    devices: [], osVersions: [], connection: '',
-    skills: [], yearsExp: '1-3',
-    bio: '', linkedin: '',
+  // Editing an already-complete profile should start from what's actually
+  // saved, not a blank form — otherwise re-opening this wizard silently
+  // wipes fields the user never touched this time around.
+  const [form, setForm] = useState(() => {
+    const [firstName = '', ...rest] = (user?.name || '').split(' ');
+    return {
+      firstName,
+      lastName: rest.join(' '),
+      country: user?.country || 'United States',
+      city: user?.city || '',
+      age: user?.age || '',
+      occupation: user?.occupation || '',
+      devices: user?.devices || [],
+      osVersions: user?.osVersions || [],
+      connection: user?.connection || '',
+      skills: user?.skills || [],
+      yearsExp: user?.yearsExp || '1-3',
+      bio: user?.bio || '',
+      linkedin: user?.linkedin || '',
+    };
   });
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
