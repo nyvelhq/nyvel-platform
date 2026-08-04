@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { Save, Bell, Lock, Globe, Zap, AlertCircle } from 'lucide-react';
+import { Save, Bell, Lock, Globe, Zap, AlertCircle, History } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import ToggleSwitch from '../components/ui/ToggleSwitch';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../App';
 import {
   validatePlatformName,
   validateRateLimit,
@@ -19,14 +20,28 @@ const dangerActions = {
     message: 'This removes all cached data platform-wide. Users may see a brief performance dip while the cache rebuilds.',
     confirmText: 'Clear Cache',
     successMessage: 'Cache cleared',
+    logSummary: 'Cleared platform cache',
   },
   resetAnalytics: {
     title: 'Reset Analytics?',
     message: 'This permanently deletes all analytics data collected so far. This action cannot be undone.',
     confirmText: 'Reset Analytics',
     successMessage: 'Analytics data reset',
+    logSummary: 'Reset all analytics data',
   },
 };
+
+// "maxUploadSize" -> "Max Upload Size" — same humanizer used for toggle rows below
+const humanizeKey = (key) => {
+  const spaced = key.replace(/([A-Z])/g, ' $1').trim();
+  const titled = spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  return titled.replace(/\bApi\b/g, 'API');
+};
+
+const initialLog = [
+  { id: 1, user: 'admin@nyvel.co', timestamp: '2026-07-10 09:14:02', summary: 'Enabled Advanced Reporting' },
+  { id: 2, user: 'admin@nyvel.co', timestamp: '2026-06-28 16:40:19', summary: 'Changed API Rate Limit: 500 → 1000' },
+];
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -63,11 +78,42 @@ export default function AdminSettings() {
     },
   });
 
+  // Snapshot of what's actually saved — diffed against `settings` at save
+  // time so the audit trail logs real changes, not every keystroke.
+  const [savedSettings, setSavedSettings] = useState(settings);
+  const [changeLog, setChangeLog] = useState(initialLog);
   const [saved, setSaved] = useState(false);
   const [errors, setErrors] = useState({});
   const [dangerAction, setDangerAction] = useState(null);
   const [dangerLoading, setDangerLoading] = useState(false);
   const { addToast } = useToast();
+  const { user } = useAuth();
+
+  const logChange = useCallback((summary) => {
+    setChangeLog((prev) => [
+      { id: Date.now(), user: user?.email || 'admin@nyvel.co', timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '), summary },
+      ...prev,
+    ]);
+  }, [user]);
+
+  const diffSettings = useCallback((before, after) => {
+    const changes = [];
+    for (const category of Object.keys(after)) {
+      for (const key of Object.keys(after[category])) {
+        const prevVal = before[category]?.[key];
+        const nextVal = after[category][key];
+        if (prevVal !== nextVal) {
+          const label = humanizeKey(key);
+          if (typeof nextVal === 'boolean') {
+            changes.push(`${nextVal ? 'Enabled' : 'Disabled'} ${label}`);
+          } else {
+            changes.push(`Changed ${label}: ${prevVal} → ${nextVal}`);
+          }
+        }
+      }
+    }
+    return changes;
+  }, []);
 
   const validateSettings = useCallback(() => {
     const newErrors = {};
@@ -94,10 +140,13 @@ export default function AdminSettings() {
 
   const handleSave = useCallback(() => {
     if (validateSettings()) {
+      const changes = diffSettings(savedSettings, settings);
+      changes.forEach(logChange);
+      setSavedSettings(settings);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     }
-  }, [validateSettings]);
+  }, [validateSettings, diffSettings, savedSettings, settings, logChange]);
 
   const toggleSetting = useCallback((category, key) => {
     try {
@@ -140,11 +189,12 @@ export default function AdminSettings() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 600));
       addToast(dangerActions[dangerAction].successMessage, 'success');
+      logChange(dangerActions[dangerAction].logSummary);
       setDangerAction(null);
     } finally {
       setDangerLoading(false);
     }
-  }, [dangerAction, addToast]);
+  }, [dangerAction, addToast, logChange]);
 
   // Shared row shell for toggle lists
   const settingRow = 'flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg';
@@ -404,6 +454,29 @@ export default function AdminSettings() {
               <Button variant="danger" size="sm" onClick={() => setDangerAction('resetAnalytics')}>Reset</Button>
             </div>
           </div>
+        </div>
+
+        {/* Change History */}
+        <div className="card p-6 animate-fade-up" style={{ animationDelay: '500ms' }}>
+          <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <History size={20} className="text-slate-500 dark:text-slate-400" aria-hidden="true" />
+            Change History
+          </h3>
+          {changeLog.length === 0 ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">No configuration changes yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {changeLog.map((entry) => (
+                <div key={entry.id} className={settingRow}>
+                  <div>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{entry.summary}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{entry.user}</p>
+                  </div>
+                  <span className="text-xs font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap">{entry.timestamp}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <ConfirmationModal

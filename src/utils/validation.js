@@ -254,24 +254,21 @@ export const validatePlatformName = (name) => {
  * Validate API rate limit
  */
 export const validateRateLimit = (value) => {
-  const error = validators.number(value, 1, 100000);
-  return error || 'API rate limit must be between 1 and 100,000 requests/min';
+  return validators.number(value, 1, 100000) && 'API rate limit must be between 1 and 100,000 requests/min';
 };
 
 /**
  * Validate timeout in seconds
  */
 export const validateTimeout = (value) => {
-  const error = validators.number(value, 1, 3600);
-  return error || 'Timeout must be between 1 and 3600 seconds';
+  return validators.number(value, 1, 3600) && 'Timeout must be between 1 and 3600 seconds';
 };
 
 /**
  * Validate max concurrent tests
  */
 export const validateConcurrentTests = (value) => {
-  const error = validators.number(value, 1, 100000);
-  return error || 'Concurrent tests must be between 1 and 100,000';
+  return validators.number(value, 1, 100000) && 'Concurrent tests must be between 1 and 100,000';
 };
 
 /**
