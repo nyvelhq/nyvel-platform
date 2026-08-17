@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Button from './Button';
+import { ACCESS_PASSWORD } from '../../utils/accessGate';
 
 /**
  * PasswordGate — Gate dashboard routes with a password
@@ -12,8 +13,6 @@ export default function PasswordGate({ onAuthenticate }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const CORRECT_PASSWORD = process.env.REACT_APP_PASSWORD || 'nyvel2024';
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -21,7 +20,7 @@ export default function PasswordGate({ onAuthenticate }) {
 
     await new Promise((res) => setTimeout(res, 600));
 
-    if (password === CORRECT_PASSWORD) {
+    if (password === ACCESS_PASSWORD) {
       onAuthenticate();
       setPassword('');
     } else {

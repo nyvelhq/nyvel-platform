@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
 import { duration, ease } from './motion/tokens';
+import { ACCESS_PASSWORD, ACCESS_QUERY_PARAM } from './utils/accessGate';
 
 // Pages
 // Admin dashboard pages implemented with comprehensive validation and error handling
@@ -89,13 +90,14 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // Single source of truth for "has this session cleared the site-wide
-  // gate" — shared by PasswordGate's own password entry AND by picking a
-  // role on LoginPage. Previously LoginPage's login() never set this flag,
-  // so completing sign-in bounced straight back into PasswordGate.
+  // Single source of truth for "has this device cleared the site-wide
+  // gate" — shared by PasswordGate's own password entry, the ?key= link
+  // bypass, AND by picking a role on LoginPage. Stored in localStorage
+  // (not sessionStorage) so beta testers/investors sent a private link
+  // don't have to re-clear the gate every time they reopen the tab.
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
-      return sessionStorage.getItem(AUTH_FLAG_KEY) === 'true';
+      return localStorage.getItem(AUTH_FLAG_KEY) === 'true';
     } catch {
       return false;
     }
@@ -116,19 +118,19 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(true);
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-      sessionStorage.setItem(AUTH_FLAG_KEY, 'true');
+      localStorage.setItem(AUTH_FLAG_KEY, 'true');
     } catch {
-      // sessionStorage unavailable — auth will not survive refresh
+      // storage unavailable — auth will not survive refresh
     }
   };
 
-  // Entering the site-wide password on PasswordGate also counts as
-  // clearing the gate — same flag login() sets, so neither path has to
-  // satisfy the other a second time.
+  // Entering the site-wide password on PasswordGate, or landing on a
+  // ?key=... link, also counts as clearing the gate — same flag login()
+  // sets, so no path has to satisfy the others a second time.
   const authenticate = () => {
     setIsAuthenticated(true);
     try {
-      sessionStorage.setItem(AUTH_FLAG_KEY, 'true');
+      localStorage.setItem(AUTH_FLAG_KEY, 'true');
     } catch {
       // no-op
     }
@@ -179,7 +181,29 @@ const guarded = (role, element) => (
 // Password gate wrapper that checks routes
 function AppRoutes() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, authenticate } = useAuth();
+
+  // Private-link bypass: a shareable URL like /?key=<password> clears the
+  // gate automatically (for beta testers/investors) without exposing the
+  // routes publicly. The key is stripped from the URL immediately after
+  // so it doesn't linger in the address bar, browser history, or get
+  // re-shared accidentally.
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const params = new URLSearchParams(location.search);
+    const key = params.get(ACCESS_QUERY_PARAM);
+    if (key && key === ACCESS_PASSWORD) {
+      authenticate();
+      params.delete(ACCESS_QUERY_PARAM);
+      const cleanSearch = params.toString();
+      navigate(
+        { pathname: location.pathname, search: cleanSearch ? `?${cleanSearch}` : '' },
+        { replace: true }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search, isAuthenticated]);
 
   // Public routes that don't require password
   const publicRoutes = ['/', '/login'];
