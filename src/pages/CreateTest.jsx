@@ -123,24 +123,36 @@ export default function CreateTest() {
 
   const handleLaunch = async () => {
     setLaunching(true);
-    await new Promise((res) => setTimeout(res, 1100));
-
-    const selectedType = testTypeOptions.find((t) => t.id === form.type);
-    addCompanyTest({
-      id: `NV-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: form.name,
-      type: selectedType?.canonical || 'Bug Hunt',
-      status: 'Active',
-      testers: 0,
-      target: form.testerCount,
-      dueDate: form.endDate,
-      issues: 0,
-      criticalIssues: 0,
-      platform: form.platforms,
+    setErrors((prev) => {
+      const { launch: _, ...rest } = prev;
+      return rest;
     });
 
-    setLaunchedName(form.name || 'Your test');
+    const selectedType = testTypeOptions.find((t) => t.id === form.type);
+    const { error } = await addCompanyTest({
+      name: form.name,
+      type: selectedType?.canonical || 'Bug Hunt',
+      description: form.description,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      testerCount: form.testerCount,
+      platforms: form.platforms,
+      expertise: form.expertise,
+      ageRange: form.ageRange,
+      countries: form.countries,
+      compensation: form.compensation,
+      nda: form.nda,
+      briefing: form.briefing,
+    });
+
     setLaunching(false);
+
+    if (error) {
+      setErrors((prev) => ({ ...prev, launch: 'Could not launch this test. Please try again.' }));
+      return;
+    }
+
+    setLaunchedName(form.name || 'Your test');
     setLaunched(true);
   };
 
@@ -437,6 +449,10 @@ export default function CreateTest() {
               <p className="font-semibold mb-1">Ready to launch?</p>
               <p className="text-brand-700 dark:text-brand-300">Your test will go live immediately and testers will be notified within minutes. You can pause or modify the test at any time from your dashboard.</p>
             </div>
+
+            {errors.launch && (
+              <p className="text-sm text-error-500 dark:text-error-400" role="alert">{errors.launch}</p>
+            )}
 
             <div className="flex justify-between">
               <Button variant="secondary" onClick={() => goToStep(2)}>Back</Button>
