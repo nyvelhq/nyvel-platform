@@ -58,7 +58,7 @@ const roleConfig = {
  * Sidebar — semantic navigation component
  */
 function Sidebar({ isOpen, onClose, isMobile = false }) {
-  const { user, logout, login } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -68,13 +68,6 @@ function Sidebar({ isOpen, onClose, isMobile = false }) {
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
-
-  const switchRole = (role) => {
-    login(role);
-    const destinations = { company: '/company/dashboard', tester: '/tester/dashboard', admin: '/admin/dashboard' };
-    navigate(destinations[role]);
-    onClose();
   };
 
   return (
@@ -130,25 +123,6 @@ function Sidebar({ isOpen, onClose, isMobile = false }) {
 
       {/* User section */}
       <div className="px-3 py-4 border-t border-slate-800 dark:border-slate-800 flex-shrink-0 space-y-3">
-        {/* Role switcher for MVP demo */}
-        <div className="px-3 py-2 rounded-lg bg-slate-800/60 dark:bg-slate-800/40">
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-widest mb-2">
-            Demo: Switch Role
-          </p>
-          <div className="flex gap-1">
-            {['company', 'tester', 'admin'].map((r) => (
-              <button
-                key={r}
-                onClick={() => switchRole(r)}
-                className={`flex-1 py-1 text-xs rounded-md font-medium transition-all capitalize
-                  ${user?.role === r ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700 dark:hover:bg-slate-600'}`}
-              >
-                {r === 'company' ? '🏢' : r === 'tester' ? '👤' : '🛡️'}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* User profile */}
         <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-slate-800 dark:hover:bg-slate-800 cursor-pointer group transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">

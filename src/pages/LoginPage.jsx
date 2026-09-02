@@ -1,63 +1,56 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Briefcase, User, Shield, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import NyvelMark from '../components/ui/NyvelMark';
 import { useAuth } from '../App';
 import Button from '../components/ui/Button';
 
-const roles = [
-  {
-    id: 'company',
-    label: 'Company',
-    sub: 'Run tests & get feedback',
-    icon: Briefcase,
-    color: 'border-brand-500 bg-brand-50 text-brand-700',
-    highlight: 'bg-brand-600 text-white',
-    dest: '/company/dashboard',
-  },
-  {
-    id: 'tester',
-    label: 'Beta Tester',
-    sub: 'Join tests & earn money',
-    icon: User,
-    color: 'border-cyan-500 bg-cyan-50 text-cyan-700',
-    highlight: 'bg-accent-500 text-white',
-    dest: '/tester/dashboard',
-  },
-  {
-    id: 'admin',
-    label: 'Admin',
-    sub: 'Manage the platform',
-    icon: Shield,
-    color: 'border-amber-500 bg-amber-50 text-amber-700',
-    highlight: 'bg-amber-500 text-white',
-    dest: '/admin/dashboard',
-  },
-];
+const dashboardByRole = {
+  company: '/company/dashboard',
+  tester: '/tester/dashboard',
+  admin: '/admin/dashboard',
+};
 
 export default function LoginPage() {
-  const [selectedRole, setSelectedRole] = useState('company');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [forgotNotice, setForgotNotice] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
 
-  const enterDemo = async () => {
-    setLoading(true);
-    await new Promise((res) => setTimeout(res, 800));
-    login(selectedRole);
-    const dest = roles.find((r) => r.id === selectedRole)?.dest || '/company/dashboard';
-    navigate(dest);
-    // Testers land on the dashboard, where a banner guides them to
-    // complete onboarding — mirroring a real first-login experience.
-  };
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+
+  const { signIn, requestPasswordReset } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await enterDemo();
+    setError('');
+    setLoading(true);
+    const { error: signInError, role } = await signIn(email, password);
+    setLoading(false);
+    if (signInError) {
+      setError('Incorrect email or password. Please try again.');
+      return;
+    }
+    navigate(dashboardByRole[role] || '/tester/dashboard');
+  };
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotLoading(true);
+    const { error: resetError } = await requestPasswordReset(forgotEmail);
+    setForgotLoading(false);
+    if (resetError) {
+      setForgotError('Something went wrong. Please try again.');
+      return;
+    }
+    setForgotSent(true);
   };
 
   return (
@@ -108,106 +101,133 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <h1 className="font-display text-2xl font-bold text-white mb-1">Welcome back</h1>
-          <p className="text-slate-400 text-sm mb-8">Sign in to your Nyvel account</p>
-
-          {/* Role selector */}
-          <div className="mb-6">
-            <label className="block text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">
-              Sign in as
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              {roles.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setSelectedRole(id)}
-                  className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 text-xs font-semibold transition-all duration-150
-                    ${selectedRole === id
-                      ? 'border-brand-500 bg-brand-500/10 text-brand-400'
-                      : 'border-white/10 text-slate-500 hover:border-white/20 hover:text-slate-300'
-                    }`}
-                >
-                  <Icon size={18} />
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="form-label text-slate-300">Email address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                className="form-input bg-slate-900 border-white/10 text-white placeholder-slate-600 focus:ring-brand-500"
-                required
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-1.5 items-center relative">
-                <label className="form-label text-slate-300 mb-0">Password</label>
+          {showForgot ? (
+            forgotSent ? (
+              <div>
+                <div className="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center mb-5">
+                  <CheckCircle2 size={24} className="text-brand-400" />
+                </div>
+                <h1 className="font-display text-2xl font-bold text-white mb-1">Check your email</h1>
+                <p className="text-slate-400 text-sm mb-8">
+                  If an account exists for <span className="text-slate-300">{forgotEmail}</span>, we've
+                  sent a link to reset your password.
+                </p>
                 <button
                   type="button"
-                  onClick={() => setForgotNotice((v) => !v)}
-                  className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
+                  onClick={() => {
+                    setShowForgot(false);
+                    setForgotSent(false);
+                    setForgotEmail('');
+                  }}
+                  className="text-sm text-brand-400 hover:text-brand-300 font-medium transition-colors"
                 >
-                  Forgot password?
+                  Back to sign in
                 </button>
-                {forgotNotice && (
-                  <div className="absolute right-0 top-full mt-1 w-64 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-slate-300 shadow-lg z-10">
-                    No reset needed — this is an MVP demo, any password works.
+              </div>
+            ) : (
+              <div>
+                <h1 className="font-display text-2xl font-bold text-white mb-1">Reset your password</h1>
+                <p className="text-slate-400 text-sm mb-8">
+                  Enter your email and we'll send you a link to reset it.
+                </p>
+                <form onSubmit={handleForgotSubmit} className="space-y-4">
+                  <div>
+                    <label className="form-label text-slate-300">Email address</label>
+                    <input
+                      type="email"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      className="form-input bg-slate-900 border-white/10 text-white placeholder-slate-600 focus:ring-brand-500"
+                      required
+                    />
                   </div>
-                )}
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="form-input bg-slate-900 border-white/10 text-white placeholder-slate-600 pr-11"
-                  required
-                />
+                  {forgotError && (
+                    <p className="text-sm text-error-400" role="alert">{forgotError}</p>
+                  )}
+                  <Button type="submit" className="w-full mt-2" size="lg" loading={forgotLoading}>
+                    {forgotLoading ? 'Sending...' : 'Send reset link'}
+                  </Button>
+                </form>
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                  onClick={() => setShowForgot(false)}
+                  className="mt-6 text-sm text-slate-500 hover:text-slate-300 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  Back to sign in
                 </button>
               </div>
-            </div>
+            )
+          ) : (
+            <>
+              <h1 className="font-display text-2xl font-bold text-white mb-1">Welcome back</h1>
+              <p className="text-slate-400 text-sm mb-8">Sign in to your Nyvel account</p>
 
-            <Button
-              type="submit"
-              className="w-full mt-2"
-              size="lg"
-              loading={loading}
-              iconRight={!loading && <ArrowRight size={18} />}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="form-label text-slate-300">Email address</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    className="form-input bg-slate-900 border-white/10 text-white placeholder-slate-600 focus:ring-brand-500"
+                    required
+                    autoComplete="email"
+                  />
+                </div>
 
-          <p className="mt-6 text-center text-sm text-slate-500">
-            Don't have an account?{' '}
-            <button
-              type="button"
-              onClick={enterDemo}
-              className="text-brand-400 hover:text-brand-300 font-medium transition-colors"
-            >
-              Get started free
-            </button>
-          </p>
+                <div>
+                  <div className="flex justify-between mb-1.5 items-center">
+                    <label className="form-label text-slate-300 mb-0">Password</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgot(true)}
+                      className="text-xs text-brand-400 hover:text-brand-300 transition-colors"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="form-input bg-slate-900 border-white/10 text-white placeholder-slate-600 pr-11"
+                      required
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
 
-          <p className="mt-8 text-center text-xs text-slate-600">
-            💡 MVP Demo: any email/password works — just select a role above
-          </p>
+                {error && (
+                  <p className="text-sm text-error-400" role="alert">{error}</p>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full mt-2"
+                  size="lg"
+                  loading={loading}
+                  iconRight={!loading && <ArrowRight size={18} />}
+                >
+                  {loading ? 'Signing in...' : 'Sign In'}
+                </Button>
+              </form>
+
+              <p className="mt-8 text-center text-xs text-slate-600">
+                Nyvel accounts are set up by your organization's admin. Contact them if you need access.
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

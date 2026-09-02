@@ -3,11 +3,13 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
 import { duration, ease } from './motion/tokens';
 import { ACCESS_PASSWORD, ACCESS_QUERY_PARAM } from './utils/accessGate';
+import { supabase } from './lib/supabaseClient';
 
 // Pages
 // Admin dashboard pages implemented with comprehensive validation and error handling
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import ResetPassword from './pages/ResetPassword';
 import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyTests from './pages/CompanyTests';
 import CreateTest from './pages/CreateTest';
@@ -38,63 +40,67 @@ export const useAuth = () => {
   return ctx;
 };
 
-const STORAGE_KEY = 'nyvel_user';
-const ROLE_STORAGE_KEY = 'nyvel_users_by_role';
 const AUTH_FLAG_KEY = 'nyvel_authenticated';
+// Onboarding/profile fields that live only in the client for now (bio,
+// skills, devices, etc.) — they aren't columns on public.profiles yet
+// (that table only has id/name/email/role/client_id, see supabase/schema.sql).
+// Cached per-user in sessionStorage so TesterOnboarding/TesterProfile keep
+// working unchanged until a later increment adds real columns for them.
+const EXTRA_STORAGE_PREFIX = 'nyvel_profile_extra_';
 
-const mockUsers = {
-  company: {
-    id: 'usr_comp_001',
-    name: 'Sarah Chen',
-    email: 'sarah@techcorp.io',
-    role: 'company',
-    company: 'TechCorp Inc.',
-    avatar: null,
-    plan: 'Professional',
-  },
-  tester: {
-    id: 'usr_test_042',
-    name: 'Marcus Johnson',
-    email: 'marcus@email.com',
-    role: 'tester',
-    avatar: null,
-    rating: 4.9,
-    testsCompleted: 127,
-    profileComplete: false,
-  },
-  admin: {
-    id: 'usr_admin_001',
-    name: 'Nyvel Admin',
-    email: 'admin@nyvel.co',
-    role: 'admin',
-    avatar: null,
-  },
+const loadExtra = (uid) => {
+  if (!uid) return {};
+  try {
+    const raw = sessionStorage.getItem(EXTRA_STORAGE_PREFIX + uid);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveExtra = (uid, extra) => {
+  if (!uid) return;
+  try {
+    sessionStorage.setItem(EXTRA_STORAGE_PREFIX + uid, JSON.stringify(extra));
+  } catch {
+    // sessionStorage unavailable — extra profile fields will not survive refresh
+  }
+};
+
+// Build the app-facing user object from a Supabase auth user + their
+// public.profiles row. role/client_id come from the server (F-02 — never
+// chosen by the client), everything else is either the profile row or the
+// locally-cached "extra" fields described above.
+const buildUser = (authUser, profileRow) => ({
+  id: authUser.id,
+  email: profileRow?.email || authUser.email,
+  name: profileRow?.name || '',
+  role: profileRow?.role || 'tester',
+  clientId: profileRow?.client_id || null,
+  ...loadExtra(authUser.id),
+});
+
+const fetchProfile = async (userId) => {
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  if (error) {
+    console.error('Failed to load profile:', error.message);
+    return null;
+  }
+  return data;
 };
 
 export function AuthProvider({ children }) {
-  const [usersByRole, setUsersByRole] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(ROLE_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : { ...mockUsers };
-    } catch {
-      return { ...mockUsers };
-    }
-  });
-
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
+  // True until the initial session check (getSession) resolves, so
+  // ProtectedRoute doesn't bounce an already-signed-in user to /login
+  // just because Supabase hasn't answered yet on first paint/refresh.
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Single source of truth for "has this device cleared the site-wide
   // gate" — shared by PasswordGate's own password entry, the ?key= link
-  // bypass, AND by picking a role on LoginPage. Stored in localStorage
-  // (not sessionStorage) so beta testers/investors sent a private link
-  // don't have to re-clear the gate every time they reopen the tab.
+  // bypass, AND a successful sign-in. Stored in localStorage (not
+  // sessionStorage) so beta testers/investors sent a private link don't
+  // have to re-clear the gate every time they reopen the tab.
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     try {
       return localStorage.getItem(AUTH_FLAG_KEY) === 'true';
@@ -103,30 +109,37 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const persistUsersByRole = (next) => {
-    setUsersByRole(next);
-    try {
-      sessionStorage.setItem(ROLE_STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // sessionStorage unavailable — role state will not survive refresh
-    }
-  };
+  useEffect(() => {
+    let mounted = true;
 
-  const login = (role) => {
-    const nextUser = usersByRole[role] || mockUsers[role];
-    setUser(nextUser);
-    setIsAuthenticated(true);
-    try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-      localStorage.setItem(AUTH_FLAG_KEY, 'true');
-    } catch {
-      // storage unavailable — auth will not survive refresh
-    }
-  };
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user && mounted) {
+        const profile = await fetchProfile(session.user.id);
+        if (mounted) setUser(buildUser(session.user, profile));
+      }
+      if (mounted) setAuthLoading(false);
+    };
+    init();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      if (event === 'SIGNED_OUT' || !session) {
+        setUser(null);
+        return;
+      }
+      const profile = await fetchProfile(session.user.id);
+      if (mounted) setUser(buildUser(session.user, profile));
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   // Entering the site-wide password on PasswordGate, or landing on a
-  // ?key=... link, also counts as clearing the gate — same flag login()
-  // sets, so no path has to satisfy the others a second time.
+  // ?key=... link, also counts as clearing the gate.
   const authenticate = () => {
     setIsAuthenticated(true);
     try {
@@ -136,30 +149,72 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // no-op
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error };
+    let role = null;
+    if (data?.session?.user) {
+      const profile = await fetchProfile(data.session.user.id);
+      role = profile?.role || 'tester';
+      setUser(buildUser(data.session.user, profile));
     }
+    authenticate();
+    return { error: null, role };
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  const requestPasswordReset = async (email) => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { error };
+  };
+
+  const updatePassword = async (newPassword) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    return { error };
   };
 
   const updateUser = (patch) => {
     setUser((u) => {
+      if (!u) return u;
       const next = { ...u, ...patch };
-      try {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // no-op
-      }
-      persistUsersByRole({ ...usersByRole, [next.role]: next });
+      const { id, email, name, role, clientId, ...extra } = next;
+      saveExtra(id, extra);
       return next;
     });
+    // Best-effort sync of the one editable field that does live server-side —
+    // display name. Everything else in `patch` is a local-only extra field
+    // (see buildUser/loadExtra above) until those columns exist.
+    if (patch.name && user?.id) {
+      supabase
+        .from('profiles')
+        .update({ name: patch.name })
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) console.error('Failed to sync name to profile:', error.message);
+        });
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, updateUser, authenticate }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        authLoading,
+        isAuthenticated,
+        signIn,
+        logout,
+        updateUser,
+        authenticate,
+        requestPasswordReset,
+        updatePassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -167,7 +222,10 @@ export function AuthProvider({ children }) {
 
 // Protected Route wrapper
 function ProtectedRoute({ children, role }) {
-  const { user } = useAuth();
+  const { user, authLoading } = useAuth();
+  // Session restore (getSession + profile fetch) is still in flight — wait
+  // rather than bouncing a signed-in user to /login on refresh.
+  if (authLoading) return null;
   if (!user) return <Navigate to="/login" replace />;
   if (role && user.role !== role) return <Navigate to={`/${user.role}/dashboard`} replace />;
   return children;
@@ -205,8 +263,10 @@ function AppRoutes() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search, isAuthenticated]);
 
-  // Public routes that don't require password
-  const publicRoutes = ['/', '/login'];
+  // Public routes that don't require password. /reset-password is here too:
+  // it's reached via a Supabase-emailed recovery link, and a tester/client
+  // clicking that link shouldn't have to also clear the marketing gate first.
+  const publicRoutes = ['/', '/login', '/reset-password'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
   const needsAuth = !isAuthenticated && !isPublicRoute;
 
@@ -232,6 +292,7 @@ function AppRoutes() {
         {/* Marketing */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Company routes */}
         <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
