@@ -13,10 +13,21 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+// createClient throws synchronously if either value is falsy/malformed —
+// that happens at module-load time, before React ever mounts, so it takes
+// down the ENTIRE app (landing page included) with a blank white screen,
+// not just the login flow. Fall back to a syntactically valid placeholder
+// so the app always boots; auth calls simply fail until real env vars are
+// set (locally in .env.local, or in Vercel -> Project Settings ->
+// Environment Variables for deployed environments).
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-anon-key-not-real',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  }
+);
