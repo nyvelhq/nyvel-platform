@@ -35,6 +35,7 @@ const adminNav = [
   { label: 'Overview', icon: LayoutDashboard, href: '/admin/dashboard' },
   { label: 'Users', icon: Users, href: '/admin/users' },
   { label: 'Tests', icon: FlaskConical, href: '/admin/tests' },
+  { label: 'Payouts', icon: DollarSign, href: '/admin/payouts' },
   { label: 'Reports', icon: BarChart3, href: '/admin/reports' },
   { label: 'Security', icon: Shield, href: '/admin/security' },
   { label: 'Settings', icon: Settings, href: '/admin/settings' },

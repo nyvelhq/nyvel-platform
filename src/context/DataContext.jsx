@@ -344,6 +344,32 @@ export function DataProvider({ children }) {
     return { error: null };
   };
 
+  // Admin marks a tester's flat per-test compensation as paid (C-06).
+  // Upserts on (test_id, tester_id) — the payouts table's own unique
+  // constraint — so this both creates the first payout record for a pair
+  // and would no-op/overwrite if called again, though the UI only offers
+  // this action while status is still 'pending' (payouts are meant to be
+  // append-only once paid, per the BA spec). Admin-only via RLS
+  // ("payouts: admin full access" in schema.sql) — no new migration needed.
+  const markPayoutPaid = async ({ testId, testerId, amount }) => {
+    const { error } = await supabase.from('payouts').upsert(
+      {
+        test_id: testId,
+        tester_id: testerId,
+        amount,
+        status: 'paid',
+        paid_by: user?.id,
+        paid_at: new Date().toISOString(),
+      },
+      { onConflict: 'test_id,tester_id' }
+    );
+    if (error) {
+      console.error('markPayoutPaid:', error.message);
+      return { error };
+    }
+    return { error: null };
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -357,6 +383,7 @@ export function DataProvider({ children }) {
         declineApplication,
         submitFinding,
         triageFinding,
+        markPayoutPaid,
         dataLoading,
         refreshData: reloadAll,
       }}
