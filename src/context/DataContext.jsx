@@ -275,6 +275,26 @@ export function DataProvider({ children }) {
     return { error: null };
   };
 
+  // Company decides on a pending application (C-03). RLS requires the
+  // signed-in user's client_id to match the application's test (see
+  // migration 0003) — a company can only decide on applicants to its own
+  // tests. Refreshes companyTests afterward so the "testers accepted"
+  // count on My Tests/Dashboard stays in sync.
+  const decideApplication = async (applicationId, decision) => {
+    const { error } = await supabase
+      .from('applications')
+      .update({ status: decision, decided_by: user?.id, decided_at: new Date().toISOString() })
+      .eq('id', applicationId);
+    if (error) {
+      console.error(`decideApplication (${decision}):`, error.message);
+      return { error };
+    }
+    await loadCompanyTests();
+    return { error: null };
+  };
+  const acceptApplication = (applicationId) => decideApplication(applicationId, 'accepted');
+  const declineApplication = (applicationId) => decideApplication(applicationId, 'declined');
+
   return (
     <DataContext.Provider
       value={{
@@ -284,6 +304,8 @@ export function DataProvider({ children }) {
         myApplications,
         applyToTest,
         hasApplied,
+        acceptApplication,
+        declineApplication,
         dataLoading,
         refreshData: reloadAll,
       }}

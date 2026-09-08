@@ -13,6 +13,7 @@ import ResetPassword from './pages/ResetPassword';
 import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyTests from './pages/CompanyTests';
 import CreateTest from './pages/CreateTest';
+import CompanyTestDetail from './pages/CompanyTestDetail';
 import TesterDashboard from './pages/TesterDashboard';
 import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
@@ -298,7 +299,7 @@ function AppRoutes() {
         <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
         <Route path="/company/create-test" element={guarded('company', <CreateTest />)} />
         <Route path="/company/tests" element={guarded('company', <CompanyTests />)} />
-        <Route path="/company/tests/:id" element={guarded('company', <ComingSoon title="Test Details" />)} />
+        <Route path="/company/tests/:id" element={guarded('company', <CompanyTestDetail />)} />
         <Route path="/company/testers" element={guarded('company', <ComingSoon title="Testers" />)} />
         <Route path="/company/reports" element={guarded('company', <ComingSoon title="Reports" />)} />
         <Route path="/company/settings" element={guarded('company', <ComingSoon title="Settings" />)} />
