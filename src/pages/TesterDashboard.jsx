@@ -359,7 +359,7 @@ export default function TesterDashboard() {
                       <td className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
                       <td>
                         <button
-                          onClick={() => navigate(`/tester/applications/${app.id}`)}
+                          onClick={() => navigate(`/tester/tests/${app.sourceTestId}`)}
                           className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300"
                         >
                           <ExternalLink size={14} />

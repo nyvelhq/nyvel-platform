@@ -14,6 +14,7 @@ import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyTests from './pages/CompanyTests';
 import CreateTest from './pages/CreateTest';
 import CompanyTestDetail from './pages/CompanyTestDetail';
+import TesterTestDetail from './pages/TesterTestDetail';
 import TesterDashboard from './pages/TesterDashboard';
 import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
@@ -313,7 +314,7 @@ function AppRoutes() {
             or bookmarked hit on the old standalone routes there instead
             of showing a placeholder for something that already works. */}
         <Route path="/tester/tests" element={<Navigate to="/tester/dashboard?tab=available" replace />} />
-        <Route path="/tester/tests/:id" element={guarded('tester', <ComingSoon title="Test Details" />)} />
+        <Route path="/tester/tests/:id" element={guarded('tester', <TesterTestDetail />)} />
         <Route path="/tester/applications" element={<Navigate to="/tester/dashboard?tab=my" replace />} />
         <Route path="/tester/applications/:id" element={guarded('tester', <ComingSoon title="Application Details" />)} />
         <Route path="/tester/earnings" element={<Navigate to="/tester/dashboard?tab=earnings" replace />} />

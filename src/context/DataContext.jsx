@@ -295,6 +295,55 @@ export function DataProvider({ children }) {
   const acceptApplication = (applicationId) => decideApplication(applicationId, 'accepted');
   const declineApplication = (applicationId) => decideApplication(applicationId, 'declined');
 
+  // Tester submits a finding against a test they have an ACCEPTED
+  // application for (C-04). RLS enforces the accepted-application gate
+  // server-side (see schema.sql's "findings: accepted tester can submit")
+  // so a rejected/pending tester's insert is refused there even if this
+  // ever got called out of turn.
+  const submitFinding = async ({ testId, title, description, severity }) => {
+    if (!user?.id) return { error: new Error('Not signed in.') };
+    const { data, error } = await supabase
+      .from('findings')
+      .insert({
+        test_id: testId,
+        tester_id: user.id,
+        title,
+        description,
+        severity,
+      })
+      .select()
+      .single();
+    if (error) {
+      console.error('submitFinding:', error.message);
+      return { error };
+    }
+    return { error: null, finding: data };
+  };
+
+  // Company triages a submitted finding (C-05) — accept, reject, or ask for
+  // more info. review_reason is required by the table's own CHECK
+  // constraint for reject/more_info (see migration 0004), so the caller
+  // must pass one for those two decisions. Refreshes companyTests
+  // afterward so an accepted finding's severity/issue counts update on My
+  // Tests/Dashboard the same way acceptApplication refreshes tester counts.
+  const triageFinding = async (findingId, decision, reviewReason) => {
+    const { error } = await supabase
+      .from('findings')
+      .update({
+        status: decision,
+        review_reason: reviewReason || null,
+        reviewed_by: user?.id,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('id', findingId);
+    if (error) {
+      console.error(`triageFinding (${decision}):`, error.message);
+      return { error };
+    }
+    await loadCompanyTests();
+    return { error: null };
+  };
+
   return (
     <DataContext.Provider
       value={{
@@ -306,6 +355,8 @@ export function DataProvider({ children }) {
         hasApplied,
         acceptApplication,
         declineApplication,
+        submitFinding,
+        triageFinding,
         dataLoading,
         refreshData: reloadAll,
       }}
