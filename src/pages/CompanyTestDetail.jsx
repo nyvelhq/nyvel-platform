@@ -38,7 +38,11 @@ export default function CompanyTestDetail() {
     setLoading(true);
     const { data, error } = await supabase
       .from('applications')
-      .select('id, status, applied_at, tester_id, profiles(name, email)')
+      // applications has two FKs into profiles (tester_id, decided_by) —
+      // PostgREST can't guess which one to embed, so it must be named
+      // explicitly (as the referencing column) or every query 400s with
+      // "more than one relationship was found for 'applications' and 'profiles'".
+      .select('id, status, applied_at, tester_id, profiles!tester_id(name, email)')
       .eq('test_id', id)
       .order('applied_at', { ascending: false });
 
