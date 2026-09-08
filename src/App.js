@@ -23,6 +23,7 @@ import AdminUsers from './pages/AdminUsers';
 import AdminTests from './pages/AdminTests';
 import AdminReports from './pages/AdminReports';
 import AdminSecurity from './pages/AdminSecurity';
+import AdminPayouts from './pages/AdminPayouts';
 import AdminSettings from './pages/AdminSettings';
 import ComingSoon from './pages/ComingSoon';
 
@@ -326,6 +327,7 @@ function AppRoutes() {
         <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
         <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
         <Route path="/admin/security" element={guarded('admin', <AdminSecurity />)} />
+        <Route path="/admin/payouts" element={guarded('admin', <AdminPayouts />)} />
         <Route path="/admin/settings" element={guarded('admin', <AdminSettings />)} />
 
         {/* Fallback */}
