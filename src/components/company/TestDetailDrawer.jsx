@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 import { StatusBadge } from '../ui/Badge';
 import DetailDrawer from '../admin/DetailDrawer';
@@ -9,6 +10,7 @@ import DetailDrawer from '../admin/DetailDrawer';
  * page so a row click means the same thing in both places.
  */
 export default function TestDetailDrawer({ test, onClose }) {
+  const navigate = useNavigate();
   return (
     <DetailDrawer
       open={test !== null}
@@ -52,9 +54,21 @@ export default function TestDetailDrawer({ test, onClose }) {
           : []
       }
       footer={
-        <Button variant="secondary" onClick={onClose}>
-          Close
-        </Button>
+        <>
+          <Button variant="secondary" onClick={onClose}>
+            Close
+          </Button>
+          {test && (
+            <Button
+              onClick={() => {
+                onClose();
+                navigate(`/company/tests/${test.id}`);
+              }}
+            >
+              Manage Applicants
+            </Button>
+          )}
+        </>
       }
     />
   );
