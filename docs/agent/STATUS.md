@@ -11,7 +11,11 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
 - DONE and live: real Supabase auth with a 7-table schema and RLS; DataContext
   wired to Supabase; C-03 company application review; C-04/C-05 tester
   findings plus company triage; C-06 admin payouts (append-only, no unmark);
-  the New Test creation "age_range" schema-cache fix (PR #13, merged).
+  F-08 admin dashboard metrics now real Supabase queries (PR #14, merged).
+- New Test creation's "age_range" schema-cache error is fixed in code
+  (PR #13, merged) pending Eben running
+  `supabase/migrations/0005_reassert_test_fields.sql` against production if
+  it hasn't been already.
 - Seed accounts: `test-company@nyvel.co` (company), `test-tester@nyvel.co`
   (tester), `testeadu@gmail.com` (admin).
 - Not yet exercised live: the Reject/More Info path in finding triage.
@@ -20,8 +24,8 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
 
 1. ~~**New Test creation error**~~ — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/13_
-2. **F-08** — replace the fabricated admin dashboard metrics with real
-   Supabase queries. — _status: in PR —
+2. ~~**F-08**~~ — replace the fabricated admin dashboard metrics with real
+   Supabase queries. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
@@ -54,6 +58,26 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
   (`src/context/DataContext.test.jsx`) that pins the exact column set
   `addCompanyTest` is allowed to write, so a future rename/typo fails CI
   instead of shipping. PR: https://github.com/nyvelhq/nyvel-platform/pull/13
+- **F-08** — `AdminDashboard.jsx` (Platform Overview) rendered
+  `src/data/mockData.js`'s fabricated `adminStats`/`platformGrowthData`/
+  `recentPlatformActivity`/`topCompanies` (hardcoded totals like 412,847
+  users, a 99.97% "uptime", and a 4.8/5.0 "tester satisfaction score" with
+  no backing data anywhere in the schema). Replaced with real Supabase
+  queries against `profiles`/`tests`/`payouts`/`findings`/`clients`/
+  `applications`: real user/test counts, real $ paid out (from the C-06
+  payouts table), real accepted-findings counts, a real cumulative growth
+  chart, a real recent-activity feed, and real top-companies-by-amount-paid
+  table. Metrics with no real data source (uptime, satisfaction score) were
+  removed rather than replaced with a different guess — "Findings Awaiting
+  Triage" and "Test Fill Rate" (accepted testers vs. target) stand in as
+  real, honest alternatives. Aggregation logic extracted into a pure
+  `deriveAdminStats()` function with 6 unit tests
+  (`src/pages/AdminDashboard.test.js`). Only touches `AdminDashboard.jsx`
+  itself — `AdminUsers.jsx`/`AdminTests.jsx`/etc. still use mock data and
+  are a separate, larger follow-up (not in this backlog yet). Scope: only
+  `src/pages/AdminDashboard.jsx` — no schema, RLS, or migration changes
+  (admin already has full-access RLS on every table this page reads).
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/14
 - **Fintech & Payments marketing copy** — removed the "Non-sandbox payment
   testing with real-world financial flows" claim from
   `src/data/mockData.js` (`testTypes`, rendered on the public landing page's
