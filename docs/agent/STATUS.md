@@ -23,7 +23,8 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
    'tests' in the schema cache` (400). — _status: merged —
    https://github.com/nyvelhq/nyvel-platform/pull/13_
 2. **F-08** — replace the fabricated admin dashboard metrics with real
-   Supabase queries. — _status: in PR (this PR)_
+   Supabase queries. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
    (compliance risk). — _status: not started_
@@ -75,3 +76,4 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
   are a separate, larger follow-up (not in this backlog yet). Scope: only
   `src/pages/AdminDashboard.jsx` — no schema, RLS, or migration changes
   (admin already has full-access RLS on every table this page reads).
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/14
