@@ -49,7 +49,8 @@ _Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
    DataContext functions. — _status: in PR —
    https://github.com/nyvelhq/nyvel-platform/pull/17_
 5. ~~**F-05**~~ — GitHub Actions CI that runs install, test and build on
-   every PR. — _status: already done, no code change needed — see PR log_
+   every PR. — _status: already done, no code change needed —
+   https://github.com/nyvelhq/nyvel-platform/pull/18_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
    trivial). — _status: not started_
 7. **F-07** — STRIDE threat model doc. — _status: not started_
@@ -137,3 +138,4 @@ _Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
   "Eben must do" below. `deploy.yml` (a separate Vercel-deploy-notification
   workflow, largely redundant with Vercel's own GitHub integration) exists
   too but wasn't in scope for this item.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/18
