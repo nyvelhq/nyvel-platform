@@ -25,7 +25,7 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
    https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
-   (compliance risk). — _status: in PR (this PR)_
+   (compliance risk). — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/15_
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
    DataContext functions. — _status: not started_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
@@ -63,4 +63,4 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
   asserts the identical non-sandbox/live-money capability — left in scope
   since it's a one-line copy fix addressing the same compliance risk. No
   other public marketing copy (Navbar, Footer, Features, Testimonials) makes
-  a similar claim. PR: (this PR)
+  a similar claim. PR: https://github.com/nyvelhq/nyvel-platform/pull/15
