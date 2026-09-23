@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
+_Last updated: 2026-09-23 by the orchestrator (F-06)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -52,7 +52,8 @@ _Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
    every PR. — _status: already done, no code change needed —
    https://github.com/nyvelhq/nyvel-platform/pull/18_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
-   trivial). — _status: not started_
+   trivial). — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/19_
 7. **F-07** — STRIDE threat model doc. — _status: not started_
 
 ### Blocked (skip)
@@ -135,7 +136,46 @@ _Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
   future runs. One real gap I can't fix from a PR: I have no way to verify
   whether these checks are set as "required" in main's branch protection
   rules (that's a repo Settings change, not a code change) — flagged under
-  "Eben must do" below. `deploy.yml` (a separate Vercel-deploy-notification
+  "Eben must do" below. **Update: Eben confirmed this is now set up** (a
+  classic branch protection rule on `main` requiring the Lint/Build/Test
+  checks and up-to-date branches). `deploy.yml` (a separate Vercel-deploy-notification
   workflow, largely redundant with Vercel's own GitHub integration) exists
   too but wasn't in scope for this item.
   PR: https://github.com/nyvelhq/nyvel-platform/pull/18
+- **F-06** — added `docs/ops/RUNBOOK.md`, a real (not generic) secrets/
+  backups/monitoring inventory. Secrets: all 3 env vars the code actually
+  reads (`REACT_APP_SUPABASE_URL`, `REACT_APP_SUPABASE_ANON_KEY`,
+  `REACT_APP_PASSWORD`), where they're set (Vercel dashboard), and a real
+  live finding — `src/utils/accessGate.js` (wired into `App.js`'s
+  site-wide pre-launch gate) and the unused `PrivateAccess.jsx` both
+  silently fall back to the hardcoded password `'nyvel2024'` if
+  `REACT_APP_PASSWORD` is ever unset in an environment. Flagged under
+  "Eben must do" rather than silently changed, since changing the fallback
+  behavior is a product decision, not a docs fix. **Update: turned out
+  worse than assessed** — Eben checked the Vercel dashboard and found
+  `REACT_APP_PASSWORD` was unset in *every* environment including
+  Production, meaning the live site had been running on the hardcoded
+  fallback the whole time (the site "working" was never evidence the var
+  was set, since the fallback is designed to keep it working either way).
+  Eben set a real value in all three environments and redeployed
+  Production — verified resolved; `docs/ops/RUNBOOK.md` §1.2 updated to
+  record the corrected severity and the lesson (check the dashboard
+  directly, don't infer from app behavior). Added the missing var to
+  `.env.example` and a one-line pointer comment at both hardcoded-default
+  sites (trivial, safe — no behavior change).
+  Backups: no Supabase CLI/config in this repo, migrations are a
+  schema-reproducibility record but not a data backup, and the actual
+  Supabase plan/backup/PITR settings can't be checked from the repo — that
+  whole section is "Eben must do" (check the dashboard, verify a restore
+  actually works once). Monitoring: confirmed there is currently none at
+  all (no Sentry/LogRocket/Datadog/PostHog/Vercel Analytics in
+  `package.json`, no monitoring code anywhere, nothing in the CI
+  workflows) — ties back to F-08's removal of the fabricated "99.97%
+  uptime" stat, which was never measuring anything real. Listed a
+  cheapest-first menu of options (Vercel's own dashboard today, Vercel
+  Analytics, Supabase's dashboard, a free uptime checker, then Sentry as a
+  real but non-trivial follow-up) rather than picking one myself. Also
+  documented, since it caused confusion while researching: `deploy.yml`
+  doesn't actually deploy anything — Vercel's native GitHub integration
+  does the real deploying, outside this repo's workflow files.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/19

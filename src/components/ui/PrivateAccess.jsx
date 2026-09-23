@@ -18,6 +18,10 @@ export default function PrivateAccess({ children }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Unused component (not imported anywhere) — superseded by
+  // PasswordGate.jsx + src/utils/accessGate.js, which is what App.js
+  // actually wires up. See docs/ops/RUNBOOK.md §1.2 for the same
+  // hardcoded-fallback caveat this duplicates.
   const CORRECT_PASSWORD = process.env.REACT_APP_PASSWORD || 'nyvel2024';
 
   // Public routes that don't require password authentication
