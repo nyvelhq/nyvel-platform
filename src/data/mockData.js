@@ -230,48 +230,10 @@ export const earningsData = [
   { month: 'Jun', earned: 580 },
 ];
 
-// ─── ADMIN MOCK DATA ──────────────────────────────────────────────
-
-export const adminStats = {
-  totalUsers: 412847,
-  activeTests: 1284,
-  monthlyRevenue: 284900,
-  uptime: 99.97,
-  trends: {
-    totalUsers: '+3.2%',
-    activeTests: '+12%',
-    monthlyRevenue: '+8.4%',
-    uptime: '0.00%',
-  },
-};
-
-export const platformGrowthData = [
-  { month: 'Jan', users: 342000, tests: 980, revenue: 218000 },
-  { month: 'Feb', users: 356000, tests: 1020, revenue: 234000 },
-  { month: 'Mar', users: 371000, tests: 1080, revenue: 247000 },
-  { month: 'Apr', users: 385000, tests: 1140, revenue: 259000 },
-  { month: 'May', users: 398000, tests: 1210, revenue: 271000 },
-  { month: 'Jun', users: 412847, tests: 1284, revenue: 284900 },
-];
-
-export const recentPlatformActivity = [
-  { id: 1, event: 'New company registered', detail: 'PayServe Inc. joined as Enterprise', time: '2 min ago', type: 'company', group: 'Today' },
-  { id: 2, event: 'Test launched', detail: 'NV-1044: E-Commerce Bug Hunt (25 slots)', time: '8 min ago', type: 'test', group: 'Today' },
-  { id: 3, event: 'Payout processed', detail: '$4,200 disbursed to 84 testers', time: '15 min ago', type: 'payment', group: 'Today' },
-  { id: 4, event: 'Critical bug reported', detail: 'NV-1041: Crash on checkout — iOS 17', time: '23 min ago', type: 'alert', group: 'Today' },
-  { id: 5, event: 'Test completed', detail: 'NV-1020: Onboarding Study — 98% satisfaction', time: '1 hr ago', type: 'test', group: 'Today' },
-  { id: 6, event: '500 new testers joined', detail: 'Primary source: referral campaign', time: '2 hr ago', type: 'tester', group: 'Today' },
-  { id: 7, event: 'New company onboarded', detail: 'Fintech Corp · Professional plan', time: 'Mon', type: 'company', group: 'Earlier This Week' },
-  { id: 8, event: 'Test published', detail: 'Global QA · 48 testers requested', time: 'Mon', type: 'test', group: 'Earlier This Week' },
-];
-
-export const topCompanies = [
-  { name: 'TechCorp Inc.', tests: 42, spend: 18400, plan: 'Enterprise' },
-  { name: 'PayFlow Systems', tests: 31, spend: 14200, plan: 'Professional' },
-  { name: 'MedConnect Health', tests: 28, spend: 12800, plan: 'Enterprise' },
-  { name: 'PixelForge Studios', tests: 24, spend: 9400, plan: 'Professional' },
-  { name: 'DataView Analytics', tests: 19, spend: 7200, plan: 'Starter' },
-];
+// adminStats/platformGrowthData/recentPlatformActivity/topCompanies used to
+// live here as fabricated placeholder numbers for AdminDashboard.jsx. F-08
+// replaced them with real Supabase queries (see AdminDashboard.jsx's load()
+// and useMemo) — removed rather than left as unused dead data.
 
 // ─── SHARED ───────────────────────────────────────────────────────
 
