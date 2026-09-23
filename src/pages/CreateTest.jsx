@@ -21,7 +21,7 @@ const testTypeOptions = [
   { id: 'usability', label: 'Usability Study', icon: '🎯', desc: 'UX feedback & recordings', canonical: 'Usability' },
   { id: 'load-test', label: 'Load Test', icon: '⚡', desc: 'Performance under load', canonical: 'Load Test' },
   { id: 'multi-day', label: 'Multi-Day Study', icon: '📅', desc: 'Longitudinal feedback', canonical: 'Multi-Day' },
-  { id: 'fintech', label: 'Fintech & Payments', icon: '💳', desc: 'Real transaction testing', canonical: 'Fintech' },
+  { id: 'fintech', label: 'Fintech & Payments', icon: '💳', desc: 'Payment & checkout flow testing', canonical: 'Fintech' },
   { id: 'game', label: 'Game Playtesting', icon: '🎮', desc: 'Multiplayer & performance', canonical: 'Game' },
 ];
 
