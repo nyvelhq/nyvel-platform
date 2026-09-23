@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (F-10)._
+_Last updated: 2026-09-23 by the orchestrator (F-05 correction)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -12,7 +12,9 @@ _Last updated: 2026-09-23 by the orchestrator (F-10)._
   wired to Supabase; C-03 company application review; C-04/C-05 tester
   findings plus company triage; C-06 admin payouts (append-only, no unmark);
   F-08 admin dashboard metrics now real Supabase queries (PR #14, merged);
-  the Fintech & Payments marketing-copy fix (PR #15, merged).
+  the Fintech & Payments marketing-copy fix (PR #15, merged); F-05 (GitHub
+  Actions CI on every PR) was already implemented and working — no PR
+  needed, see the F-05 note below.
 - New Test creation's "age_range" schema-cache error is fixed in code
   (PR #13, merged) pending Eben running
   `supabase/migrations/0005_reassert_test_fields.sql` against production if
@@ -46,8 +48,9 @@ _Last updated: 2026-09-23 by the orchestrator (F-10)._
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
    DataContext functions. — _status: in PR —
    https://github.com/nyvelhq/nyvel-platform/pull/17_
-5. **F-05** — GitHub Actions CI that runs install, test and build on every
-   PR. — _status: not started_
+5. ~~**F-05**~~ — GitHub Actions CI that runs install, test and build on
+   every PR. — _status: already done, no code change needed —
+   https://github.com/nyvelhq/nyvel-platform/pull/18_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
    trivial). — _status: not started_
 7. **F-07** — STRIDE threat model doc. — _status: not started_
@@ -117,3 +120,22 @@ _Last updated: 2026-09-23 by the orchestrator (F-10)._
   locally, watching it fail, then reverting. `src/context/DataContext.test.jsx`
   now has 12 tests; full suite is 27 tests across 5 files.
   PR: https://github.com/nyvelhq/nyvel-platform/pull/17
+- **F-05** — no code change: `.github/workflows/ci.yml` ("CI Pipeline") has
+  existed since 2026-07-14 and already does exactly what this item asked —
+  three jobs (lint, build, test) triggered on every `push` to `main`/`develop`
+  and every `pull_request` targeting them, each running `npm ci` first. It
+  has run successfully on every PR and merge this session (runs #52–#66,
+  e.g. https://github.com/nyvelhq/nyvel-platform/actions/runs/35889362212 for
+  PR #17) — verified via the GitHub Actions API
+  (`mcp__github__actions_list`/`actions_get`), not just assumed from the repo
+  containing a workflow file. The backlog's "not started" was stale; earlier
+  PRs in this run checked `get_status` (the legacy commit-status API, which
+  only shows things like Netlify/Vercel) instead of Actions check-runs, so
+  the running CI was invisible in those checks — worth remembering for
+  future runs. One real gap I can't fix from a PR: I have no way to verify
+  whether these checks are set as "required" in main's branch protection
+  rules (that's a repo Settings change, not a code change) — flagged under
+  "Eben must do" below. `deploy.yml` (a separate Vercel-deploy-notification
+  workflow, largely redundant with Vercel's own GitHub integration) exists
+  too but wasn't in scope for this item.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/18
