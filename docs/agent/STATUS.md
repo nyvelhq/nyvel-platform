@@ -18,7 +18,8 @@ _Last updated: 2026-09-23 by the orchestrator (New Test creation error)._
 ## Queue
 
 1. **New Test creation error** — `Could not find the 'age_range' column of
-   'tests' in the schema cache` (400). — _status: in PR — see PR log below._
+   'tests' in the schema cache` (400). — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/13_
 2. **F-08** — replace the fabricated admin dashboard metrics with real
    Supabase queries. — _status: not started_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
@@ -51,4 +52,4 @@ _Last updated: 2026-09-23 by the orchestrator (New Test creation error)._
   0002's columns + `notify pgrst, 'reload schema'`) and a regression test
   (`src/context/DataContext.test.jsx`) that pins the exact column set
   `addCompanyTest` is allowed to write, so a future rename/typo fails CI
-  instead of shipping. PR: (added on push, see repo).
+  instead of shipping. PR: https://github.com/nyvelhq/nyvel-platform/pull/13
