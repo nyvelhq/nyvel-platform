@@ -28,7 +28,8 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech marketing claim)._
    https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
-   (compliance risk). — _status: in PR (this PR)_
+   (compliance risk). — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/16_
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
    DataContext functions. — _status: not started_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
@@ -96,3 +97,4 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech marketing claim)._
   transfers up to $1") — confirmed it's dead code (TesterDashboard.jsx reads
   `availableTests` from live DataContext/Supabase, not this mock export), so
   no live page renders it.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/16
