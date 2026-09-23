@@ -52,7 +52,8 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
    every PR. — _status: already done, no code change needed —
    https://github.com/nyvelhq/nyvel-platform/pull/18_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
-   trivial). — _status: in PR (this PR)_
+   trivial). — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/19_
 7. **F-07** — STRIDE threat model doc. — _status: not started_
 
 ### Blocked (skip)
@@ -169,4 +170,4 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
   documented, since it caused confusion while researching: `deploy.yml`
   doesn't actually deploy anything — Vercel's native GitHub integration
   does the real deploying, outside this repo's workflow files.
-  PR: (added on push, see repo)
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/19
