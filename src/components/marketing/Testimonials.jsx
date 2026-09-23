@@ -3,7 +3,7 @@ import { Bug, Gauge, CreditCard } from 'lucide-react';
 import ScrollReveal from '../ScrollReveal';
 
 // Honest, illustrative use cases — NOT attributed customer endorsements.
-const useCases = [
+export const useCases = [
   {
     icon: Bug,
     tag: 'Bug Hunt · Mobile',
@@ -19,8 +19,8 @@ const useCases = [
   {
     icon: CreditCard,
     tag: 'Fintech · Payments',
-    title: 'Validate payment flows in the real world',
-    desc: 'Exercise real-environment payment and edge-case paths with NDA-bound testers, so you ship money-moving features with confidence.',
+    title: 'Validate payment flows before you ship',
+    desc: 'Put NDA-bound testers through your banking and payment flows in staging, surfacing UX gaps and edge cases before real customers hit them.',
   },
 ];
 

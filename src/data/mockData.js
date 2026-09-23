@@ -253,7 +253,7 @@ export const testTypes = [
   { name: 'Usability Study', icon: '🎯', desc: 'Recorded sessions capturing how users actually navigate your product.', color: 'violet' },
   { name: 'Load Test', icon: '⚡', desc: 'Live concurrent user sessions to stress-test your infrastructure.', color: 'yellow' },
   { name: 'Multi-Day Study', icon: '📅', desc: 'Longitudinal feedback collected over days or weeks of real usage.', color: 'blue' },
-  { name: 'Fintech & Payments', icon: '💳', desc: 'Non-sandbox payment testing with real-world financial flows.', color: 'green' },
+  { name: 'Fintech & Payments', icon: '💳', desc: 'Dedicated testers for banking and payments apps — UX, edge cases, and security review in your staging environment.', color: 'green' },
   { name: 'Game Playtesting', icon: '🎮', desc: 'Multiplayer, balance, and performance testing by real gamers.', color: 'purple' },
   { name: 'Global QA', icon: '🌍', desc: 'Manual testing with localized testers in the markets you target.', color: 'cyan' },
   { name: 'In-Home Usage', icon: '🏠', desc: 'Field testing for physical or location-dependent digital products.', color: 'orange' },

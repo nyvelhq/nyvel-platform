@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (F-08)._
+_Last updated: 2026-09-23 by the orchestrator (Fintech marketing claim)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -13,6 +13,7 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
   findings plus company triage; C-06 admin payouts (append-only, no unmark).
 - New Test creation's schema-cache error is fixed pending Eben running the
   migration in PR #13 (merged) against production.
+- F-08 (real admin dashboard metrics) is merged (PR #14) and live.
 - Seed accounts: `test-company@nyvel.co` (company), `test-tester@nyvel.co`
   (tester), `testeadu@gmail.com` (admin).
 - Not yet exercised live: the Reject/More Info path in finding triage.
@@ -23,11 +24,11 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
    'tests' in the schema cache` (400). — _status: merged —
    https://github.com/nyvelhq/nyvel-platform/pull/13_
 2. **F-08** — replace the fabricated admin dashboard metrics with real
-   Supabase queries. — _status: in PR —
+   Supabase queries. — _status: merged —
    https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
-   (compliance risk). — _status: not started_
+   (compliance risk). — _status: in PR (this PR)_
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
    DataContext functions. — _status: not started_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
@@ -77,3 +78,21 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
   `src/pages/AdminDashboard.jsx` — no schema, RLS, or migration changes
   (admin already has full-access RLS on every table this page reads).
   PR: https://github.com/nyvelhq/nyvel-platform/pull/14
+
+- **Fintech marketing claim** — reworded the "Fintech & Payments — non-sandbox
+  payment testing with real-world financial flows" tile on the public landing
+  page (`src/data/mockData.js`'s `testTypes`) to describe honest staging-
+  environment testing instead of implying Nyvel moves real money. Found and
+  fixed an identical-in-spirit claim right next to it on the same page
+  (`Testimonials.jsx`'s "Fintech · Payments" use case: "Validate payment
+  flows in the real world" / "ship money-moving features with confidence"),
+  and one more instance in the CreateTest wizard's Fintech option
+  ("Real transaction testing") — slightly beyond the queue item's literal
+  "public marketing site" scope, but the same compliance risk and a one-line
+  fix. Added a regression test (`src/marketingCopyClaims.test.js`) that fails
+  CI if any of these phrases (or close variants) reappear anywhere in
+  `testTypes` or `Testimonials.jsx`'s use cases. Noted but did NOT touch
+  `mockData.js`'s `availableTests[2].description` ("Real-environment bank
+  transfers up to $1") — confirmed it's dead code (TesterDashboard.jsx reads
+  `availableTests` from live DataContext/Supabase, not this mock export), so
+  no live page renders it.
