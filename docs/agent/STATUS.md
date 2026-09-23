@@ -4,30 +4,32 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (F-08)._
+_Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy)._
 
 ## Current state (as of Sep 23, 2026)
 
 - DONE and live: real Supabase auth with a 7-table schema and RLS; DataContext
   wired to Supabase; C-03 company application review; C-04/C-05 tester
-  findings plus company triage; C-06 admin payouts (append-only, no unmark).
-- New Test creation's schema-cache error is fixed pending Eben running the
-  migration in PR #13 (merged) against production.
+  findings plus company triage; C-06 admin payouts (append-only, no unmark);
+  F-08 admin dashboard metrics now real Supabase queries (PR #14, merged).
+- New Test creation's "age_range" schema-cache error is fixed in code
+  (PR #13, merged) pending Eben running
+  `supabase/migrations/0005_reassert_test_fields.sql` against production if
+  it hasn't been already.
 - Seed accounts: `test-company@nyvel.co` (company), `test-tester@nyvel.co`
   (tester), `testeadu@gmail.com` (admin).
 - Not yet exercised live: the Reject/More Info path in finding triage.
 
 ## Queue
 
-1. **New Test creation error** — `Could not find the 'age_range' column of
-   'tests' in the schema cache` (400). — _status: merged —
+1. ~~**New Test creation error**~~ — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/13_
-2. **F-08** — replace the fabricated admin dashboard metrics with real
-   Supabase queries. — _status: in PR —
+2. ~~**F-08**~~ — replace the fabricated admin dashboard metrics with real
+   Supabase queries. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/14_
 3. **Remove the "Fintech & Payments — non-sandbox payment testing with
    real-world financial flows" claim** from the public marketing site
-   (compliance risk). — _status: not started_
+   (compliance risk). — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/15_
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
    DataContext functions. — _status: not started_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
@@ -56,7 +58,6 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
   (`src/context/DataContext.test.jsx`) that pins the exact column set
   `addCompanyTest` is allowed to write, so a future rename/typo fails CI
   instead of shipping. PR: https://github.com/nyvelhq/nyvel-platform/pull/13
-
 - **F-08** — `AdminDashboard.jsx` (Platform Overview) rendered
   `src/data/mockData.js`'s fabricated `adminStats`/`platformGrowthData`/
   `recentPlatformActivity`/`topCompanies` (hardcoded totals like 412,847
@@ -77,3 +78,13 @@ _Last updated: 2026-09-23 by the orchestrator (F-08)._
   `src/pages/AdminDashboard.jsx` — no schema, RLS, or migration changes
   (admin already has full-access RLS on every table this page reads).
   PR: https://github.com/nyvelhq/nyvel-platform/pull/14
+- **Fintech & Payments marketing copy** — removed the "Non-sandbox payment
+  testing with real-world financial flows" claim from
+  `src/data/mockData.js` (`testTypes`, rendered on the public landing page's
+  `#test-types` section). Also fixed the same claim ("Real transaction
+  testing") in `src/pages/CreateTest.jsx`'s test-type picker, which is
+  authenticated company-facing product copy rather than the public site but
+  asserts the identical non-sandbox/live-money capability — left in scope
+  since it's a one-line copy fix addressing the same compliance risk. No
+  other public marketing copy (Navbar, Footer, Features, Testimonials) makes
+  a similar claim. PR: https://github.com/nyvelhq/nyvel-platform/pull/15
