@@ -38,7 +38,8 @@ _Last updated: 2026-09-23 by the orchestrator (F-10)._
    (compliance risk). — _status: in PR (another orchestrator session) —
    https://github.com/nyvelhq/nyvel-platform/pull/15_
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
-   DataContext functions. — _status: in PR (this PR)_
+   DataContext functions. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/17_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
    PR. — _status: not started_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
@@ -102,4 +103,4 @@ _Last updated: 2026-09-23 by the orchestrator (F-10)._
   actually catch regressions by deliberately breaking `acceptApplication`
   locally, watching it fail, then reverting. `src/context/DataContext.test.jsx`
   now has 12 tests; full suite is 27 tests across 5 files.
-  PR: (added on push, see repo)
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/17
