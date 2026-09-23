@@ -4,14 +4,15 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy)._
+_Last updated: 2026-09-23 by the orchestrator (F-10)._
 
 ## Current state (as of Sep 23, 2026)
 
 - DONE and live: real Supabase auth with a 7-table schema and RLS; DataContext
   wired to Supabase; C-03 company application review; C-04/C-05 tester
   findings plus company triage; C-06 admin payouts (append-only, no unmark);
-  F-08 admin dashboard metrics now real Supabase queries (PR #14, merged).
+  F-08 admin dashboard metrics now real Supabase queries (PR #14, merged);
+  the Fintech & Payments marketing-copy fix (PR #15, merged).
 - New Test creation's "age_range" schema-cache error is fixed in code
   (PR #13, merged) pending Eben running
   `supabase/migrations/0005_reassert_test_fields.sql` against production if
@@ -19,6 +20,16 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
 - Seed accounts: `test-company@nyvel.co` (company), `test-tester@nyvel.co`
   (tester), `testeadu@gmail.com` (admin).
 - Not yet exercised live: the Reject/More Info path in finding triage.
+- Note for future runs: two orchestrator sessions independently picked up
+  the Fintech-copy item (queue #3) concurrently and opened duplicate PRs
+  (#15 and #16). #16 was closed as a duplicate; its one extra finding (an
+  equivalent claim in `Testimonials.jsx` — "Validate payment flows in the
+  real world" / "ship money-moving features with confidence" — that #15's
+  own verification missed) was left as a comment on #15 for that PR to fold
+  in. Worth checking whether that comment was addressed before treating the
+  Fintech-copy compliance risk as fully closed. Check open PRs for an item
+  before starting it, not just at the top of a run — another session may
+  have opened one after this file was last read.
 
 ## Queue
 
@@ -27,11 +38,14 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
 2. ~~**F-08**~~ — replace the fabricated admin dashboard metrics with real
    Supabase queries. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/14_
-3. **Remove the "Fintech & Payments — non-sandbox payment testing with
-   real-world financial flows" claim** from the public marketing site
-   (compliance risk). — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/15_
+3. ~~**Remove the "Fintech & Payments — non-sandbox payment testing with
+   real-world financial flows" claim**~~ from the public marketing site
+   (compliance risk). — _status: done — merged via
+   https://github.com/nyvelhq/nyvel-platform/pull/15_ (see the note above on
+   the Testimonials.jsx gap flagged in review comments)
 4. **F-10** — QA test plan and Definition of Done, plus unit tests for
-   DataContext functions. — _status: not started_
+   DataContext functions. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/17_
 5. **F-05** — GitHub Actions CI that runs install, test and build on every
    PR. — _status: not started_
 6. **F-06** — secrets, backups and monitoring runbook (docs only unless
@@ -85,6 +99,21 @@ _Last updated: 2026-09-23 by the orchestrator (Fintech & Payments marketing copy
   testing") in `src/pages/CreateTest.jsx`'s test-type picker, which is
   authenticated company-facing product copy rather than the public site but
   asserts the identical non-sandbox/live-money capability — left in scope
-  since it's a one-line copy fix addressing the same compliance risk. No
-  other public marketing copy (Navbar, Footer, Features, Testimonials) makes
-  a similar claim. PR: https://github.com/nyvelhq/nyvel-platform/pull/15
+  since it's a one-line copy fix addressing the same compliance risk.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/15
+- **F-10** — added `docs/qa/TEST_PLAN.md` (scope, test types and where they
+  live, environments, entry/exit criteria, severity, regression strategy)
+  and `docs/qa/DEFINITION_OF_DONE.md` (a concrete checklist, not aspirational
+  — column-name-vs-schema check, RLS review requirement, no-fabricated-
+  claims, etc., each tied to a real incident or fix already in this repo).
+  Added 10 new unit tests for `DataContext.jsx`'s functions — `loadCompanyTests`,
+  `loadAvailableTests`, `loadMyApplications` (status/progress derivation),
+  `applyToTest`/`hasApplied` (including the no-double-apply guard),
+  `acceptApplication`/`declineApplication`, `submitFinding` (including the
+  signed-out guard), `triageFinding`, `markPayoutPaid` — on top of the
+  existing `addCompanyTest` coverage, using a shared mock Supabase builder
+  that records table/payload/filters per call. Verified the new tests
+  actually catch regressions by deliberately breaking `acceptApplication`
+  locally, watching it fail, then reverting. `src/context/DataContext.test.jsx`
+  now has 12 tests; full suite is 27 tests across 5 files.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/17
