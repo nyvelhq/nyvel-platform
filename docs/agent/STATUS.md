@@ -150,11 +150,19 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
   site-wide pre-launch gate) and the unused `PrivateAccess.jsx` both
   silently fall back to the hardcoded password `'nyvel2024'` if
   `REACT_APP_PASSWORD` is ever unset in an environment. Flagged under
-  "Eben must do" (verify it's actually set to a real value in every Vercel
-  environment, including Preview) rather than silently changed, since
-  changing the fallback behavior is a product decision, not a docs fix.
-  Added the missing var to `.env.example` and a one-line pointer comment
-  at both hardcoded-default sites (trivial, safe — no behavior change).
+  "Eben must do" rather than silently changed, since changing the fallback
+  behavior is a product decision, not a docs fix. **Update: turned out
+  worse than assessed** — Eben checked the Vercel dashboard and found
+  `REACT_APP_PASSWORD` was unset in *every* environment including
+  Production, meaning the live site had been running on the hardcoded
+  fallback the whole time (the site "working" was never evidence the var
+  was set, since the fallback is designed to keep it working either way).
+  Eben set a real value in all three environments and redeployed
+  Production — verified resolved; `docs/ops/RUNBOOK.md` §1.2 updated to
+  record the corrected severity and the lesson (check the dashboard
+  directly, don't infer from app behavior). Added the missing var to
+  `.env.example` and a one-line pointer comment at both hardcoded-default
+  sites (trivial, safe — no behavior change).
   Backups: no Supabase CLI/config in this repo, migrations are a
   schema-reproducibility record but not a data backup, and the actual
   Supabase plan/backup/PITR settings can't be checked from the repo — that

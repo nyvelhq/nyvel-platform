@@ -41,7 +41,7 @@ the Supabase anon key: Supabase dashboard → Project Settings → API →
 regenerate, then update the Vercel env var and redeploy. There is
 currently no documented cadence for doing this proactively (see §1.3).
 
-### 1.2 A real, live finding: the password gate's hardcoded fallback
+### 1.2 RESOLVED (2026-09-23): the password gate's hardcoded fallback
 
 `src/utils/accessGate.js` (the gate actually wired into `App.js`, guarding
 every route except `/`, `/login`, `/reset-password`) and the unused
@@ -53,21 +53,23 @@ done here since it's out of scope for a docs-only item) both contain:
 process.env.REACT_APP_PASSWORD || 'nyvel2024'
 ```
 
-**If `REACT_APP_PASSWORD` is ever unset in an environment** (a fresh
-Vercel preview deployment, a contributor's local `.env.local`, a
-misconfigured environment), the gate silently falls back to the
-publicly-visible-in-source-control password `nyvel2024`. This is a soft
-pre-launch gate, not the real auth system (real per-user auth is Supabase
-Auth, unaffected by this), so the blast radius is "an unreleased page is
-visible to someone who found the default," not account compromise — but
-it's still a real, fixable gap.
+**This was worse than first assessed.** The initial version of this doc
+guessed the gap was likely Preview/Development-only, since Production
+"working" was assumed to mean it had a real value set. That assumption
+was wrong: when Eben checked the Vercel dashboard, `REACT_APP_PASSWORD`
+was **not set in any environment, including Production** — the live site
+had been running on the hardcoded fallback `nyvel2024` the entire time.
+"The site works" was never evidence the var was set correctly, because
+the fallback is specifically designed to make the site keep working
+either way — that's what made this easy to miss.
 
-**Eben must do**: confirm `REACT_APP_PASSWORD` is actually set to a
-non-default value in every Vercel environment (Production, Preview,
-Development) — check Vercel dashboard → Environment Variables and verify
-the value isn't `nyvel2024`. If it's unset for Preview specifically (easy
-to miss — Preview/Development scopes are separate from Production in
-Vercel), every preview deploy is gated by the guessable default.
+**Fix applied**: Eben added `REACT_APP_PASSWORD` with a real, non-default
+value to all three Vercel environments (Production, Preview, Development)
+and redeployed Production to pick it up. Verified resolved.
+
+**Lesson for future secrets audits**: "the app boots and looks fine" is
+not sufficient evidence that a var with a fallback default is actually
+set — check the Vercel dashboard directly, don't infer from behavior.
 
 ### 1.3 Recommended rotation cadence (not yet a policy — proposing one)
 
