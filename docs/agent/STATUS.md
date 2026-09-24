@@ -54,8 +54,8 @@ _Last updated: 2026-09-24 by the orchestrator (F-07)._
 6. ~~**F-06**~~ — secrets, backups and monitoring runbook (docs only unless
    trivial). — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/19_
-7. **F-07** — STRIDE threat model doc. — _status: in PR — (link added below
-   once opened)_
+7. **F-07** — STRIDE threat model doc. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/20_
 
 ### Blocked (skip)
 
@@ -228,4 +228,4 @@ queue; a product-owner call for whoever prioritizes next)
   auto-added to the numbered queue itself — a product-owner/Eben call).
   `npm ci && npm test -- --watchAll=false && npm run build` all still
   pass (27/27 tests, clean build) since no application code changed.
-  PR: (this PR)
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/20
