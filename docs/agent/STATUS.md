@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-23 by the orchestrator (F-06)._
+_Last updated: 2026-09-24 by the orchestrator (F-07)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -51,10 +51,11 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
 5. ~~**F-05**~~ — GitHub Actions CI that runs install, test and build on
    every PR. — _status: already done, no code change needed —
    https://github.com/nyvelhq/nyvel-platform/pull/18_
-6. **F-06** — secrets, backups and monitoring runbook (docs only unless
-   trivial). — _status: in PR —
+6. ~~**F-06**~~ — secrets, backups and monitoring runbook (docs only unless
+   trivial). — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/19_
-7. **F-07** — STRIDE threat model doc. — _status: not started_
+7. **F-07** — STRIDE threat model doc. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/20_
 
 ### Blocked (skip)
 
@@ -62,6 +63,28 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
 - Payments (beyond sandbox/non-sandbox scoping already noted above).
 - Legal / compliance sign-off items beyond the marketing-copy fix in the
   queue.
+
+### Proposed new items (from F-07's findings — not yet added to the numbered
+queue; a product-owner call for whoever prioritizes next)
+
+- Fix `profiles: admin can insert`'s self-insert branch, which doesn't pin
+  `role = 'tester'` the way the self-update policy does — a latent
+  privilege-escalation gap (currently unreachable in the normal signup
+  path, blocked by the `handle_new_user()` trigger + primary key, but a
+  real hole in the policy's own design). See
+  `docs/security/STRIDE_THREAT_MODEL.md` §2.6/§3.1 for the exact one-line
+  fix.
+- Add payout immutability (a trigger rejecting updates once
+  `status = 'paid'`) and/or a lightweight audit/history table — `payouts`
+  is documented as "append-only once paid" but nothing actually enforces
+  that. See STRIDE doc §2.2 (T4) / §2.3 (R2).
+- Cap findings submissions per tester per test — there's currently no
+  limit on how many `findings` rows one accepted tester can insert for a
+  test. See STRIDE doc §2.5 (D3).
+- Replace `AdminSecurity.jsx`'s fabricated "2FA enabled 98%" / fake threat
+  log with real data or an honest "not implemented" state — same class of
+  fix as F-08 already did for the admin dashboard. See STRIDE doc §2.3
+  (R3).
 
 ## PR log
 
@@ -179,3 +202,30 @@ _Last updated: 2026-09-23 by the orchestrator (F-06)._
   doesn't actually deploy anything — Vercel's native GitHub integration
   does the real deploying, outside this repo's workflow files.
   PR: https://github.com/nyvelhq/nyvel-platform/pull/19
+- **F-07** — added `docs/security/STRIDE_THREAT_MODEL.md`, a STRIDE
+  analysis checked against the real schema/RLS/auth code rather than
+  written generically. Every finding is tagged Verified (read the actual
+  policy/code) or Inferred (plausible, not checked against a live
+  Supabase project — no DB access from this PR). Headline findings: (1) a
+  real but currently-unreachable privilege-escalation gap in the
+  `profiles: admin can insert` RLS policy — its self-insert branch never
+  pins `role = 'tester'` the way the sibling self-update policy does; (2)
+  `payouts`' documented "append-only once paid" is a convention only,
+  not enforced by RLS or a constraint — an admin update to a paid row
+  today would leave no trace of the prior value; (3) no cap on findings
+  submissions per tester per test; (4) `AdminSecurity.jsx` renders
+  entirely fabricated 2FA/threat-log data (`mockData.js`) with no
+  disclaimer that the *data* itself is fake, same class of issue F-08
+  already fixed on the admin dashboard; (5) `schema.sql`'s comment
+  claiming rejected/more-info findings "never reach the client" is stale
+  — migration 0004 + `CompanyTestDetail.jsx` intentionally broadened this
+  so the company/client role can triage all statuses, which is correct
+  behavior, just undocumented as a comment update. None of these were
+  fixed in this PR — it's a docs-only item per the backlog, and RLS/auth
+  changes are explicitly "stop and report instead of guessing" per
+  `docs/agent/RULES.md` when CI can't verify them against a live
+  project. Proposed follow-up items added below the queue (not
+  auto-added to the numbered queue itself — a product-owner/Eben call).
+  `npm ci && npm test -- --watchAll=false && npm run build` all still
+  pass (27/27 tests, clean build) since no application code changed.
+  PR: https://github.com/nyvelhq/nyvel-platform/pull/20
