@@ -63,7 +63,7 @@ _Last updated: 2026-09-25 by the orchestrator (UX-01)._
    (Users, Tests, Reports, Security, Settings → "Coming soon"), and the
    landing page's live-metrics ledger, activity ticker, country/turnaround/
    free-trial claims and unbuilt pricing features. — _status: in PR —
-   PR_LINK_
+   https://github.com/nyvelhq/nyvel-platform/pull/21_
 9. **UX-02 Close the loop** — the core company↔tester flow dead-ends in
    four places: show the test briefing (and NDA flag) to accepted testers;
    let a company mark a test complete; let a tester reply to a
@@ -264,4 +264,4 @@ queue; a product-owner call for whoever prioritizes next)
   Testimonials fintech card now says sandbox/staging. Service claims that
   may be delivered offline (vetting, NDAs, "professional QA review") and the
   plan prices were left as-is and flagged for Eben. New pure helpers in
-  `src/utils/dashboardStats.js` + 7 new tests (34 total). PR: PR_LINK
+  `src/utils/dashboardStats.js` + 7 new tests (34 total). PR: https://github.com/nyvelhq/nyvel-platform/pull/21
