@@ -19,12 +19,7 @@ import TesterDashboard from './pages/TesterDashboard';
 import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminUsers from './pages/AdminUsers';
-import AdminTests from './pages/AdminTests';
-import AdminReports from './pages/AdminReports';
-import AdminSecurity from './pages/AdminSecurity';
 import AdminPayouts from './pages/AdminPayouts';
-import AdminSettings from './pages/AdminSettings';
 import ComingSoon from './pages/ComingSoon';
 
 // Components & Providers
@@ -80,6 +75,7 @@ const buildUser = (authUser, profileRow) => ({
   name: profileRow?.name || '',
   role: profileRow?.role || 'tester',
   clientId: profileRow?.client_id || null,
+  createdAt: profileRow?.created_at || authUser.created_at || null,
   ...loadExtra(authUser.id),
 });
 
@@ -186,7 +182,7 @@ export function AuthProvider({ children }) {
     setUser((u) => {
       if (!u) return u;
       const next = { ...u, ...patch };
-      const { id, email, name, role, clientId, ...extra } = next;
+      const { id, email, name, role, clientId, createdAt, ...extra } = next;
       saveExtra(id, extra);
       return next;
     });
@@ -323,12 +319,14 @@ function AppRoutes() {
 
         {/* Admin routes */}
         <Route path="/admin/dashboard" element={guarded('admin', <AdminDashboard />)} />
-        <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
-        <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
-        <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
-        <Route path="/admin/security" element={guarded('admin', <AdminSecurity />)} />
+        {/* Users/Tests/Reports/Security/Settings rendered mockData.js and
+            fake actions; they stay unrouted until wired to real data. */}
+        <Route path="/admin/users" element={guarded('admin', <ComingSoon title="Users" />)} />
+        <Route path="/admin/tests" element={guarded('admin', <ComingSoon title="Tests" />)} />
+        <Route path="/admin/reports" element={guarded('admin', <ComingSoon title="Reports" />)} />
+        <Route path="/admin/security" element={guarded('admin', <ComingSoon title="Security" />)} />
         <Route path="/admin/payouts" element={guarded('admin', <AdminPayouts />)} />
-        <Route path="/admin/settings" element={guarded('admin', <AdminSettings />)} />
+        <Route path="/admin/settings" element={guarded('admin', <ComingSoon title="Settings" />)} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

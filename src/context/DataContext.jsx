@@ -60,6 +60,8 @@ export function DataProvider({ children }) {
   const [companyTests, setCompanyTests] = useState([]);
   const [availableTests, setAvailableTests] = useState([]);
   const [myApplications, setMyApplications] = useState([]);
+  const [myPayouts, setMyPayouts] = useState([]);
+  const [myAcceptedFindingTestIds, setMyAcceptedFindingTestIds] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   // --- company: tests owned by the signed-in company user's client ------
@@ -95,7 +97,8 @@ export function DataProvider({ children }) {
     setCompanyTests(
       tests.map((t) => {
         const testApps = (apps || []).filter((a) => a.test_id === t.id);
-        const acceptedFindings = (findings || []).filter((f) => f.test_id === t.id && f.status === 'accepted');
+        const testFindings = (findings || []).filter((f) => f.test_id === t.id);
+        const acceptedFindings = testFindings.filter((f) => f.status === 'accepted');
         const topSeverity = acceptedFindings.reduce(
           (top, f) => (SEVERITY_RANK[f.severity] > (SEVERITY_RANK[top] || 0) ? f.severity : top),
           null
@@ -113,6 +116,9 @@ export function DataProvider({ children }) {
           criticalIssues: acceptedFindings.filter((f) => f.severity === 'critical').length,
           severity: severityLabel(topSeverity),
           platform: t.platforms || [],
+          pendingApplicants: testApps.filter((a) => a.status === 'pending').length,
+          openFindings: testFindings.filter((f) => f.status === 'open').length,
+          acceptedBySeverity: acceptedFindings.reduce((acc, f) => ({ ...acc, [f.severity]: (acc[f.severity] || 0) + 1 }), {}),
         };
       })
     );
@@ -200,17 +206,37 @@ export function DataProvider({ children }) {
     );
   }, [user?.id, user?.role]);
 
+  // --- tester: own payouts + accepted findings, for real earnings figures --
+  // RLS: "payouts: tester can read own" and findings' own-rows read policy.
+  const loadMyEarnings = useCallback(async () => {
+    if (!user?.id || user.role !== 'tester') {
+      setMyPayouts([]);
+      setMyAcceptedFindingTestIds([]);
+      return;
+    }
+    const [{ data: payouts, error: payoutsError }, { data: findings, error: findingsError }] = await Promise.all([
+      supabase.from('payouts').select('test_id, amount, status, paid_at').eq('tester_id', user.id),
+      supabase.from('findings').select('test_id').eq('tester_id', user.id).eq('status', 'accepted'),
+    ]);
+    if (payoutsError) console.error('loadMyEarnings (payouts):', payoutsError.message);
+    if (findingsError) console.error('loadMyEarnings (findings):', findingsError.message);
+    setMyPayouts(payouts || []);
+    setMyAcceptedFindingTestIds((findings || []).map((f) => f.test_id));
+  }, [user?.id, user?.role]);
+
   const reloadAll = useCallback(async () => {
     setDataLoading(true);
-    await Promise.all([loadCompanyTests(), loadAvailableTests(), loadMyApplications()]);
+    await Promise.all([loadCompanyTests(), loadAvailableTests(), loadMyApplications(), loadMyEarnings()]);
     setDataLoading(false);
-  }, [loadCompanyTests, loadAvailableTests, loadMyApplications]);
+  }, [loadCompanyTests, loadAvailableTests, loadMyApplications, loadMyEarnings]);
 
   useEffect(() => {
     if (!isAuthenticated) {
       setCompanyTests([]);
       setAvailableTests([]);
       setMyApplications([]);
+      setMyPayouts([]);
+      setMyAcceptedFindingTestIds([]);
       setDataLoading(false);
       return;
     }
@@ -377,6 +403,8 @@ export function DataProvider({ children }) {
         addCompanyTest,
         availableTests,
         myApplications,
+        myPayouts,
+        myAcceptedFindingTestIds,
         applyToTest,
         hasApplied,
         acceptApplication,

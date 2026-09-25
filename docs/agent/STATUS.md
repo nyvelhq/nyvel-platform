@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-24 by the orchestrator (F-07)._
+_Last updated: 2026-09-25 by the orchestrator (UX-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -45,8 +45,8 @@ _Last updated: 2026-09-24 by the orchestrator (F-07)._
    (compliance risk). — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/15_ (see the note above on
    the Testimonials.jsx gap flagged in review comments)
-4. **F-10** — QA test plan and Definition of Done, plus unit tests for
-   DataContext functions. — _status: in PR —
+4. ~~**F-10**~~ — QA test plan and Definition of Done, plus unit tests for
+   DataContext functions. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/17_
 5. ~~**F-05**~~ — GitHub Actions CI that runs install, test and build on
    every PR. — _status: already done, no code change needed —
@@ -54,8 +54,23 @@ _Last updated: 2026-09-24 by the orchestrator (F-07)._
 6. ~~**F-06**~~ — secrets, backups and monitoring runbook (docs only unless
    trivial). — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/19_
-7. **F-07** — STRIDE threat model doc. — _status: in PR —
+7. ~~**F-07**~~ — STRIDE threat model doc. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/20_
+8. **UX-01 Honesty pass** — remove or make real every fabricated number,
+   badge and claim a user can see (from the Sep 25 UI/UX review, approved by
+   Eben). Tester dashboard/profile earnings and stats, company dashboard
+   stats and charts, the demo notification bell, the five mock admin pages
+   (Users, Tests, Reports, Security, Settings → "Coming soon"), and the
+   landing page's live-metrics ledger, activity ticker, country/turnaround/
+   free-trial claims and unbuilt pricing features. — _status: in PR —
+   PR_LINK_
+9. **UX-02 Close the loop** — the core company↔tester flow dead-ends in
+   four places: show the test briefing (and NDA flag) to accepted testers;
+   let a company mark a test complete; let a tester reply to a
+   "More info needed" finding; add a confirmation step to admin
+   "Mark Paid" (irreversible) and surface payout load/save errors instead of
+   an empty state. — _status: not started_ (the "reply to more info" part
+   likely needs a schema change → Architect pass + migration)
 
 ### Blocked (skip)
 
@@ -229,3 +244,24 @@ queue; a product-owner call for whoever prioritizes next)
   `npm ci && npm test -- --watchAll=false && npm run build` all still
   pass (27/27 tests, clean build) since no application code changed.
   PR: https://github.com/nyvelhq/nyvel-platform/pull/20
+- **UX-01 Honesty pass** — from the Sep 25 UI/UX review (screenshots of all
+  21 routes × desktop/mobile against a mocked Supabase). Removed or made real
+  everything a user could mistake for real data. Tester dashboard, earnings
+  tab and profile now derive from the tester's own applications, accepted
+  findings and `payouts` rows (pending payout uses AdminPayouts' own rule);
+  the "Top Tester" badge, 4.9 rating, invented bio/location/devices/skills
+  and "Fintech Testing Certified" certifications are gone (honest empty
+  states instead). Company dashboard stat cards are real (active tests,
+  testers accepted, applicants to review, findings to triage), the fake
+  activity chart is removed and the severity donut counts real accepted
+  findings. Notification bell shows "No notifications yet" (no fake dot).
+  Admin Users/Tests/Reports/Security/Settings route to "Coming soon" — page
+  files kept for the wire-up follow-up. Landing page: removed the "LIVE"
+  ledger (1,284 testers) and ticker (incl. the NeoBank payment line), 42
+  countries, 24–48h / 24h capacity, 14-day free trial / no credit card,
+  "Most Popular", automatic tester compensation, and unbuilt pricing
+  features (API/webhooks, SSO, custom integrations, CSV export); the
+  Testimonials fintech card now says sandbox/staging. Service claims that
+  may be delivered offline (vetting, NDAs, "professional QA review") and the
+  plan prices were left as-is and flagged for Eben. New pure helpers in
+  `src/utils/dashboardStats.js` + 7 new tests (34 total). PR: PR_LINK

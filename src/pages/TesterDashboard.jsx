@@ -12,12 +12,12 @@ import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
 import { spring } from '../motion/tokens';
 import useDarkMode from '../hooks/useDarkMode';
-import { testerStats, earningsData } from '../data/mockData';
+import { deriveTesterEarnings } from '../utils/dashboardStats';
 
 export default function TesterDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { availableTests, myApplications, applyToTest, hasApplied } = useAppData();
+  const { availableTests, myApplications, myPayouts, myAcceptedFindingTestIds, applyToTest, hasApplied } = useAppData();
   const [searchParams, setSearchParams] = useSearchParams();
   // Sidebar links to "Available Tests" / "My Applications" / "Earnings"
   // point here with ?tab=... instead of to separate placeholder pages —
@@ -74,7 +74,11 @@ export default function TesterDashboard() {
   const testTypes = ['all', ...new Set(availableTests.map((t) => t.type))];
   const filteredTests = typeFilter === 'all' ? availableTests : availableTests.filter((t) => t.type === typeFilter);
 
-  const thisMonthEarned = earningsData[earningsData.length - 1]?.earned || 0;
+  const earnings = deriveTesterEarnings({
+    applications: myApplications,
+    payouts: myPayouts,
+    acceptedFindingTestIds: myAcceptedFindingTestIds,
+  });
 
   return (
     <PlatformLayout title="Tester Dashboard">
@@ -108,27 +112,20 @@ export default function TesterDashboard() {
             below (was a dark gradient card, a different visual system) */}
         <div className="card rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-            {user?.name?.split(' ').map((n) => n[0]).join('') || 'MJ'}
+            {user?.name?.split(' ').map((n) => n[0]).join('') || '?'}
           </div>
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-1 flex-wrap">
-              <h2 className="font-display font-bold text-slate-900 dark:text-slate-50 text-xl">{user?.name}</h2>
-              <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 rounded-full">
-                <Star size={12} className="text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-400">{user?.rating}</span>
-              </div>
-              <Badge label="Top Tester" color="violet" />
-            </div>
+            <h2 className="font-display font-bold text-slate-900 dark:text-slate-50 text-xl mb-1">{user?.name}</h2>
             <p className="text-slate-500 dark:text-slate-400 text-sm">{user?.email}</p>
           </div>
           <div className="flex gap-6 text-center flex-shrink-0">
             <div>
-              <p className="text-2xl font-bold font-display text-slate-900 dark:text-slate-50">{user?.testsCompleted}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tests Done</p>
+              <p className="text-2xl font-bold font-display text-slate-900 dark:text-slate-50">{earnings.completedTests}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tests Completed</p>
             </div>
             <div className="w-px bg-slate-200 dark:bg-slate-700" />
             <div>
-              <p className="text-2xl font-bold font-display gradient-text">${testerStats.totalEarned.toLocaleString()}</p>
+              <p className="text-2xl font-bold font-display gradient-text">${earnings.totalEarned.toLocaleString()}</p>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Total Earned</p>
             </div>
           </div>
@@ -138,33 +135,29 @@ export default function TesterDashboard() {
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
           <StatCard
             label="Active Tests"
-            value={testerStats.activeTests}
+            value={earnings.activeTests}
             animate
             icon={CheckCircle}
             iconColor="violet"
           />
           <StatCard
             label="Tests Completed"
-            value={testerStats.completed}
+            value={earnings.completedTests}
             animate
-            trend={testerStats.trends.completed}
-            trendLabel=" this month"
             icon={Star}
             iconColor="cyan"
           />
           <StatCard
             label="Total Earned"
-            value={testerStats.totalEarned}
+            value={earnings.totalEarned}
             animate
             format={(n) => `$${Math.round(n).toLocaleString()}`}
-            trend={testerStats.trends.totalEarned}
-            trendLabel=" this month"
             icon={DollarSign}
             iconColor="green"
           />
           <StatCard
             label="Pending Payout"
-            value={testerStats.pendingPayout}
+            value={earnings.pendingPayout}
             animate
             format={(n) => `$${Math.round(n)}`}
             icon={Clock}
@@ -282,10 +275,12 @@ export default function TesterDashboard() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 mb-4">
-                      <span className="flex items-center gap-1">
-                        <Clock size={12} />
-                        {test.duration}
-                      </span>
+                      {test.duration && (
+                        <span className="flex items-center gap-1">
+                          <Clock size={12} />
+                          {test.duration}
+                        </span>
+                      )}
                       <span>{test.slotsTotal - test.slots} / {test.slotsTotal} spots filled</span>
                       <span>Deadline: {test.deadline}</span>
                     </div>
@@ -377,9 +372,12 @@ export default function TesterDashboard() {
           {activeTab === 'earnings' && (
             <div className="animate-fade-in card rounded-2xl p-6">
               <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Earnings History</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">Last 6 months</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+                Payouts recorded as paid, last 6 months. Pending payout is the compensation for tests where at
+                least one of your findings has been accepted and payment hasn't been recorded yet.
+              </p>
               <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={earningsData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                <BarChart data={earnings.monthly} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
                   <XAxis dataKey="month" tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
@@ -392,15 +390,15 @@ export default function TesterDashboard() {
               </ResponsiveContainer>
               <div className="mt-5 grid grid-cols-3 gap-4 border-t border-slate-100 dark:border-slate-700/50 pt-5">
                 <div className="text-center">
-                  <p className="text-2xl font-bold font-display text-slate-900 dark:text-slate-100">${thisMonthEarned.toLocaleString()}</p>
+                  <p className="text-2xl font-bold font-display text-slate-900 dark:text-slate-100">${earnings.thisMonth.toLocaleString()}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">This Month</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold font-display gradient-text">${testerStats.totalEarned.toLocaleString()}</p>
+                  <p className="text-2xl font-bold font-display gradient-text">${earnings.totalEarned.toLocaleString()}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">All Time</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold font-display text-emerald-600 dark:text-emerald-400">${testerStats.pendingPayout}</p>
+                  <p className="text-2xl font-bold font-display text-emerald-600 dark:text-emerald-400">${earnings.pendingPayout.toLocaleString()}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pending Payout</p>
                 </div>
               </div>
