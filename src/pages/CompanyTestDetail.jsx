@@ -7,6 +7,8 @@ import { Badge, StatusBadge, TypeBadge, PriorityBadge } from '../components/ui/B
 import EmptyState from '../components/ui/EmptyState';
 import { supabase } from '../lib/supabaseClient';
 import { loadApplicantProfiles } from '../lib/testerProfiles';
+import { loadFindingMessages } from '../lib/findingMessages';
+import FindingThread from '../components/findings/FindingThread';
 import { useAppData } from '../context/DataContext';
 import { useToast } from '../context/ToastContext';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
@@ -50,6 +52,8 @@ export default function CompanyTestDetail() {
   const [actingOn, setActingOn] = useState(null);
 
   const [findings, setFindings] = useState([]);
+  // finding id -> conversation history (UX-07, migration 0015)
+  const [threads, setThreads] = useState({});
   const [loadingFindings, setLoadingFindings] = useState(true);
   const [actingOnFinding, setActingOnFinding] = useState(null);
   // { findingId, decision } while a Reject/More Info reason is being typed —
@@ -97,8 +101,10 @@ export default function CompanyTestDetail() {
     if (error) {
       console.error('loadFindings:', error.message);
       setFindings([]);
+      setThreads({});
     } else {
       setFindings(data || []);
+      setThreads(await loadFindingMessages((data || []).map((f) => f.id)));
     }
     setLoadingFindings(false);
   }, [id]);
@@ -354,15 +360,21 @@ export default function CompanyTestDetail() {
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{f.description}</p>
-                    {f.review_reason && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 italic">
-                        {f.tester_response ? 'You asked' : 'Reviewer note'}: {f.review_reason}
-                      </p>
-                    )}
-                    {f.tester_response && (
-                      <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
-                        <span className="font-semibold">Tester replied:</span> {f.tester_response}
-                      </p>
+                    {threads[f.id]?.length ? (
+                      <FindingThread messages={threads[f.id]} viewer="company" />
+                    ) : (
+                      <>
+                        {f.review_reason && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+                            {f.tester_response ? 'You asked' : 'Reviewer note'}: {f.review_reason}
+                          </p>
+                        )}
+                        {f.tester_response && (
+                          <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
+                            <span className="font-semibold">Tester replied:</span> {f.tester_response}
+                          </p>
+                        )}
+                      </>
                     )}
 
                     {f.status === 'open' && (

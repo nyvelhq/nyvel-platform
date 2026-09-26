@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileSearch, Send, FileLock2, ClipboardList } from 'lucide-react';
+import { loadFindingMessages } from '../lib/findingMessages';
+import FindingThread from '../components/findings/FindingThread';
 import { MAX_FINDINGS_PER_TEST, MAX_FINDING_TITLE, MAX_FINDING_DESCRIPTION } from '../lib/findingLimits';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
@@ -46,6 +48,8 @@ export default function TesterTestDetail() {
   const [test, setTest] = useState(null);
   const [application, setApplication] = useState(null); // {id, status} or null
   const [findings, setFindings] = useState([]);
+  // finding id -> conversation history (UX-07, migration 0015)
+  const [threads, setThreads] = useState({});
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState('');
@@ -83,6 +87,7 @@ export default function TesterTestDetail() {
     setTest(testRow || null);
     setApplication(appRow || null);
     setFindings(findingRows || []);
+    setThreads(await loadFindingMessages((findingRows || []).map((f) => f.id)));
 
     // RLS (migration 0007) only returns the briefing to accepted testers who
     // have accepted the NDA where one is required.
@@ -373,15 +378,21 @@ export default function TesterTestDetail() {
                       </div>
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{f.description}</p>
-                    {f.review_reason && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-1">
-                        {f.status === 'more_info' || f.tester_response ? 'Question from the company' : 'Reviewer note'}: {f.review_reason}
-                      </p>
-                    )}
-                    {f.tester_response && f.status !== 'more_info' && (
-                      <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
-                        <span className="font-semibold">Your reply:</span> {f.tester_response}
-                      </p>
+                    {threads[f.id]?.length ? (
+                      <FindingThread messages={threads[f.id]} viewer="tester" />
+                    ) : (
+                      <>
+                        {f.review_reason && (
+                          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-1">
+                            {f.status === 'more_info' || f.tester_response ? 'Question from the company' : 'Reviewer note'}: {f.review_reason}
+                          </p>
+                        )}
+                        {f.tester_response && f.status !== 'more_info' && (
+                          <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
+                            <span className="font-semibold">Your reply:</span> {f.tester_response}
+                          </p>
+                        )}
+                      </>
                     )}
                     {f.status === 'more_info' && (
                       <div className="pt-1 space-y-2">

@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (POL-01)._
+_Last updated: 2026-09-26 by the orchestrator (UX-07)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -213,10 +213,20 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - **Detail pages** (test detail, requests, admin users/tests) are
      centred.
 
-   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/36_
-22. **UX-07 Finding conversation history** — only the latest "More info"
-   question/reply pair is kept; a second round overwrites it. Add a
-   `finding_messages` thread. _Size S–M · migration._ — _status: not started_
+   _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/36_
+22. **UX-07 Finding conversation history** — migration 0015 adds an
+   append-only `finding_messages` table (`docs/adr/0005-finding-conversation-history.md`),
+   written only by a trigger on `findings`. It logs each question, reply,
+   and accepted/rejected decision with its author and time.
+   - **Access:** no direct writes for anyone; readable by whoever can read
+     the finding.
+   - **Backfill:** existing questions and replies are copied in.
+   - **UI:** both finding views show the full thread, and fall back to the
+     old single question/reply if the table isn't there.
+   - **Tests:** 13 checks in `supabase/tests/70_finding_messages.sql`, 3 unit
+     tests.
+
+   _Size S–M · migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/37_
 23. **ADM-02 Admin Reports / Settings** — currently "Coming soon"; rebuild
    Reports on real payouts/findings data; Settings only once there's
    something real to configure. Security page stays hidden until real
@@ -242,6 +252,8 @@ runs before merging; test it on a local Postgres like 0006/0007.
 
 ### Eben-owned (decisions or dashboard work, not code — do in parallel)
 
+- Run migration `0015_finding_messages.sql` (UX-07) in the Supabase SQL
+  editor before merging its PR.
 - Run migration `0014_findings_cap.sql` (SEC-04) in the Supabase SQL editor
   before merging its PR.
 - Run migration `0013_tester_profiles.sql` (UX-05) in the Supabase SQL
