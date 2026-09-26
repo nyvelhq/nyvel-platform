@@ -70,7 +70,7 @@ _Last updated: 2026-09-26 by the orchestrator (UX-02)._
    let a company mark a test complete; let a tester reply to a
    "More info needed" finding; add a confirmation step to admin
    "Mark Paid" (irreversible) and surface payout load/save errors instead of
-   an empty state. — _status: in PR — UX02_PR_LINK_ (migration 0007,
+   an empty state. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/23_ (migration 0007,
    `docs/adr/0002-close-the-loop.md`; also fixes briefings being readable by
    every tester through the API)
 10. **NDA-01 Tester NDA acceptance** — click-through confidentiality
