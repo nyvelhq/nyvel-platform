@@ -6,6 +6,7 @@ import Button from '../components/ui/Button';
 import { Badge, StatusBadge, TypeBadge, PriorityBadge } from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import { supabase } from '../lib/supabaseClient';
+import { loadApplicantProfiles } from '../lib/testerProfiles';
 import { useAppData } from '../context/DataContext';
 import { useToast } from '../context/ToastContext';
 import { ConfirmationModal } from '../components/admin/ConfirmationModal';
@@ -43,6 +44,8 @@ export default function CompanyTestDetail() {
   const test = companyTests.find((t) => t.id === id);
 
   const [applicants, setApplicants] = useState([]);
+  // tester id -> skills/devices/etc. from applicant_profiles (UX-05)
+  const [applicantProfiles, setApplicantProfiles] = useState({});
   const [loading, setLoading] = useState(true);
   const [actingOn, setActingOn] = useState(null);
 
@@ -61,6 +64,7 @@ export default function CompanyTestDetail() {
 
   const loadApplicants = useCallback(async () => {
     setLoading(true);
+    loadApplicantProfiles(id).then(setApplicantProfiles);
     const { data, error } = await supabase
       .from('applications')
       // applications has two FKs into profiles (tester_id, decided_by) —
@@ -244,6 +248,8 @@ export default function CompanyTestDetail() {
               <tbody>
                 {applicants.map((a) => {
                   const badge = decisionBadge[a.status] || decisionBadge.pending;
+                  const tp = applicantProfiles[a.tester_id];
+                  const facts = tp ? [tp.country, tp.yearsExp && `${tp.yearsExp} experience`, tp.connection].filter(Boolean) : [];
                   return (
                     <tr key={a.id} className="table-row-enter">
                       <td>
@@ -251,6 +257,18 @@ export default function CompanyTestDetail() {
                           {a.profiles?.name || 'Unnamed tester'}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">{a.profiles?.email}</div>
+                        {tp ? (
+                          <div className="mt-1.5 space-y-1 text-xs text-slate-600 dark:text-slate-400 max-w-md">
+                            {tp.skills.length > 0 && (
+                              <p className="font-medium text-slate-700 dark:text-slate-300">{tp.skills.join(', ')}</p>
+                            )}
+                            {tp.devices.length > 0 && <p>Devices: {tp.devices.join(', ')}</p>}
+                            {facts.length > 0 && <p>{facts.join(' · ')}</p>}
+                            {tp.bio && <p className="line-clamp-2 text-slate-500 dark:text-slate-400" title={tp.bio}>{tp.bio}</p>}
+                          </div>
+                        ) : (
+                          <div className="text-xs mt-0.5 text-slate-500 dark:text-slate-400">No tester profile yet</div>
+                        )}
                         {test?.nda && (
                           <div className={`text-xs mt-0.5 whitespace-nowrap ${a.nda_accepted_at ? 'text-success-700 dark:text-success-400' : 'text-slate-500 dark:text-slate-400'}`}>
                             {a.nda_accepted_at

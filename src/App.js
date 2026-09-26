@@ -4,6 +4,7 @@ import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
 import { duration, ease } from './motion/tokens';
 import { ACCESS_PASSWORD, ACCESS_QUERY_PARAM } from './utils/accessGate';
 import { supabase } from './lib/supabaseClient';
+import { loadTesterProfile, saveTesterProfile, hasTesterProfileFields } from './lib/testerProfiles';
 
 // Pages
 // Admin dashboard pages implemented with comprehensive validation and error handling
@@ -41,44 +42,19 @@ export const useAuth = () => {
 };
 
 const AUTH_FLAG_KEY = 'nyvel_authenticated';
-// Onboarding/profile fields that live only in the client for now (bio,
-// skills, devices, etc.) — they aren't columns on public.profiles yet
-// (that table only has id/name/email/role/client_id, see supabase/schema.sql).
-// Cached per-user in sessionStorage so TesterOnboarding/TesterProfile keep
-// working unchanged until a later increment adds real columns for them.
-const EXTRA_STORAGE_PREFIX = 'nyvel_profile_extra_';
-
-const loadExtra = (uid) => {
-  if (!uid) return {};
-  try {
-    const raw = sessionStorage.getItem(EXTRA_STORAGE_PREFIX + uid);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-};
-
-const saveExtra = (uid, extra) => {
-  if (!uid) return;
-  try {
-    sessionStorage.setItem(EXTRA_STORAGE_PREFIX + uid, JSON.stringify(extra));
-  } catch {
-    // sessionStorage unavailable — extra profile fields will not survive refresh
-  }
-};
 
 // Build the app-facing user object from a Supabase auth user + their
 // public.profiles row. role/client_id come from the server (F-02 — never
-// chosen by the client), everything else is either the profile row or the
-// locally-cached "extra" fields described above.
-const buildUser = (authUser, profileRow) => ({
+// chosen by the client). Testers also get their public.tester_profiles
+// fields (UX-05, migration 0013).
+const buildUser = (authUser, profileRow, testerProfile) => ({
   id: authUser.id,
   email: profileRow?.email || authUser.email,
   name: profileRow?.name || '',
   role: profileRow?.role || 'tester',
   clientId: profileRow?.client_id || null,
   createdAt: profileRow?.created_at || authUser.created_at || null,
-  ...loadExtra(authUser.id),
+  ...(testerProfile || {}),
 });
 
 const fetchProfile = async (userId) => {
@@ -88,6 +64,19 @@ const fetchProfile = async (userId) => {
     return null;
   }
   return data;
+};
+
+// Profile row plus, for testers, their saved onboarding answers. A failed
+// tester-profile load leaves those fields unset rather than blocking sign-in.
+const loadUser = async (authUser) => {
+  const profile = await fetchProfile(authUser.id);
+  let testerProfile = null;
+  if ((profile?.role || 'tester') === 'tester') {
+    const result = await loadTesterProfile(authUser.id);
+    if (result.error) console.error('Failed to load tester profile:', result.error.message);
+    testerProfile = result.profile;
+  }
+  return buildUser(authUser, profile, testerProfile);
 };
 
 export function AuthProvider({ children }) {
@@ -116,8 +105,8 @@ export function AuthProvider({ children }) {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user && mounted) {
-        const profile = await fetchProfile(session.user.id);
-        if (mounted) setUser(buildUser(session.user, profile));
+        const nextUser = await loadUser(session.user);
+        if (mounted) setUser(nextUser);
       }
       if (mounted) setAuthLoading(false);
     };
@@ -129,8 +118,8 @@ export function AuthProvider({ children }) {
         setUser(null);
         return;
       }
-      const profile = await fetchProfile(session.user.id);
-      if (mounted) setUser(buildUser(session.user, profile));
+      const nextUser = await loadUser(session.user);
+      if (mounted) setUser(nextUser);
     });
 
     return () => {
@@ -155,9 +144,9 @@ export function AuthProvider({ children }) {
     if (error) return { error };
     let role = null;
     if (data?.session?.user) {
-      const profile = await fetchProfile(data.session.user.id);
-      role = profile?.role || 'tester';
-      setUser(buildUser(data.session.user, profile));
+      const nextUser = await loadUser(data.session.user);
+      role = nextUser.role;
+      setUser(nextUser);
     }
     authenticate();
     return { error: null, role };
@@ -180,26 +169,27 @@ export function AuthProvider({ children }) {
     return { error };
   };
 
-  const updateUser = (patch) => {
-    setUser((u) => {
-      if (!u) return u;
-      const next = { ...u, ...patch };
-      const { id, email, name, role, clientId, createdAt, ...extra } = next;
-      saveExtra(id, extra);
-      return next;
-    });
-    // Best-effort sync of the one editable field that does live server-side —
-    // display name. Everything else in `patch` is a local-only extra field
-    // (see buildUser/loadExtra above) until those columns exist.
-    if (patch.name && user?.id) {
-      supabase
-        .from('profiles')
-        .update({ name: patch.name })
-        .eq('id', user.id)
-        .then(({ error }) => {
-          if (error) console.error('Failed to sync name to profile:', error.message);
-        });
+  // Saves profile edits to the server, then updates `user`. Resolves to
+  // { error } so callers can tell the person when a save failed; nothing
+  // changes locally unless every write succeeded.
+  const updateUser = async (patch) => {
+    if (!user?.id) return { error: { message: 'You are signed out.' } };
+    if (hasTesterProfileFields(patch)) {
+      const { error } = await saveTesterProfile(user.id, patch);
+      if (error) {
+        console.error('Failed to save tester profile:', error.message);
+        return { error };
+      }
     }
+    if (typeof patch.name === 'string' && patch.name.trim() && patch.name !== user.name) {
+      const { error } = await supabase.from('profiles').update({ name: patch.name.trim() }).eq('id', user.id);
+      if (error) {
+        console.error('Failed to save name:', error.message);
+        return { error };
+      }
+    }
+    setUser((u) => (u ? { ...u, ...patch } : u));
+    return { error: null };
   };
 
   return (

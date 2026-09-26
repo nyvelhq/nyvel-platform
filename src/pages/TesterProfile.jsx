@@ -23,8 +23,15 @@ export default function TesterProfile() {
     setIsEditingBio(true);
   };
 
-  const saveBio = () => {
-    updateUser({ bio: bioDraft });
+  const [savingBio, setSavingBio] = useState(false);
+  const saveBio = async () => {
+    setSavingBio(true);
+    const { error } = await updateUser({ bio: bioDraft });
+    setSavingBio(false);
+    if (error) {
+      addToast(`Couldn't save your bio: ${error.message || 'please try again.'}`, 'error');
+      return;
+    }
     setIsEditingBio(false);
     addToast('Bio updated', 'success');
   };
@@ -99,6 +106,8 @@ export default function TesterProfile() {
                 <textarea
                   autoFocus
                   rows={3}
+                  maxLength={2000}
+                  aria-label="Bio"
                   className="form-input text-sm resize-none"
                   value={bioDraft}
                   onChange={(e) => setBioDraft(e.target.value)}
@@ -107,7 +116,7 @@ export default function TesterProfile() {
                   }}
                 />
                 <div className="flex gap-2">
-                  <Button size="sm" icon={<Check size={14} />} onClick={saveBio}>Save</Button>
+                  <Button size="sm" icon={<Check size={14} />} onClick={saveBio} loading={savingBio}>Save</Button>
                   <Button size="sm" variant="secondary" icon={<X size={14} />} onClick={() => setIsEditingBio(false)}>
                     Cancel
                   </Button>

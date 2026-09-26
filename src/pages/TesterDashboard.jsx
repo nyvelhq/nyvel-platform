@@ -107,7 +107,7 @@ export default function TesterDashboard() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">Complete your tester profile</p>
               <p className="text-xs text-brand-700 dark:text-brand-300 mt-0.5">
-                Finish onboarding to unlock higher-paying tests matched to your devices and skills.
+                Finish your profile so companies can see your skills and devices when you apply.
               </p>
             </div>
             <Button size="sm" onClick={() => navigate('/tester/onboarding')}>
