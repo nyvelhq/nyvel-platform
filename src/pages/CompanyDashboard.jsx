@@ -6,6 +6,7 @@ import {
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import StatCard from '../components/ui/StatCard';
+import ActionList from '../components/ui/ActionList';
 import EmptyState from '../components/ui/EmptyState';
 import { StatusBadge, TypeBadge, SeverityBadge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
@@ -15,7 +16,7 @@ import TestDetailDrawer from '../components/company/TestDetailDrawer';
 import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
-import { deriveCompanySummary } from '../utils/dashboardStats';
+import { deriveCompanySummary, testsNeedingAction, pluralize } from '../utils/dashboardStats';
 
 const greeting = () => {
   const h = new Date().getHours();
@@ -37,6 +38,7 @@ export default function CompanyDashboard() {
   };
 
   const summary = useMemo(() => deriveCompanySummary(companyTests), [companyTests]);
+  const openTest = (id) => navigate(`/company/tests/${id}`);
   const issuesBySeverity = summary.severity;
   const severityTotal = issuesBySeverity.reduce((sum, s) => sum + s.value, 0);
   const filteredSeverityEntry = severityFilter
@@ -87,10 +89,38 @@ export default function CompanyDashboard() {
               <StatCard label="Testers Accepted" value={summary.acceptedTesters} animate icon={Users} iconColor="cyan" />
             </ScrollReveal>
             <ScrollReveal animation="fade-in-page" staggerIndex={2} staggerDelay={100}>
-              <StatCard label="Applicants to Review" value={summary.applicantsToReview} animate icon={UserPlus} iconColor="amber" />
+              <StatCard
+                label="Applicants to Review"
+                value={summary.applicantsToReview}
+                animate
+                icon={UserPlus}
+                iconColor="amber"
+                footer={
+                  <ActionList
+                    items={testsNeedingAction(companyTests, 'pendingApplicants').map((t) => ({ ...t, detail: `${pluralize(t.count, 'applicants')} waiting` }))}
+                    onOpen={openTest}
+                    onMore={() => navigate('/company/tests')}
+                    emptyText="Nothing waiting on you."
+                  />
+                }
+              />
             </ScrollReveal>
             <ScrollReveal animation="fade-in-page" staggerIndex={3} staggerDelay={100}>
-              <StatCard label="Findings to Triage" value={summary.findingsToTriage} animate icon={AlertTriangle} iconColor="amber" />
+              <StatCard
+                label="Findings to Triage"
+                value={summary.findingsToTriage}
+                animate
+                icon={AlertTriangle}
+                iconColor="amber"
+                footer={
+                  <ActionList
+                    items={testsNeedingAction(companyTests, 'openFindings').map((t) => ({ ...t, detail: `${pluralize(t.count, 'findings')} waiting` }))}
+                    onOpen={openTest}
+                    onMore={() => navigate('/company/tests')}
+                    emptyText="Nothing waiting on you."
+                  />
+                }
+              />
             </ScrollReveal>
           </div>
         </div>

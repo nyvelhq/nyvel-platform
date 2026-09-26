@@ -1,4 +1,5 @@
 import React from 'react';
+import { pluralize } from '../../utils/dashboardStats';
 
 // Unified semantic color system for badges (refined, more subtle)
 const colorMap = {
@@ -98,13 +99,14 @@ export function SeverityBadge({ count, type = 'issues' }) {
   else if (count > 5) color = 'warning';
   else if (count > 0) color = 'warning';
 
+  const text = pluralize(count, type);
   return (
     <Badge
-      label={`${count} ${type}`}
+      label={text}
       color={color}
       dot
       role="status"
-      aria-label={`${count} ${type} found`}
+      aria-label={`${text} found`}
     />
   );
 }

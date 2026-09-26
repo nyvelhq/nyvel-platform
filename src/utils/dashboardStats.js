@@ -9,11 +9,10 @@ export function deriveTesterEarnings({ applications = [], payouts = [], accepted
   const acceptedFindings = new Set(acceptedFindingTestIds);
 
   const totalEarned = paid.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-  const pendingPayout = applications
-    .filter((a) => (a.status === 'Active' || a.status === 'Completed')
-      && acceptedFindings.has(a.sourceTestId)
-      && !paidTestIds.has(a.sourceTestId))
-    .reduce((sum, a) => sum + (Number(a.compensation) || 0), 0);
+  const owed = applications.filter((a) => (a.status === 'Active' || a.status === 'Completed')
+    && acceptedFindings.has(a.sourceTestId)
+    && !paidTestIds.has(a.sourceTestId));
+  const pendingPayout = owed.reduce((sum, a) => sum + (Number(a.compensation) || 0), 0);
 
   const monthly = [];
   for (let i = 5; i >= 0; i--) {
@@ -34,6 +33,8 @@ export function deriveTesterEarnings({ applications = [], payouts = [], accepted
     acceptedFindings: acceptedFindingTestIds.length,
     totalEarned,
     pendingPayout,
+    // The tests behind pendingPayout, so the dashboard can link to them (UX-06).
+    pendingPayoutTests: owed.map((a) => ({ id: a.sourceTestId, name: a.testName, amount: Number(a.compensation) || 0 })),
     thisMonth: monthly[monthly.length - 1].earned,
     monthly: monthly.map(({ month, earned }) => ({ month, earned })),
   };
@@ -60,3 +61,16 @@ export function deriveCompanySummary(companyTests = []) {
     })),
   };
 }
+
+// Tests with something waiting on the company, most urgent first (UX-06).
+// `field` is a per-test count on companyTests rows, e.g. 'pendingApplicants'.
+export function testsNeedingAction(companyTests = [], field) {
+  return companyTests
+    .filter((t) => (t[field] || 0) > 0)
+    .map((t) => ({ id: t.id, name: t.name, count: t[field] }))
+    .sort((a, b) => b.count - a.count || String(a.name).localeCompare(String(b.name)));
+}
+
+// "1 bug" / "2 bugs". Pass the plural; a trailing "s" is dropped for one.
+export const pluralize = (count, plural) =>
+  `${count} ${count === 1 && plural.endsWith('s') ? plural.slice(0, -1) : plural}`;

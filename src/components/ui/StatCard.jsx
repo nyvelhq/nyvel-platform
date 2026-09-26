@@ -25,6 +25,7 @@ export default function StatCard({
   prefix,
   suffix,
   decimals,
+  footer,
 }) {
   const canAnimate = animate && typeof value === 'number';
   const displayValue = formatter ? formatter(value) : value;
@@ -110,6 +111,7 @@ export default function StatCard({
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{trendCaption}</p>
         )}
       </div>
+      {footer && <div className="pt-3 border-t border-slate-100 dark:border-slate-800">{footer}</div>}
     </div>
   );
 }

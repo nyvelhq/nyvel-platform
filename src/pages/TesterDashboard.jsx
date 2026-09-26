@@ -6,6 +6,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import StatCard from '../components/ui/StatCard';
+import ActionList from '../components/ui/ActionList';
 import { StatusBadge, TypeBadge, Badge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import { useAuth } from '../App';
@@ -177,6 +178,13 @@ export default function TesterDashboard() {
             format={(n) => `$${Math.round(n)}`}
             icon={Clock}
             iconColor="amber"
+            footer={
+              <ActionList
+                items={earnings.pendingPayoutTests.map((t) => ({ ...t, detail: `$${t.amount.toLocaleString()} owed` }))}
+                onOpen={(id) => navigate(`/tester/tests/${id}`)}
+                emptyText="Nothing owed right now."
+              />
+            }
           />
         </div>
 
