@@ -8,7 +8,7 @@ a non-local database.
 
 ## Run locally
 
-Needs Docker, Node 20 and `psql`.
+Needs Docker, Node 22+ (supabase-js uses its built-in WebSocket) and `psql`.
 
 ```bash
 cd e2e
