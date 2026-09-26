@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (SEC-04)._
+_Last updated: 2026-09-26 by the orchestrator (ADM-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -172,11 +172,23 @@ runs before merging; test it on a local Postgres like 0006/0007.
    The finding form shows "N of 25 findings used", replaces the form with a
    message at the cap, and limits field lengths to match. 7 checks in
    `supabase/tests/60_findings_cap.sql`; STRIDE D3 marked fixed. _Size S ·
-   migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/33_
-19. **ADM-01 Admin Users & Tests on real data** — both are "Coming soon"
-   since UX-01; rebuild on `profiles`/`clients`/`tests` reusing the existing
-   table UI in `AdminUsers.jsx`/`AdminTests.jsx`, with read-only views first
-   and no fake bulk actions. _Size M._ — _status: not started_
+   migration._ — _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/33_
+19. **ADM-01 Admin Users & Tests on real data** — `/admin/users` and
+   `/admin/tests` are live again, rebuilt as lean read-only pages. The old
+   mock pages had fake inline edits, bulk actions and ratings, and are
+   replaced.
+   - **Users:** each account with role, company or country, activity
+     (applications and accepted findings for testers, tests for company
+     users) and join date; role filter and search; a detail drawer
+     (profile status, skills, applications, paid out). Role and company
+     changes still happen in Supabase, and the page says so.
+   - **Tests:** each test with company, status, testers accepted vs
+     wanted, applicants to review, and accepted vs waiting findings;
+     status filter and search; a detail drawer.
+
+   The counting logic is in `src/utils/adminDirectory.js`, with 5 unit
+   tests. No migration: admin RLS already allowed these reads. — _status:
+   in PR — PR_LINK_
 20. **UX-06 "Needs your attention" links** — the company dashboard's
    "Applicants to Review"/"Findings to Triage" cards should link to the
    tests that need action; same for the tester's "Pending Payout". Also
