@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-06)._
+_Last updated: 2026-09-26 by the orchestrator (POL-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -195,13 +195,25 @@ runs before merging; test it on a local Postgres like 0006/0007.
    "+N more". The tester's "Pending Payout" card lists the tests they're
    owed for, linking to each. Adds a shared `ActionList` and a StatCard
    `footer` slot. Fixes "1 bugs" → "1 bug" (`pluralize` helper). 3 new
-   unit tests. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/35_
-21. **POL-01 Visual consistency** — emoji icons in test-type cards vs lucide
-   elsewhere; severity and status badges sharing colours ("Low" = "Accepted"
-   green); internal test IDs in the My Tests table; password gate branding
-   and its artificial 600ms delay; admin stat tiles vs shared `StatCard`;
-   unused wide empty space on detail pages. _Size S–M._ — _status: not
-   started_
+   unit tests. — _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/35_
+21. **POL-01 Visual consistency** —
+   - **Icons:** test-type cards (landing page and Create Test) use lucide
+     icons instead of emoji, and the Create Test cards are restacked so text
+     no longer spills out. Stray emoji are gone: 🚀 on Launch, ✅ in
+     onboarding, ✨ and ✓ in the hero.
+   - **Severity badges:** "Low" is neutral grey instead of the same green as
+     "Accepted" (Low slate, Medium brand, High amber, Critical red).
+   - **My Tests:** the internal test-ID column is removed.
+   - **Password gate:** uses the real Nyvel logo and wordmark, and the
+     artificial 600ms delay is gone.
+   - **StatCard:** padding goes from 48px to 24/32px and the icon box from
+     80px to 40px (this spacing scale doubles Tailwind's), so cards are much
+     tighter on phones. The admin dashboard already used the shared
+     StatCard.
+   - **Detail pages** (test detail, requests, admin users/tests) are
+     centred.
+
+   _status: in PR — PR_LINK_
 22. **UX-07 Finding conversation history** — only the latest "More info"
    question/reply pair is kept; a second round overwrites it. Add a
    `finding_messages` thread. _Size S–M · migration._ — _status: not started_

@@ -54,11 +54,11 @@ export default function StatCard({
   const trendPositive = hasTrend && trend > 0;
 
   return (
-    <div className="stat-card flex flex-col gap-4">
+    <div className="stat-card flex flex-col gap-2 sm:gap-3">
       <div className="flex items-start justify-between">
         {Icon && (
           <div
-            className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+            className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ${
               iconColorMap[iconColor] || iconColorMap.brand
             }`}
             aria-hidden="true"

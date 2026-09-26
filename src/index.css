@@ -127,7 +127,7 @@
 
   /* Stat card — dashboard KPI display */
   .stat-card {
-    @apply card p-6 hover:shadow-elevation-sm dark:hover:shadow-elevation-dark-md transition-shadow duration-200;
+    @apply card p-3 sm:p-4 hover:shadow-elevation-sm dark:hover:shadow-elevation-dark-md transition-shadow duration-200;
   }
 
   /* Data table styling */

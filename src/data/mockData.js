@@ -1,14 +1,16 @@
+import { Bug, Target, Zap, CalendarDays, CreditCard, Gamepad2, Globe, Home } from 'lucide-react';
+
 // ─── SHARED ───────────────────────────────────────────────────────
 
 export const testTypes = [
-  { name: 'Bug Hunt', icon: '🐛', desc: 'Crowdsourced defect discovery with real users across real devices.', color: 'red' },
-  { name: 'Usability Study', icon: '🎯', desc: 'Recorded sessions capturing how users actually navigate your product.', color: 'violet' },
-  { name: 'Load Test', icon: '⚡', desc: 'Live concurrent user sessions to stress-test your infrastructure.', color: 'yellow' },
-  { name: 'Multi-Day Study', icon: '📅', desc: 'Longitudinal feedback collected over days or weeks of real usage.', color: 'blue' },
-  { name: 'Fintech & Payments', icon: '💳', desc: 'Structured testing for payment and checkout flows across fintech apps.', color: 'green' },
-  { name: 'Game Playtesting', icon: '🎮', desc: 'Multiplayer, balance, and performance testing by real gamers.', color: 'purple' },
-  { name: 'Global QA', icon: '🌍', desc: 'Manual testing with localized testers in the markets you target.', color: 'cyan' },
-  { name: 'In-Home Usage', icon: '🏠', desc: 'Field testing for physical or location-dependent digital products.', color: 'orange' },
+  { name: 'Bug Hunt', icon: Bug, desc: 'Crowdsourced defect discovery with real users across real devices.', color: 'red' },
+  { name: 'Usability Study', icon: Target, desc: 'Recorded sessions capturing how users actually navigate your product.', color: 'violet' },
+  { name: 'Load Test', icon: Zap, desc: 'Live concurrent user sessions to stress-test your infrastructure.', color: 'yellow' },
+  { name: 'Multi-Day Study', icon: CalendarDays, desc: 'Longitudinal feedback collected over days or weeks of real usage.', color: 'blue' },
+  { name: 'Fintech & Payments', icon: CreditCard, desc: 'Structured testing for payment and checkout flows across fintech apps.', color: 'green' },
+  { name: 'Game Playtesting', icon: Gamepad2, desc: 'Multiplayer, balance, and performance testing by real gamers.', color: 'purple' },
+  { name: 'Global QA', icon: Globe, desc: 'Manual testing with localized testers in the markets you target.', color: 'cyan' },
+  { name: 'In-Home Usage', icon: Home, desc: 'Field testing for physical or location-dependent digital products.', color: 'orange' },
 ];
 
 export const pricingPlans = [

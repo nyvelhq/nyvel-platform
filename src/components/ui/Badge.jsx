@@ -112,12 +112,14 @@ export function SeverityBadge({ count, type = 'issues' }) {
 }
 
 /**
- * PriorityBadge — displays priority level (Low, Medium, High, Critical)
+ * PriorityBadge — displays priority/severity level (Low, Medium, High, Critical).
+ * Low is neutral rather than green so it can't be mistaken for an
+ * "Accepted" status badge next to it (POL-01).
  */
 export function PriorityBadge({ priority }) {
   const priorityMap = {
-    Low: 'success',
-    Medium: 'warning',
+    Low: 'slate',
+    Medium: 'brand',
     High: 'warning',
     Critical: 'error',
   };

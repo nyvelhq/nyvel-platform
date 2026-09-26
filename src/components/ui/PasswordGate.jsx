@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Button from './Button';
+import NyvelMark from './NyvelMark';
 import { ACCESS_PASSWORD } from '../../utils/accessGate';
 
 /**
@@ -11,24 +12,15 @@ export default function PasswordGate({ onAuthenticate }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
-
-    await new Promise((res) => setTimeout(res, 600));
-
     if (password === ACCESS_PASSWORD) {
       onAuthenticate();
-      setPassword('');
     } else {
       setError('Incorrect password. Please try again.');
-      setPassword('');
     }
-
-    setLoading(false);
+    setPassword('');
   };
 
   return (
@@ -36,12 +28,10 @@ export default function PasswordGate({ onAuthenticate }) {
       <div className="w-full max-w-md px-6 py-8">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-lg bg-brand-500 mb-4">
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-bold text-white font-display">Nyvel</h1>
+          <NyvelMark size={56} className="block rounded-xl shadow-glow mx-auto mb-4" />
+          <h1 className="text-3xl font-bold text-white font-display">
+            Ny<span className="text-brand-400">vel</span>
+          </h1>
           <p className="text-slate-400 mt-1">Private Platform</p>
         </div>
 
@@ -59,13 +49,11 @@ export default function PasswordGate({ onAuthenticate }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
                 autoFocus
-                disabled={loading}
                 className="form-input bg-slate-800 border-slate-700 text-white placeholder-slate-500 pr-11 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                disabled={loading}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
@@ -80,10 +68,9 @@ export default function PasswordGate({ onAuthenticate }) {
           <Button
             type="submit"
             className="w-full"
-            disabled={!password || loading}
-            loading={loading}
+            disabled={!password}
           >
-            {loading ? 'Verifying...' : 'Access Platform'}
+            Access Platform
           </Button>
         </form>
 

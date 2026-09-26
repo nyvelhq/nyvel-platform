@@ -66,7 +66,7 @@ export default function AdminTests() {
 
   return (
     <PlatformLayout title="Tests">
-      <div className="p-2 sm:p-8 space-y-6 max-w-6xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard label="Active tests" value={active.length} icon={FlaskConical} iconColor="brand"
             trendCaption={`${rows.length} tests in total`} />

@@ -77,7 +77,7 @@ export default function AdminRequests() {
 
   return (
     <PlatformLayout title="Access Requests">
-      <div className="p-2 sm:p-8 space-y-6 max-w-4xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-sm text-slate-600 dark:text-slate-400">
             {newCount} new · Approving doesn&apos;t create an account: invite the person from Supabase Auth,

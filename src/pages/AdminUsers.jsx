@@ -90,7 +90,7 @@ export default function AdminUsers() {
 
   return (
     <PlatformLayout title="Users">
-      <div className="p-2 sm:p-8 space-y-6 max-w-6xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard label="Testers" value={counts.tester} icon={UserRound} iconColor="brand"
             trendCaption={`${rows.filter((r) => r.role === 'tester' && r.profileComplete).length} with a complete profile`} />
