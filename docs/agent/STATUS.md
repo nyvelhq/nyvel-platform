@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (backlog reprioritized with Eben)._
+_Last updated: 2026-09-26 by the orchestrator (DEV-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -92,8 +92,16 @@ runs before merging; test it on a local Postgres like 0006/0007.
    briefings and findings, decide applications and triage findings.
    Reproduced locally. Migration 0008 pins self-insert to tester/no company
    and adds a trigger rejecting non-admin API changes to role/client_id/
-   email. _Size S · migration · RLS._ — _status: in PR —
-   https://github.com/nyvelhq/nyvel-platform/pull/24_
+   email. _Size S · migration · RLS._ — _status: done — merged via
+   https://github.com/nyvelhq/nyvel-platform/pull/24_ (0008 applied by Eben)
+11a. **DEV-01 Real CI gates + merge without bypass** — lint job was a no-op
+   (`|| echo`); no CI coverage of SQL at all. Added `npm run lint`
+   (zero warnings), a Postgres 15 job that applies schema + all migrations
+   twice and runs `supabase/tests/*.sql` access-rule tests, a PR template
+   with a sign-off checklist, and documented branch-protection settings
+   (RUNBOOK §4.1). The new DB tests immediately caught a bug in 0007:
+   `set_test_status` was callable by anon / profile-less users (NULL from
+   `is_admin()`), fixed by migration 0009. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/25_
 12. **SEC-02 Make paid payouts immutable + auditable** — `payouts` is
    "append-only once paid" by convention only; an admin update silently
    rewrites amount/recipient with no history. Trigger rejecting updates to
