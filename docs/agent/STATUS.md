@@ -85,11 +85,15 @@ then growth blockers, then mobile/accessibility, then admin tooling, then
 polish. "Migration" = needs a `supabase/migrations/NNNN_*.sql` that Eben
 runs before merging; test it on a local Postgres like 0006/0007.
 
-11. **SEC-01 Pin role on profile self-insert** — `profiles: admin can
-   insert` lets a signed-in user insert their own profile row with any
-   `role`, including `admin`, if their row is ever missing. One-line policy
-   fix (STRIDE §2.2 T3 / §3.1). _Size S · migration · RLS._ — _status: not
-   started_
+11. **SEC-01 Lock profile privileges** — while fixing the latent
+   self-insert gap (STRIDE T3) found a **live** hole: the self-update policy
+   pins `role` but not `client_id`, so any tester could attach themselves to
+   a company (client_id is visible on open tests) and read its drafts,
+   briefings and findings, decide applications and triage findings.
+   Reproduced locally. Migration 0008 pins self-insert to tester/no company
+   and adds a trigger rejecting non-admin API changes to role/client_id/
+   email. _Size S · migration · RLS._ — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/24_
 12. **SEC-02 Make paid payouts immutable + auditable** — `payouts` is
    "append-only once paid" by convention only; an admin update silently
    rewrites amount/recipient with no history. Trigger rejecting updates to
