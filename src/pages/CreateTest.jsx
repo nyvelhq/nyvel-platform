@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronRight, FlaskConical, Users, Eye, Circle, CheckCircle2, Square, CheckSquare, RotateCcw, Check } from 'lucide-react';
+import { ChevronRight, FlaskConical, Users, Eye, Circle, CheckCircle2, Square, CheckSquare, RotateCcw, Check, Bug, Target, Zap, CalendarDays, CreditCard, Gamepad2, Rocket } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import Stepper from '../components/ui/Stepper';
@@ -18,12 +18,12 @@ const stepVariants = {
 };
 
 const testTypeOptions = [
-  { id: 'bug-hunt', label: 'Bug Hunt', icon: '🐛', desc: 'Find defects & crashes', canonical: 'Bug Hunt' },
-  { id: 'usability', label: 'Usability Study', icon: '🎯', desc: 'UX feedback & recordings', canonical: 'Usability' },
-  { id: 'load-test', label: 'Load Test', icon: '⚡', desc: 'Performance under load', canonical: 'Load Test' },
-  { id: 'multi-day', label: 'Multi-Day Study', icon: '📅', desc: 'Longitudinal feedback', canonical: 'Multi-Day' },
-  { id: 'fintech', label: 'Fintech & Payments', icon: '💳', desc: 'Payment & checkout flow testing', canonical: 'Fintech' },
-  { id: 'game', label: 'Game Playtesting', icon: '🎮', desc: 'Multiplayer & performance', canonical: 'Game' },
+  { id: 'bug-hunt', label: 'Bug Hunt', icon: Bug, desc: 'Find defects & crashes', canonical: 'Bug Hunt' },
+  { id: 'usability', label: 'Usability Study', icon: Target, desc: 'UX feedback & recordings', canonical: 'Usability' },
+  { id: 'load-test', label: 'Load Test', icon: Zap, desc: 'Performance under load', canonical: 'Load Test' },
+  { id: 'multi-day', label: 'Multi-Day Study', icon: CalendarDays, desc: 'Longitudinal feedback', canonical: 'Multi-Day' },
+  { id: 'fintech', label: 'Fintech & Payments', icon: CreditCard, desc: 'Payment & checkout flow testing', canonical: 'Fintech' },
+  { id: 'game', label: 'Game Playtesting', icon: Gamepad2, desc: 'Multiplayer & performance', canonical: 'Game' },
 ];
 
 const platforms = ['iOS', 'Android', 'Web', 'macOS', 'Windows', 'API'];
@@ -219,14 +219,16 @@ export default function CreateTest() {
                     key={t.id}
                     type="button"
                     onClick={() => set('type', t.id)}
-                    className={`flex items-start gap-3 p-3 rounded-xl border-[1.5px] text-left transition-all
+                    className={`flex flex-col gap-1.5 p-2 rounded-xl border-[1.5px] text-left transition-all
                       ${selected
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-950/40 dark:border-brand-400'
                         : 'border-slate-200 dark:border-slate-700 hover:border-brand-200 dark:hover:border-brand-800/60'}`}
                   >
-                    <SelectIcon selected={selected} />
-                    <span className="text-2xl leading-none">{t.icon}</span>
-                    <div>
+                    <span className="flex items-center justify-between">
+                      <t.icon size={20} className={selected ? 'text-brand-600 dark:text-brand-400' : 'text-slate-500 dark:text-slate-400'} aria-hidden="true" />
+                      <SelectIcon selected={selected} />
+                    </span>
+                    <div className="min-w-0">
                       <p className={`text-xs font-semibold ${selected ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
                         {t.label}
                       </p>
@@ -468,8 +470,8 @@ export default function CreateTest() {
 
             <div className="flex justify-between">
               <Button variant="secondary" onClick={() => goToStep(2)}>Back</Button>
-              <Button onClick={handleLaunch} loading={launching} size="lg">
-                {launching ? 'Launching...' : '🚀 Launch Test'}
+              <Button onClick={handleLaunch} loading={launching} size="lg" icon={launching ? null : <Rocket size={16} />}>
+                {launching ? 'Launching...' : 'Launch Test'}
               </Button>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, ShieldCheck, UserCheck, Layers, Timer, X } from 'lucide-react';
+import { ArrowRight, ShieldCheck, UserCheck, Layers, Timer, X, Sparkles, Check } from 'lucide-react';
 import Button from '../ui/Button';
 import { duration, ease } from '../../motion/tokens';
 
@@ -40,7 +40,7 @@ export default function Hero() {
           >
             <div className="bg-accent-500/20 border-b border-accent-500/30 px-4 py-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 max-w-2xl">
-                <span className="text-accent-400 font-bold text-lg">✨</span>
+                <Sparkles size={18} className="text-accent-400 flex-shrink-0" aria-hidden="true" />
                 <p className="text-slate-100 text-sm sm:text-base">
                   <span className="font-semibold">Now in private beta:</span> we&apos;re onboarding our first companies and testers.
                 </p>
@@ -96,15 +96,15 @@ export default function Hero() {
           style={{ opacity: 0, animationFillMode: 'forwards' }}
         >
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
-            <span className="text-accent-400 font-bold text-lg">✓</span>
+            <Check size={18} className="text-accent-400 flex-shrink-0" aria-hidden="true" />
             Bugs found by real people, not robots
           </p>
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
-            <span className="text-accent-400 font-bold text-lg">✓</span>
+            <Check size={18} className="text-accent-400 flex-shrink-0" aria-hidden="true" />
             Findings you can review, accept and act on in one place
           </p>
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
-            <span className="text-accent-400 font-bold text-lg">✓</span>
+            <Check size={18} className="text-accent-400 flex-shrink-0" aria-hidden="true" />
             Professional QA review for every test
           </p>
         </div>

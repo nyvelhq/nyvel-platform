@@ -162,7 +162,7 @@ export default function CompanyTestDetail() {
 
   return (
     <PlatformLayout title={test.name}>
-      <div className="p-2 sm:p-8 space-y-6 max-w-4xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-4xl mx-auto">
         <button
           onClick={() => navigate('/company/tests')}
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"

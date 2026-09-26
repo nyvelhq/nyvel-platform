@@ -67,7 +67,7 @@ export default function CompanyTests() {
   const filtered = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     return companyTests.filter((t) => {
-      const matchesTerm = !term || t.name.toLowerCase().includes(term) || t.id.toLowerCase().includes(term);
+      const matchesTerm = !term || t.name.toLowerCase().includes(term);
       const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
       return matchesTerm && matchesStatus;
     });
@@ -135,7 +135,7 @@ export default function CompanyTests() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                  placeholder="Search by name or ID..."
+                  placeholder="Search by name..."
                   className="form-input pl-9 w-full"
                   aria-label="Search tests"
                 />
@@ -165,7 +165,6 @@ export default function CompanyTests() {
                   <table className="w-full data-table">
                     <thead>
                       <tr>
-                        <th>Test ID</th>
                         <th>Name</th>
                         <th>Type</th>
                         <th>Status</th>
@@ -182,9 +181,6 @@ export default function CompanyTests() {
                           className="table-row-enter cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/40"
                           onClick={() => setDetailTest(test)}
                         >
-                          <td className="max-md:!hidden">
-                            <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{test.id}</span>
-                          </td>
                           <td>
                             <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                             <div className="flex gap-1 mt-1">

@@ -258,7 +258,7 @@ export default function TesterOnboarding() {
               </div>
 
               <div className="bg-success-50/70 dark:bg-success-900/20 border border-success-200/70 dark:border-success-800/50 rounded-xl p-4 text-sm text-success-800 dark:text-success-200">
-                <p className="font-semibold mb-1">✅ Your profile is ready to launch</p>
+                <p className="font-semibold mb-1">Your profile is ready to save</p>
                 <p className="text-success-700 dark:text-success-300 text-xs">
                   Your profile is saved to your account. Companies see your skills, devices, country and bio when you apply to their tests. Your city, age, occupation and LinkedIn stay private.
                 </p>

@@ -55,11 +55,12 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {testTypes.map((type, i) => {
               const colorClass = typeColorMap[type.color] || typeColorMap.violet;
+              const Icon = type.icon;
               return (
                 <ScrollReveal key={type.name} animation="slide-in-up" staggerIndex={i % 4} staggerDelay={80} threshold={0.15}>
                   <div className="card-interactive p-6 group">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4 border ${colorClass}`}>
-                      {type.icon}
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 border ${colorClass}`}>
+                      <Icon size={22} aria-hidden="true" />
                     </div>
                     <h3 className="font-display font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors">
                       {type.name}
