@@ -213,7 +213,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - **Detail pages** (test detail, requests, admin users/tests) are
      centred.
 
-   _status: in PR — PR_LINK_
+   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/36_
 22. **UX-07 Finding conversation history** — only the latest "More info"
    question/reply pair is kept; a second round overwrites it. Add a
    `finding_messages` thread. _Size S–M · migration._ — _status: not started_
