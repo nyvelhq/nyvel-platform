@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-02)._
+_Last updated: 2026-09-26 by the orchestrator (backlog reprioritized with Eben)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -65,23 +65,109 @@ _Last updated: 2026-09-26 by the orchestrator (UX-02)._
    free-trial claims and unbuilt pricing features. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/21_; NDA-claim follow-up in
    https://github.com/nyvelhq/nyvel-platform/pull/22_
-9. **UX-02 Close the loop** — the core company↔tester flow dead-ends in
-   four places: show the test briefing (and NDA flag) to accepted testers;
-   let a company mark a test complete; let a tester reply to a
-   "More info needed" finding; add a confirmation step to admin
-   "Mark Paid" (irreversible) and surface payout load/save errors instead of
-   an empty state. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/23_ (migration 0007,
-   `docs/adr/0002-close-the-loop.md`; also fixes briefings being readable by
-   every tester through the API)
-10. **NDA-01 Tester NDA acceptance** — click-through confidentiality
-   agreement for NDA-required tests: testers accept it before applying, the
-   DB records version + server timestamp (migration 0006, enforced by a
-   trigger), companies see acceptance per applicant. See
-   `docs/adr/0001-tester-nda-acceptance.md`. Agreement text in
-   `src/content/testerNda.js` is an unreviewed **draft** — Eben to replace
-   or have counsel review. — _status: done — merged via
-   https://github.com/nyvelhq/nyvel-platform/pull/22_ (migration 0006 applied
-   by Eben 2026-09-26)
+9. ~~**UX-02 Close the loop**~~ — briefing for accepted testers (moved into
+   a protected `test_briefings` table — it was readable by every tester via
+   the API), companies mark tests complete/reopen, testers reply to
+   "More info needed", admin Mark Paid confirmation + error states. —
+   _status: done — merged via
+   https://github.com/nyvelhq/nyvel-platform/pull/23_ (migration 0007,
+   `docs/adr/0002-close-the-loop.md`)
+10. ~~**NDA-01 Tester NDA acceptance**~~ — click-through confidentiality
+   agreement for NDA-required tests (migration 0006,
+   `docs/adr/0001-tester-nda-acceptance.md`). Agreement text in
+   `src/content/testerNda.js` is an unreviewed **draft**. — _status: done —
+   merged via https://github.com/nyvelhq/nyvel-platform/pull/22_
+
+### Prioritized backlog (proposed 2026-09-26 at Eben's request — work top to bottom unless Eben reorders)
+
+Order rule: security holes first, then broken core flows and data loss,
+then growth blockers, then mobile/accessibility, then admin tooling, then
+polish. "Migration" = needs a `supabase/migrations/NNNN_*.sql` that Eben
+runs before merging; test it on a local Postgres like 0006/0007.
+
+11. **SEC-01 Pin role on profile self-insert** — `profiles: admin can
+   insert` lets a signed-in user insert their own profile row with any
+   `role`, including `admin`, if their row is ever missing. One-line policy
+   fix (STRIDE §2.2 T3 / §3.1). _Size S · migration · RLS._ — _status: not
+   started_
+12. **SEC-02 Make paid payouts immutable + auditable** — `payouts` is
+   "append-only once paid" by convention only; an admin update silently
+   rewrites amount/recipient with no history. Trigger rejecting updates to
+   paid rows plus a `payout_history` table (STRIDE T4/R2). _Size S–M ·
+   migration._ — _status: not started_
+13. **SEC-03 Stop companies editing a tester's finding content** — the 0004
+   triage policy lets a company UPDATE any column, so it can rewrite a
+   finding's title/description/severity — the tester's own record of what
+   they reported, which matters in any dispute.
+   Restrict company updates to triage fields (status, review_reason,
+   reviewed_by/at) via trigger or RPC. _Size S · migration._ — _status: not
+   started_
+14. **UX-03 Real entry points (request access / apply to test)** — every
+   "Start Free", "Join as Tester", "Talk to Sales" and pricing CTA lands on a
+   login page that can't create an account. Replace with honest "Request
+   access" (company) and "Apply to test" (tester) forms stored in a new
+   table, an admin list to review them, and relabel CTAs (drop "Free" /
+   "Free Trial"). No email is sent (C-07 blocked). _Size M · migration ·
+   UX + Copy passes._ — _status: not started_
+15. **UX-04 Mobile: core actions reachable on phones** — applicant
+   Accept/Decline, My Tests table and the page header are clipped at 390px
+   (cards use `overflow-hidden` with no scroll); switch key tables to
+   stacked cards below `md`, fix the header wrap/avatar cut-off, and the
+   landing page's 14px horizontal overflow (`LandingPage.jsx` security
+   badge row). _Size M._ — _status: not started_
+16. **UX-05 Persist tester profiles** — onboarding answers (bio, skills,
+   devices, location) live only in `sessionStorage` and vanish on logout or
+   a new device; companies never see them. Add columns/table + RLS, save
+   from onboarding/profile, show skills/devices to companies on applicant
+   rows. _Size M · migration · Architect pass._ — _status: not started_
+17. **A11Y-01 Accessibility + dead links** — "Join as Tester"/"Talk to
+   Sales" nearly invisible (dark text on navy); small grey text below 4.5:1
+   in several places; login labels lack `htmlFor`, show-password button
+   lacks `aria-label`; password-gate error lacks `role="alert"`; admin
+   checkboxes unnamed; footer links that do nothing (remove them — Privacy/
+   Terms pages themselves are Eben-owned below). _Size S–M._ — _status: not
+   started_
+18. **SEC-04 Cap findings per tester per test** — no limit today; one
+   accepted tester can flood a company's triage queue (STRIDE D3). _Size S ·
+   migration._ — _status: not started_
+19. **ADM-01 Admin Users & Tests on real data** — both are "Coming soon"
+   since UX-01; rebuild on `profiles`/`clients`/`tests` reusing the existing
+   table UI in `AdminUsers.jsx`/`AdminTests.jsx`, with read-only views first
+   and no fake bulk actions. _Size M._ — _status: not started_
+20. **UX-06 "Needs your attention" links** — the company dashboard's
+   "Applicants to Review"/"Findings to Triage" cards should link to the
+   tests that need action; same for the tester's "Pending Payout". Also
+   "1 bugs" pluralisation. _Size S._ — _status: not started_
+21. **POL-01 Visual consistency** — emoji icons in test-type cards vs lucide
+   elsewhere; severity and status badges sharing colours ("Low" = "Accepted"
+   green); internal test IDs in the My Tests table; password gate branding
+   and its artificial 600ms delay; admin stat tiles vs shared `StatCard`;
+   unused wide empty space on detail pages. _Size S–M._ — _status: not
+   started_
+22. **UX-07 Finding conversation history** — only the latest "More info"
+   question/reply pair is kept; a second round overwrites it. Add a
+   `finding_messages` thread. _Size S–M · migration._ — _status: not started_
+23. **ADM-02 Admin Reports / Settings** — currently "Coming soon"; rebuild
+   Reports on real payouts/findings data; Settings only once there's
+   something real to configure. Security page stays hidden until real
+   signals exist. _Size M._ — _status: not started_
+
+### Eben-owned (decisions or dashboard work, not code — do in parallel)
+
+- Verify migrations 0005, 0006 and 0007 are applied in production (0007
+  check: `select count(*) from public.tests where briefing is not null;`
+  should be 0).
+- Have counsel review/replace the tester NDA draft (add governing law);
+  bump `version` in `src/content/testerNda.js` when it changes.
+- Privacy Policy and Terms pages (legal text) — footer links currently go
+  nowhere.
+- Confirm or drop the service claims still on the site: "Screened &
+  verified" testers, "Professional QA review" / "QA-led"; and the pricing
+  ($299/$899, plan limits, SLA).
+- Pick a monitoring option from `docs/ops/RUNBOOK.md` (Vercel Analytics →
+  uptime checker → Sentry) and check Supabase backups/PITR + auth rate
+  limits in the dashboard.
+- Pick an email provider to unblock C-07 (and future notifications).
 
 ### Blocked (skip)
 
@@ -89,28 +175,6 @@ _Last updated: 2026-09-26 by the orchestrator (UX-02)._
 - Payments (beyond sandbox/non-sandbox scoping already noted above).
 - Legal / compliance sign-off items beyond the marketing-copy fix in the
   queue.
-
-### Proposed new items (from F-07's findings — not yet added to the numbered
-queue; a product-owner call for whoever prioritizes next)
-
-- Fix `profiles: admin can insert`'s self-insert branch, which doesn't pin
-  `role = 'tester'` the way the self-update policy does — a latent
-  privilege-escalation gap (currently unreachable in the normal signup
-  path, blocked by the `handle_new_user()` trigger + primary key, but a
-  real hole in the policy's own design). See
-  `docs/security/STRIDE_THREAT_MODEL.md` §2.6/§3.1 for the exact one-line
-  fix.
-- Add payout immutability (a trigger rejecting updates once
-  `status = 'paid'`) and/or a lightweight audit/history table — `payouts`
-  is documented as "append-only once paid" but nothing actually enforces
-  that. See STRIDE doc §2.2 (T4) / §2.3 (R2).
-- Cap findings submissions per tester per test — there's currently no
-  limit on how many `findings` rows one accepted tester can insert for a
-  test. See STRIDE doc §2.5 (D3).
-- Replace `AdminSecurity.jsx`'s fabricated "2FA enabled 98%" / fake threat
-  log with real data or an honest "not implemented" state — same class of
-  fix as F-08 already did for the admin dashboard. See STRIDE doc §2.3
-  (R3).
 
 ## PR log
 
