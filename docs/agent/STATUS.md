@@ -122,7 +122,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    admin review at `/admin/requests`, every sign-up CTA relabelled and
    re-pointed ("Request access" / "Apply to test" / "Contact us"), login page
    links to both. No email sent; approving doesn't create an account. —
-   _status: in PR — UX03_PR_LINK_
+   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/28_
 15. **UX-04 Mobile: core actions reachable on phones** — applicant
    Accept/Decline, My Tests table and the page header are clipped at 390px
    (cards use `overflow-hidden` with no scroll); switch key tables to
