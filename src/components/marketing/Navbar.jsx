@@ -139,17 +139,17 @@ export default function Navbar() {
             <Button 
               variant="secondary" 
               size="sm"
-              onClick={() => navigate('/login?role=tester')}
+              onClick={() => navigate('/request-access?type=tester')}
               className="text-slate-900"
             >
-              Join as Tester
+              Apply to test
             </Button>
             <Button 
               size="sm" 
-              onClick={() => navigate('/login?role=company')}
+              onClick={() => navigate('/request-access')}
               className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold shadow-md hover:shadow-lg transition-all"
             >
-              Start Free
+              Request access
             </Button>
           </div>
 
@@ -189,14 +189,14 @@ export default function Navbar() {
                 <Button variant="ghost" className="w-full !text-slate-300" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
-                <Button variant="secondary" className="w-full text-slate-900" onClick={() => navigate('/login?role=tester')}>
-                  Join as Tester
+                <Button variant="secondary" className="w-full text-slate-900" onClick={() => navigate('/request-access?type=tester')}>
+                  Apply to test
                 </Button>
                 <Button
                   className="w-full bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 font-bold"
-                  onClick={() => navigate('/login?role=company')}
+                  onClick={() => navigate('/request-access')}
                 >
-                  Start Free
+                  Request access
                 </Button>
               </div>
             </div>

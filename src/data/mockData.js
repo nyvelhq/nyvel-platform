@@ -24,7 +24,7 @@ export const pricingPlans = [
       'Email support',
       'Standard tester pool',
     ],
-    cta: 'Get Started',
+    cta: 'Request access',
     highlighted: false,
   },
   {
@@ -40,7 +40,7 @@ export const pricingPlans = [
       'Advanced tester targeting',
       'Team collaboration (5 seats)',
     ],
-    cta: 'Get Started',
+    cta: 'Request access',
     highlighted: true,
   },
   {
@@ -55,7 +55,7 @@ export const pricingPlans = [
       'Custom tester panels',
       'SLA guarantees',
     ],
-    cta: 'Talk to Sales',
+    cta: 'Contact us',
     highlighted: false,
   },
 ];

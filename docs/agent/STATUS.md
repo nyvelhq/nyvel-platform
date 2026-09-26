@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (SEC-03)._
+_Last updated: 2026-09-26 by the orchestrator (UX-03)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -114,15 +114,15 @@ runs before merging; test it on a local Postgres like 0006/0007.
    rejected / more_info, review_reason); title, description, severity,
    tester, test and submitted_at are rejected; reviewed_by/reviewed_at are
    server-stamped. Admins/SQL editor can still correct. 11 checks in
-   `supabase/tests/30_findings.sql`. _Size S · migration._ — _status: in PR —
-   https://github.com/nyvelhq/nyvel-platform/pull/27_
-14. **UX-03 Real entry points (request access / apply to test)** — every
-   "Start Free", "Join as Tester", "Talk to Sales" and pricing CTA lands on a
-   login page that can't create an account. Replace with honest "Request
-   access" (company) and "Apply to test" (tester) forms stored in a new
-   table, an admin list to review them, and relabel CTAs (drop "Free" /
-   "Free Trial"). No email is sent (C-07 blocked). _Size M · migration ·
-   UX + Copy passes._ — _status: not started_
+   `supabase/tests/30_findings.sql`. _Size S · migration._ — _status: done —
+   merged via https://github.com/nyvelhq/nyvel-platform/pull/27_
+14. **UX-03 Real entry points (request access / apply to test)** — public
+   `/request-access` (`?type=tester`) form writing to a new write-only
+   `access_requests` table (migration 0012, `docs/adr/0003-access-requests.md`),
+   admin review at `/admin/requests`, every sign-up CTA relabelled and
+   re-pointed ("Request access" / "Apply to test" / "Contact us"), login page
+   links to both. No email sent; approving doesn't create an account. —
+   _status: in PR — UX03_PR_LINK_
 15. **UX-04 Mobile: core actions reachable on phones** — applicant
    Accept/Decline, My Tests table and the page header are clipped at 390px
    (cards use `overflow-hidden` with no scroll); switch key tables to

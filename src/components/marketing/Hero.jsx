@@ -117,18 +117,18 @@ export default function Hero() {
           <Button
             size="xl"
             className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-slate-900 px-10 py-4 rounded-lg font-bold shadow-lg hover:shadow-2xl transition-all text-lg"
-            onClick={() => navigate('/login?role=company')}
+            onClick={() => navigate('/request-access')}
             iconRight={<ArrowRight size={20} />}
           >
-            Start Testing Free
+            Request access
           </Button>
           <Button
             size="xl"
             variant="ghost"
-            className="text-slate-300 hover:text-white hover:bg-white/10 border border-slate-500 px-8 py-4 rounded-lg font-semibold"
-            onClick={() => navigate('/login?role=tester')}
+            className="!text-slate-100 hover:!text-white hover:bg-white/10 border border-slate-400 px-8 py-4 rounded-lg font-semibold"
+            onClick={() => navigate('/request-access?type=tester')}
           >
-            Join as Tester
+            Apply to test
           </Button>
         </div>
 

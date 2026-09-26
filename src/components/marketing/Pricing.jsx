@@ -85,7 +85,7 @@ export default function Pricing() {
                   variant="outline"
                   className={`w-full ${plan.highlighted ? '!bg-white !border-white' : ''}`}
                   textColor={plan.highlighted ? '!text-slate-900' : ''}
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate('/request-access')}
                 >
                   {plan.cta}
                 </Button>

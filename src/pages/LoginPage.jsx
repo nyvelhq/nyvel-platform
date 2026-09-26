@@ -223,8 +223,11 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              <p className="mt-8 text-center text-xs text-slate-600">
-                Nyvel accounts are set up by your organization's admin. Contact them if you need access.
+              <p className="mt-8 text-center text-sm text-slate-400">
+                No account yet?{' '}
+                <Link to="/request-access" className="text-brand-400 hover:text-brand-300 font-medium">Request access</Link>
+                {' '}or{' '}
+                <Link to="/request-access?type=tester" className="text-brand-400 hover:text-brand-300 font-medium">apply to test</Link>
               </p>
             </>
           )}

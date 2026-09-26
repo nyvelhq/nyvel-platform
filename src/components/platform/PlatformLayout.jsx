@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, FlaskConical, Users, BarChart3, Settings,
   Bell, ChevronDown, LogOut, Menu, Plus, Search, Briefcase,
-  User, Shield, CheckCircle, DollarSign, X
+  User, Shield, CheckCircle, DollarSign, X, Inbox
 } from 'lucide-react';
 import NyvelMark from '../ui/NyvelMark';
 import ThemeToggle from '../ui/ThemeToggle';
@@ -36,6 +36,7 @@ const adminNav = [
   { label: 'Users', icon: Users, href: '/admin/users' },
   { label: 'Tests', icon: FlaskConical, href: '/admin/tests' },
   { label: 'Payouts', icon: DollarSign, href: '/admin/payouts' },
+  { label: 'Requests', icon: Inbox, href: '/admin/requests' },
   { label: 'Reports', icon: BarChart3, href: '/admin/reports' },
   { label: 'Security', icon: Shield, href: '/admin/security' },
   { label: 'Settings', icon: Settings, href: '/admin/settings' },
