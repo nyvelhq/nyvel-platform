@@ -37,7 +37,7 @@ const features = [
     icon: Shield,
     color: 'amber',
     title: 'Confidential by Default',
-    desc: 'Findings are visible only to your team, the tester who submitted them and Nyvel admins. Data is encrypted in transit and at rest, with handling designed to support GDPR and CCPA. Your unreleased product stays confidential.',
+    desc: 'Testers accept a confidentiality agreement before joining NDA-required tests. Findings are visible only to your team, the tester who submitted them and Nyvel admins. Data is encrypted in transit and at rest, with handling designed to support GDPR and CCPA. Your unreleased product stays confidential.',
   },
 ];
 

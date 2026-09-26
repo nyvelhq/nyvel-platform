@@ -297,6 +297,32 @@ describe('applyToTest / hasApplied', () => {
     });
     expect(lastCall('applications', 'insert')).toBeUndefined();
   });
+
+  it('records the accepted NDA version when applying to an NDA-required test', async () => {
+    __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
+    const getApi = await renderApi();
+
+    await act(async () => {
+      await getApi().applyToTest({ id: 'test-1', nda: true }, { ndaVersion: 'v1-test' });
+    });
+
+    expect(lastCall('applications', 'insert').payload).toEqual({
+      test_id: 'test-1', tester_id: 'tester-1', nda_version: 'v1-test',
+    });
+  });
+
+  it('refuses to apply to an NDA-required test without an accepted NDA version', async () => {
+    __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
+    const getApi = await renderApi();
+
+    let result;
+    await act(async () => {
+      result = await getApi().applyToTest({ id: 'test-1', nda: true });
+    });
+
+    expect(result.error).toBeInstanceOf(Error);
+    expect(lastCall('applications', 'insert')).toBeUndefined();
+  });
 });
 
 describe('acceptApplication / declineApplication', () => {

@@ -8,6 +8,7 @@ import Stepper from '../components/ui/Stepper';
 import { useAppData } from '../context/DataContext';
 import { validators } from '../utils/validation';
 import { duration, ease } from '../motion/tokens';
+import NdaModal from '../components/tester/NdaModal';
 
 // Step panels slide/fade in the direction of travel (forward = from the right)
 const stepVariants = {
@@ -62,6 +63,7 @@ export default function CreateTest() {
     setStep(next);
   };
   const [launching, setLaunching] = useState(false);
+  const [ndaPreviewOpen, setNdaPreviewOpen] = useState(false);
   const [launched, setLaunched] = useState(false);
   const [launchedName, setLaunchedName] = useState('');
   const [errors, setErrors] = useState({});
@@ -401,8 +403,11 @@ export default function CreateTest() {
                   Mark this test as NDA-required
                 </label>
                 <p id="nda-help" className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                  Nyvel doesn&apos;t collect NDA signatures from testers yet. If you need one, arrange it
-                  directly with testers before sharing access to your build.
+                  Testers must read and accept Nyvel&apos;s tester confidentiality agreement before they can
+                  apply. You&apos;ll see when each applicant accepted it.{' '}
+                  <button type="button" onClick={() => setNdaPreviewOpen(true)} className="text-brand-600 dark:text-brand-400 font-medium hover:underline">
+                    Read the agreement
+                  </button>
                 </p>
               </div>
             </div>
@@ -473,6 +478,7 @@ export default function CreateTest() {
         </AnimatePresence>
         )}
       </div>
+      <NdaModal open={ndaPreviewOpen} onClose={() => setNdaPreviewOpen(false)} />
     </PlatformLayout>
   );
 }

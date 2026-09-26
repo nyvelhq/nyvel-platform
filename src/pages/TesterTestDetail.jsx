@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileSearch, Send } from 'lucide-react';
+import { ArrowLeft, FileSearch, Send, FileLock2 } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import { Badge, TypeBadge, PriorityBadge } from '../components/ui/Badge';
@@ -8,6 +8,7 @@ import EmptyState from '../components/ui/EmptyState';
 import { supabase } from '../lib/supabaseClient';
 import { useAppData } from '../context/DataContext';
 import { useAuth } from '../App';
+import NdaModal from '../components/tester/NdaModal';
 
 // A tester's raw application status (pending/accepted/declined) -> badge.
 // Deliberately literal, same reasoning as CompanyTestDetail's decisionBadge.
@@ -46,6 +47,8 @@ export default function TesterTestDetail() {
   const [findings, setFindings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState(false);
+  const [applyError, setApplyError] = useState('');
+  const [ndaOpen, setNdaOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', severity: 'medium' });
   const [formError, setFormError] = useState('');
@@ -56,7 +59,7 @@ export default function TesterTestDetail() {
       await Promise.all([
         supabase.from('tests').select('*, clients(company_name)').eq('id', id).maybeSingle(),
         user?.id
-          ? supabase.from('applications').select('id, status').eq('test_id', id).eq('tester_id', user.id).maybeSingle()
+          ? supabase.from('applications').select('*').eq('test_id', id).eq('tester_id', user.id).maybeSingle()
           : Promise.resolve({ data: null, error: null }),
         user?.id
           ? supabase
@@ -82,12 +85,19 @@ export default function TesterTestDetail() {
     load();
   }, [load]);
 
-  const handleApply = async () => {
-    if (!test) return;
+  const handleApply = async (ndaVersion) => {
+    if (!test) return { error: null };
     setApplying(true);
-    await applyToTest({ id: test.id });
+    setApplyError('');
+    const { error } = await applyToTest({ id: test.id, nda: test.nda === true }, { ndaVersion });
     setApplying(false);
+    if (error) {
+      if (!ndaVersion) setApplyError(error.message || 'Could not apply to this test.');
+      return { error };
+    }
+    setNdaOpen(false);
     await load();
+    return { error: null };
   };
 
   const handleSubmitFinding = async (e) => {
@@ -175,11 +185,24 @@ export default function TesterTestDetail() {
           </div>
           {test.description && <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{test.description}</p>}
 
+          {test.nda && (
+            <p className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+              <FileLock2 size={14} aria-hidden="true" />
+              {application?.nda_accepted_at
+                ? `You accepted the tester NDA on ${new Date(application.nda_accepted_at).toLocaleDateString()}.`
+                : 'This test requires accepting the tester NDA before you apply.'}
+              <button onClick={() => setNdaOpen(true)} className="text-brand-600 dark:text-brand-400 font-medium hover:underline">
+                {application ? 'View agreement' : 'Read it'}
+              </button>
+            </p>
+          )}
+
           {!application && (
-            <Button size="sm" loading={applying} onClick={handleApply}>
+            <Button size="sm" loading={applying} onClick={() => (test.nda ? setNdaOpen(true) : handleApply())}>
               Apply Now
             </Button>
           )}
+          {applyError && <p className="text-sm text-error-600 dark:text-error-400" role="alert">{applyError}</p>}
           {application?.status === 'pending' && (
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Your application is awaiting review from {test.clients?.company_name || 'the company'}.
@@ -286,6 +309,12 @@ export default function TesterTestDetail() {
           )}
         </div>
       </div>
+      <NdaModal
+        open={ndaOpen}
+        testName={test.title}
+        onClose={() => setNdaOpen(false)}
+        onAccept={application ? undefined : handleApply}
+      />
     </PlatformLayout>
   );
 }

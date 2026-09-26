@@ -82,7 +82,7 @@ export default function LandingPage() {
                   Security and confidentiality, built in
                 </h3>
                 <p className="text-slate-500 text-sm max-w-lg">
-                  Your tests are visible only to signed-in Nyvel testers, and each finding only to your team, the tester who submitted it and Nyvel admins. Data is encrypted
+                  Testers must accept a confidentiality agreement before applying to any test you mark NDA-required. Your tests are visible only to signed-in Nyvel testers, and each finding only to your team, the tester who submitted it and Nyvel admins. Data is encrypted
                   in transit and at rest, and our data handling is designed to support GDPR
                   and CCPA requirements.
                 </p>

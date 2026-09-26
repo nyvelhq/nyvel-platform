@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-01 NDA follow-up)._
+_Last updated: 2026-09-26 by the orchestrator (NDA-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -72,15 +72,18 @@ _Last updated: 2026-09-26 by the orchestrator (UX-01 NDA follow-up)._
    "Mark Paid" (irreversible) and surface payout load/save errors instead of
    an empty state. — _status: not started_ (the "reply to more info" part
    likely needs a schema change → Architect pass + migration)
+10. **NDA-01 Tester NDA acceptance** — click-through confidentiality
+   agreement for NDA-required tests: testers accept it before applying, the
+   DB records version + server timestamp (migration 0006, enforced by a
+   trigger), companies see acceptance per applicant. See
+   `docs/adr/0001-tester-nda-acceptance.md`. Agreement text in
+   `src/content/testerNda.js` is an unreviewed **draft** — Eben to replace
+   or have counsel review. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/22_
 
 ### Blocked (skip)
 
 - **C-07** — payout email (needs an email provider).
-- **NDA acceptance** — a real click-through NDA step for tests marked
-  NDA-required (record acceptance per application before the briefing/build
-  access is shown). Needs the NDA text from Eben (legal) plus a migration
-  (e.g. `applications.nda_accepted_at`). Until then, UX-01 made all copy say
-  only what the app enforces and tells companies to arrange NDAs directly.
 - Payments (beyond sandbox/non-sandbox scoping already noted above).
 - Legal / compliance sign-off items beyond the marketing-copy fix in the
   queue.
