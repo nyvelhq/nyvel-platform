@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (NDA-01)._
+_Last updated: 2026-09-26 by the orchestrator (UX-02)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -70,16 +70,18 @@ _Last updated: 2026-09-26 by the orchestrator (NDA-01)._
    let a company mark a test complete; let a tester reply to a
    "More info needed" finding; add a confirmation step to admin
    "Mark Paid" (irreversible) and surface payout load/save errors instead of
-   an empty state. — _status: not started_ (the "reply to more info" part
-   likely needs a schema change → Architect pass + migration)
+   an empty state. — _status: in PR — UX02_PR_LINK_ (migration 0007,
+   `docs/adr/0002-close-the-loop.md`; also fixes briefings being readable by
+   every tester through the API)
 10. **NDA-01 Tester NDA acceptance** — click-through confidentiality
    agreement for NDA-required tests: testers accept it before applying, the
    DB records version + server timestamp (migration 0006, enforced by a
    trigger), companies see acceptance per applicant. See
    `docs/adr/0001-tester-nda-acceptance.md`. Agreement text in
    `src/content/testerNda.js` is an unreviewed **draft** — Eben to replace
-   or have counsel review. — _status: in PR —
-   https://github.com/nyvelhq/nyvel-platform/pull/22_
+   or have counsel review. — _status: done — merged via
+   https://github.com/nyvelhq/nyvel-platform/pull/22_ (migration 0006 applied
+   by Eben 2026-09-26)
 
 ### Blocked (skip)
 

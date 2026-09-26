@@ -69,7 +69,13 @@ jest.mock('../lib/supabaseClient', () => {
   };
 
   return {
-    supabase: { from: (table) => makeBuilder(table) },
+    supabase: {
+      from: (table) => makeBuilder(table),
+      rpc: (fn, args) => {
+        state.calls.push({ table: null, op: 'rpc', fn, args });
+        return Promise.resolve(state.responses[`rpc:${fn}`] || { data: null, error: null });
+      },
+    },
     __getLastInsert: () => state.lastInsert,
     __getCalls: () => state.calls,
     __setResponse: (table, response) => {
@@ -407,5 +413,38 @@ describe('markPayoutPaid', () => {
     const call = lastCall('payouts', 'upsert');
     expect(call.payload).toMatchObject({ test_id: 't1', tester_id: 'tester-1', amount: 50, status: 'paid', paid_by: 'admin-1' });
     expect(call.opts).toEqual({ onConflict: 'test_id,tester_id' });
+  });
+});
+
+describe('setTestStatus / respondToFinding (migration 0007 RPCs)', () => {
+  const rpcCall = (fn) => [...__getCalls()].reverse().find((c) => c.op === 'rpc' && c.fn === fn);
+
+  it('calls set_test_status with the test id and target status', async () => {
+    const getApi = await renderApi();
+    let result;
+    await act(async () => {
+      result = await getApi().setTestStatus('test-1', 'complete');
+    });
+    expect(result.error).toBeNull();
+    expect(rpcCall('set_test_status').args).toEqual({ p_test_id: 'test-1', p_status: 'complete' });
+  });
+
+  it('passes the server error back instead of swallowing it', async () => {
+    __setResponse('rpc:set_test_status', { data: null, error: { message: 'You can only change the status of your own tests.' } });
+    const getApi = await renderApi();
+    let result;
+    await act(async () => {
+      result = await getApi().setTestStatus('test-1', 'complete');
+    });
+    expect(result.error.message).toMatch(/own tests/);
+  });
+
+  it('calls respond_to_finding with the finding id and reply', async () => {
+    __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
+    const getApi = await renderApi();
+    await act(async () => {
+      await getApi().respondToFinding('finding-1', 'Build 1.4.2');
+    });
+    expect(rpcCall('respond_to_finding').args).toEqual({ p_finding_id: 'finding-1', p_response: 'Build 1.4.2' });
   });
 });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { DollarSign, Wallet } from 'lucide-react';
+import { DollarSign, Wallet, AlertTriangle } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
@@ -7,6 +7,9 @@ import EmptyState from '../components/ui/EmptyState';
 import StatCard from '../components/ui/StatCard';
 import { supabase } from '../lib/supabaseClient';
 import { useAppData } from '../context/DataContext';
+import { useToast } from '../context/ToastContext';
+import TableScrollArea from '../components/ui/TableScrollArea';
+import { ConfirmationModal } from '../components/admin/ConfirmationModal';
 
 /**
  * AdminPayouts — C-06: admin marks a tester's flat per-test compensation as
@@ -25,9 +28,13 @@ export default function AdminPayouts() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [payingKey, setPayingKey] = useState(null);
+  const [loadError, setLoadError] = useState('');
+  const [confirmRow, setConfirmRow] = useState(null);
+  const { addToast } = useToast();
 
   const load = useCallback(async () => {
     setLoading(true);
+    setLoadError('');
 
     const [{ data: applications, error: appsError }, { data: findings, error: findingsError }, { data: payouts, error: payoutsError }] =
       await Promise.all([
@@ -44,6 +51,13 @@ export default function AdminPayouts() {
     if (appsError) console.error('AdminPayouts load (applications):', appsError.message);
     if (findingsError) console.error('AdminPayouts load (findings):', findingsError.message);
     if (payoutsError) console.error('AdminPayouts load (payouts):', payoutsError.message);
+    const firstError = appsError || findingsError || payoutsError;
+    if (firstError) {
+      setLoadError(firstError.message || 'Could not load payouts.');
+      setRows([]);
+      setLoading(false);
+      return;
+    }
 
     // Only tester+test pairs with at least one accepted finding are payable
     // at all — an accepted application alone isn't enough (BA spec: payout
@@ -82,11 +96,18 @@ export default function AdminPayouts() {
     load();
   }, [load]);
 
-  const handleMarkPaid = async (row) => {
+  const handleMarkPaid = async () => {
+    const row = confirmRow;
     setPayingKey(row.key);
     const { error } = await markPayoutPaid({ testId: row.testId, testerId: row.testerId, amount: row.amount });
     setPayingKey(null);
-    if (!error) await load();
+    setConfirmRow(null);
+    if (error) {
+      addToast(error.message || 'Could not record the payout.', 'error');
+      return;
+    }
+    addToast(`Recorded $${row.amount.toLocaleString()} paid to ${row.testerName}`, 'success');
+    await load();
   };
 
   const pending = rows.filter((r) => r.status === 'pending');
@@ -126,6 +147,14 @@ export default function AdminPayouts() {
 
           {loading ? (
             <div className="p-10 text-center text-sm text-slate-400 dark:text-slate-500">Loading payouts…</div>
+          ) : loadError ? (
+            <div className="p-6 flex flex-col sm:flex-row sm:items-center gap-3" role="alert">
+              <AlertTriangle size={18} className="text-error-500 flex-shrink-0" aria-hidden="true" />
+              <p className="text-sm text-slate-700 dark:text-slate-300 flex-1">
+                Couldn&apos;t load payouts, so this list may be incomplete: {loadError}
+              </p>
+              <Button size="sm" variant="secondary" onClick={load}>Retry</Button>
+            </div>
           ) : rows.length === 0 ? (
             <EmptyState
               icon={Wallet}
@@ -133,6 +162,7 @@ export default function AdminPayouts() {
               description="Testers become payable once they have at least one accepted finding on a test."
             />
           ) : (
+            <TableScrollArea>
             <table className="w-full data-table">
               <thead>
                 <tr>
@@ -155,7 +185,7 @@ export default function AdminPayouts() {
                     <td className="text-sm text-slate-700 dark:text-slate-300">{r.testName}</td>
                     <td className="text-sm text-slate-500 dark:text-slate-400">{r.company}</td>
                     <td className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">{r.findingCount}</td>
-                    <td className="font-semibold text-emerald-600 dark:text-emerald-400">${r.amount}</td>
+                    <td className="font-semibold text-emerald-600 dark:text-emerald-400">${r.amount.toLocaleString()}</td>
                     <td>
                       {r.status === 'paid' ? (
                         <Badge label="Paid" color="success" dot />
@@ -171,7 +201,7 @@ export default function AdminPayouts() {
                     <td>
                       {r.status === 'pending' ? (
                         <div className="flex justify-end">
-                          <Button size="sm" variant="success" loading={payingKey === r.key} onClick={() => handleMarkPaid(r)}>
+                          <Button size="sm" variant="success" loading={payingKey === r.key} onClick={() => setConfirmRow(r)}>
                             Mark Paid
                           </Button>
                         </div>
@@ -183,9 +213,21 @@ export default function AdminPayouts() {
                 ))}
               </tbody>
             </table>
+            </TableScrollArea>
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={!!confirmRow}
+        title="Record this payout as paid?"
+        message={confirmRow
+          ? `Record $${confirmRow.amount.toLocaleString()} paid to ${confirmRow.testerName}${confirmRow.testerEmail ? ` (${confirmRow.testerEmail})` : ''} for "${confirmRow.testName}". Only do this after the money has been sent. It can't be undone.`
+          : ''}
+        confirmText="Mark paid"
+        onConfirm={handleMarkPaid}
+        onCancel={() => setConfirmRow(null)}
+        isLoading={!!payingKey}
+      />
     </PlatformLayout>
   );
 }

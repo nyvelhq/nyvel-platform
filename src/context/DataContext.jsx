@@ -378,6 +378,29 @@ export function DataProvider({ children }) {
     return { error: null };
   };
 
+  // Owner company (or admin) moves a test open <-> complete. The RPC checks
+  // ownership and allowed transitions server-side (migration 0007).
+  const setTestStatus = async (testId, status) => {
+    const { error } = await supabase.rpc('set_test_status', { p_test_id: testId, p_status: status });
+    if (error) {
+      console.error(`setTestStatus (${status}):`, error.message);
+      return { error };
+    }
+    await loadCompanyTests();
+    return { error: null };
+  };
+
+  // Tester answers a "More info needed" finding; the RPC sends it back to
+  // 'open' for the company to re-triage (migration 0007).
+  const respondToFinding = async (findingId, response) => {
+    const { error } = await supabase.rpc('respond_to_finding', { p_finding_id: findingId, p_response: response });
+    if (error) {
+      console.error('respondToFinding:', error.message);
+      return { error };
+    }
+    return { error: null };
+  };
+
   // Admin marks a tester's flat per-test compensation as paid (C-06).
   // Upserts on (test_id, tester_id) — the payouts table's own unique
   // constraint — so this both creates the first payout record for a pair
@@ -419,6 +442,8 @@ export function DataProvider({ children }) {
         declineApplication,
         submitFinding,
         triageFinding,
+        setTestStatus,
+        respondToFinding,
         markPayoutPaid,
         dataLoading,
         refreshData: reloadAll,
