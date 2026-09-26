@@ -195,7 +195,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    "+N more". The tester's "Pending Payout" card lists the tests they're
    owed for, linking to each. Adds a shared `ActionList` and a StatCard
    `footer` slot. Fixes "1 bugs" → "1 bug" (`pluralize` helper). 3 new
-   unit tests. — _status: in PR — PR_LINK_
+   unit tests. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/35_
 21. **POL-01 Visual consistency** — emoji icons in test-type cards vs lucide
    elsewhere; severity and status badges sharing colours ("Low" = "Accepted"
    green); internal test IDs in the My Tests table; password gate branding
