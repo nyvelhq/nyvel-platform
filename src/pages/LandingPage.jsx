@@ -82,7 +82,7 @@ export default function LandingPage() {
                   Security and confidentiality, built in
                 </h3>
                 <p className="text-slate-500 text-sm max-w-lg">
-                  Every tester signs an NDA before touching your product. Data is encrypted
+                  Your tests are visible only to signed-in Nyvel testers, and each finding only to your team, the tester who submitted it and Nyvel admins. Data is encrypted
                   in transit and at rest, and our data handling is designed to support GDPR
                   and CCPA requirements.
                 </p>
@@ -90,7 +90,7 @@ export default function LandingPage() {
             </ScrollReveal>
             <div className="flex items-center gap-8 flex-shrink-0">
               {[
-                { k: 'NDA', label: 'Tester NDAs' },
+                { k: 'Priv', label: 'Private findings' },
                 { k: 'Enc', label: 'Encrypted data' },
                 { k: 'GDPR', label: 'GDPR-aligned' },
                 { k: 'CCPA', label: 'CCPA-aligned' },

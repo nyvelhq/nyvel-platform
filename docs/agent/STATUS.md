@@ -75,6 +75,11 @@ _Last updated: 2026-09-25 by the orchestrator (UX-01)._
 ### Blocked (skip)
 
 - **C-07** — payout email (needs an email provider).
+- **NDA acceptance** — a real click-through NDA step for tests marked
+  NDA-required (record acceptance per application before the briefing/build
+  access is shown). Needs the NDA text from Eben (legal) plus a migration
+  (e.g. `applications.nda_accepted_at`). Until then, UX-01 made all copy say
+  only what the app enforces and tells companies to arrange NDAs directly.
 - Payments (beyond sandbox/non-sandbox scoping already noted above).
 - Legal / compliance sign-off items beyond the marketing-copy fix in the
   queue.

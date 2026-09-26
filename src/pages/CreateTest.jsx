@@ -387,17 +387,24 @@ export default function CreateTest() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
               <input
                 type="checkbox"
                 id="nda"
                 checked={form.nda}
                 onChange={(e) => set('nda', e.target.checked)}
-                className="w-4 h-4 accent-brand-600"
+                aria-describedby="nda-help"
+                className="w-4 h-4 mt-0.5 accent-brand-600"
               />
-              <label htmlFor="nda" className="text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-                Require NDA agreement from testers (recommended for unreleased products)
-              </label>
+              <div>
+                <label htmlFor="nda" className="text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                  Mark this test as NDA-required
+                </label>
+                <p id="nda-help" className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  Nyvel doesn&apos;t collect NDA signatures from testers yet. If you need one, arrange it
+                  directly with testers before sharing access to your build.
+                </p>
+              </div>
             </div>
 
             <div className="flex items-end justify-between pt-2">

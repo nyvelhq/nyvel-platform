@@ -20,7 +20,7 @@ const useCases = [
     icon: CreditCard,
     tag: 'Fintech · Payments',
     title: 'Check checkout flows before customers do',
-    desc: 'Have NDA-bound testers walk your sandbox or staging payment and checkout paths, including the edge cases, and report what breaks.',
+    desc: 'Have vetted testers walk your sandbox or staging payment and checkout paths, including the edge cases, and report what breaks.',
   },
 ];
 
