@@ -10,8 +10,8 @@ const trustItems = [
   },
   {
     icon: Lock,
-    label: 'NDA Protected',
-    description: 'Every tester signs binding confidentiality agreement',
+    label: 'Private by Default',
+    description: 'Findings are visible only to your team, the submitting tester and Nyvel admins',
   },
   {
     icon: Globe,

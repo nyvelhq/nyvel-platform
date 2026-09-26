@@ -81,7 +81,7 @@ export default function MotionModal({
             aria-modal="true"
             aria-labelledby={labelledBy}
             tabIndex={-1}
-            className={`relative w-full ${maxWidth} card-elevated p-6 outline-none`}
+            className={`relative w-full ${maxWidth} max-h-[calc(100vh-2rem)] overflow-y-auto card-elevated p-6 outline-none`}
             variants={modalVariants}
             initial="hidden"
             animate="visible"

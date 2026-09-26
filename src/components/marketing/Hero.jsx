@@ -13,7 +13,7 @@ const bannerVariants = {
 
 const statItems = [
   { value: 'QA-led', label: 'Testing run by professionals', icon: UserCheck },
-  { value: 'Vetted', label: 'Screened, NDA-bound testers', icon: ShieldCheck },
+  { value: 'Vetted', label: 'Screened testers', icon: ShieldCheck },
   { value: 'Any type', label: 'Bugs, usability, load & more', icon: Layers },
   { value: 'Fast', label: 'Structured results, quickly', icon: Timer },
 ];

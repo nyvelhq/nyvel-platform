@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-25 by the orchestrator (UX-01)._
+_Last updated: 2026-09-26 by the orchestrator (NDA-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -56,14 +56,15 @@ _Last updated: 2026-09-25 by the orchestrator (UX-01)._
    https://github.com/nyvelhq/nyvel-platform/pull/19_
 7. ~~**F-07**~~ — STRIDE threat model doc. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/20_
-8. **UX-01 Honesty pass** — remove or make real every fabricated number,
+8. ~~**UX-01 Honesty pass**~~ — remove or make real every fabricated number,
    badge and claim a user can see (from the Sep 25 UI/UX review, approved by
    Eben). Tester dashboard/profile earnings and stats, company dashboard
    stats and charts, the demo notification bell, the five mock admin pages
    (Users, Tests, Reports, Security, Settings → "Coming soon"), and the
    landing page's live-metrics ledger, activity ticker, country/turnaround/
-   free-trial claims and unbuilt pricing features. — _status: in PR —
-   https://github.com/nyvelhq/nyvel-platform/pull/21_
+   free-trial claims and unbuilt pricing features. — _status: done — merged via
+   https://github.com/nyvelhq/nyvel-platform/pull/21_; NDA-claim follow-up in
+   https://github.com/nyvelhq/nyvel-platform/pull/22_
 9. **UX-02 Close the loop** — the core company↔tester flow dead-ends in
    four places: show the test briefing (and NDA flag) to accepted testers;
    let a company mark a test complete; let a tester reply to a
@@ -71,6 +72,14 @@ _Last updated: 2026-09-25 by the orchestrator (UX-01)._
    "Mark Paid" (irreversible) and surface payout load/save errors instead of
    an empty state. — _status: not started_ (the "reply to more info" part
    likely needs a schema change → Architect pass + migration)
+10. **NDA-01 Tester NDA acceptance** — click-through confidentiality
+   agreement for NDA-required tests: testers accept it before applying, the
+   DB records version + server timestamp (migration 0006, enforced by a
+   trigger), companies see acceptance per applicant. See
+   `docs/adr/0001-tester-nda-acceptance.md`. Agreement text in
+   `src/content/testerNda.js` is an unreviewed **draft** — Eben to replace
+   or have counsel review. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/22_
 
 ### Blocked (skip)
 

@@ -116,6 +116,7 @@ export function DataProvider({ children }) {
           criticalIssues: acceptedFindings.filter((f) => f.severity === 'critical').length,
           severity: severityLabel(topSeverity),
           platform: t.platforms || [],
+          nda: t.nda === true,
           pendingApplicants: testApps.filter((a) => a.status === 'pending').length,
           openFindings: testFindings.filter((f) => f.status === 'open').length,
           acceptedBySeverity: acceptedFindings.reduce((acc, f) => ({ ...acc, [f.severity]: (acc[f.severity] || 0) + 1 }), {}),
@@ -165,6 +166,7 @@ export function DataProvider({ children }) {
           platforms: t.platforms || [],
           tags: t.expertise || [],
           description: t.description,
+          nda: t.nda === true,
         };
       })
     );
@@ -287,11 +289,17 @@ export function DataProvider({ children }) {
 
   const hasApplied = (testId) => myApplications.some((a) => a.sourceTestId === testId);
 
-  const applyToTest = async (test) => {
+  // NDA-required tests need the accepted agreement version; the DB trigger
+  // (migration 0006) rejects the insert without it and stamps accepted_at.
+  const applyToTest = async (test, { ndaVersion } = {}) => {
     if (!user?.id || hasApplied(test.id)) return { error: null };
+    if (test.nda && !ndaVersion) {
+      return { error: new Error('Accept the tester NDA to apply to this test.') };
+    }
     const { error } = await supabase.from('applications').insert({
       test_id: test.id,
       tester_id: user.id,
+      ...(ndaVersion ? { nda_version: ndaVersion } : {}),
     });
     if (error) {
       console.error('applyToTest:', error.message);

@@ -79,7 +79,7 @@ export default function LoginPage() {
         <div className="space-y-4">
           {[
             { stat: 'QA-led', label: 'Tests designed & reviewed by pros' },
-            { stat: 'Vetted', label: 'Screened, NDA-bound testers' },
+            { stat: 'Vetted', label: 'Screened testers' },
             { stat: 'Real-world', label: 'Real devices, real environments' },
           ].map(({ stat, label }) => (
             <div key={stat} className="flex items-center gap-4 p-4 glass-card rounded-xl">

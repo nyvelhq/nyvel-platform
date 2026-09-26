@@ -8,6 +8,7 @@ import Stepper from '../components/ui/Stepper';
 import { useAppData } from '../context/DataContext';
 import { validators } from '../utils/validation';
 import { duration, ease } from '../motion/tokens';
+import NdaModal from '../components/tester/NdaModal';
 
 // Step panels slide/fade in the direction of travel (forward = from the right)
 const stepVariants = {
@@ -62,6 +63,7 @@ export default function CreateTest() {
     setStep(next);
   };
   const [launching, setLaunching] = useState(false);
+  const [ndaPreviewOpen, setNdaPreviewOpen] = useState(false);
   const [launched, setLaunched] = useState(false);
   const [launchedName, setLaunchedName] = useState('');
   const [errors, setErrors] = useState({});
@@ -387,17 +389,27 @@ export default function CreateTest() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
+            <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
               <input
                 type="checkbox"
                 id="nda"
                 checked={form.nda}
                 onChange={(e) => set('nda', e.target.checked)}
-                className="w-4 h-4 accent-brand-600"
+                aria-describedby="nda-help"
+                className="w-4 h-4 mt-0.5 accent-brand-600"
               />
-              <label htmlFor="nda" className="text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-                Require NDA agreement from testers (recommended for unreleased products)
-              </label>
+              <div>
+                <label htmlFor="nda" className="text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                  Mark this test as NDA-required
+                </label>
+                <p id="nda-help" className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  Testers must read and accept Nyvel&apos;s tester confidentiality agreement before they can
+                  apply. You&apos;ll see when each applicant accepted it.{' '}
+                  <button type="button" onClick={() => setNdaPreviewOpen(true)} className="text-brand-600 dark:text-brand-400 font-medium hover:underline">
+                    Read the agreement
+                  </button>
+                </p>
+              </div>
             </div>
 
             <div className="flex items-end justify-between pt-2">
@@ -466,6 +478,7 @@ export default function CreateTest() {
         </AnimatePresence>
         )}
       </div>
+      <NdaModal open={ndaPreviewOpen} onClose={() => setNdaPreviewOpen(false)} />
     </PlatformLayout>
   );
 }

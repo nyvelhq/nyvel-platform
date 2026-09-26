@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { CheckCircle, DollarSign, Clock, Star, ExternalLink, Filter, UserCheck, X, Search } from 'lucide-react';
+import { CheckCircle, DollarSign, Clock, Star, ExternalLink, Filter, UserCheck, X, Search, FileLock2 } from 'lucide-react';
 import EmptyState from '../components/ui/EmptyState';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
@@ -10,6 +10,8 @@ import { StatusBadge, TypeBadge, Badge } from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
+import { useToast } from '../context/ToastContext';
+import NdaModal from '../components/tester/NdaModal';
 import { spring } from '../motion/tokens';
 import useDarkMode from '../hooks/useDarkMode';
 import { deriveTesterEarnings } from '../utils/dashboardStats';
@@ -40,6 +42,19 @@ export default function TesterDashboard() {
     setSearchParams(tab === 'available' ? {} : { tab }, { replace: true });
   };
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [ndaTest, setNdaTest] = useState(null);
+  const { addToast } = useToast();
+
+  const apply = async (test, ndaVersion) => {
+    const { error } = await applyToTest(test, { ndaVersion });
+    if (error) {
+      if (!ndaVersion) addToast(error.message || 'Could not apply to this test.', 'error');
+      return { error };
+    }
+    setNdaTest(null);
+    addToast(`Applied to ${test.name}`, 'success');
+    return { error: null };
+  };
   const [typeFilter, setTypeFilter] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef(null);
@@ -266,6 +281,12 @@ export default function TesterDashboard() {
                       {test.platforms.map((p) => (
                         <Badge key={p} label={p} color="slate" />
                       ))}
+                      {test.nda && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          <FileLock2 size={11} aria-hidden="true" />
+                          NDA required
+                        </span>
+                      )}
                       {isUrgent && (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30">
                           <Clock size={11} />
@@ -300,7 +321,8 @@ export default function TesterDashboard() {
                       disabled={hasApplied(test.id)}
                       onClick={(e) => {
                         e.stopPropagation();
-                        applyToTest(test);
+                        if (test.nda) setNdaTest(test);
+                        else apply(test);
                       }}
                     >
                       {hasApplied(test.id) ? 'Applied ✓' : 'Apply Now'}
@@ -406,6 +428,12 @@ export default function TesterDashboard() {
           )}
         </div>
       </div>
+      <NdaModal
+        open={!!ndaTest}
+        testName={ndaTest?.name}
+        onClose={() => setNdaTest(null)}
+        onAccept={(version) => apply(ndaTest, version)}
+      />
     </PlatformLayout>
   );
 }

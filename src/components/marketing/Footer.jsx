@@ -121,7 +121,7 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
               <Shield size={12} className="text-brand-400" />
-              Encrypted &amp; NDA-protected
+              Encrypted &amp; access-controlled
             </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
               <Award size={12} className="text-accent-400" />

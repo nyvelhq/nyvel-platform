@@ -61,7 +61,7 @@ export default function CompanyTestDetail() {
       // PostgREST can't guess which one to embed, so it must be named
       // explicitly (as the referencing column) or every query 400s with
       // "more than one relationship was found for 'applications' and 'profiles'".
-      .select('id, status, applied_at, tester_id, profiles!tester_id(name, email)')
+      .select('*, profiles!tester_id(name, email)')
       .eq('test_id', id)
       .order('applied_at', { ascending: false });
 
@@ -208,10 +208,16 @@ export default function CompanyTestDetail() {
                           {a.profiles?.name || 'Unnamed tester'}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">{a.profiles?.email}</div>
+                        {test?.nda && (
+                          <div className={`text-xs mt-0.5 whitespace-nowrap ${a.nda_accepted_at ? 'text-success-700 dark:text-success-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                            {a.nda_accepted_at ? `NDA accepted ${a.nda_accepted_at.slice(0, 10)}` : 'No NDA on record'}
+                          </div>
+                        )}
                       </td>
                       <td className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {a.applied_at ? a.applied_at.slice(0, 10) : ''}
                       </td>
+
                       <td>
                         <Badge label={badge.label} color={badge.color} dot />
                       </td>
