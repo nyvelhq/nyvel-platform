@@ -22,6 +22,8 @@ import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPayouts from './pages/AdminPayouts';
+import AdminUsers from './pages/AdminUsers';
+import AdminTests from './pages/AdminTests';
 import AdminRequests from './pages/AdminRequests';
 import ComingSoon from './pages/ComingSoon';
 
@@ -314,8 +316,8 @@ function AppRoutes() {
         <Route path="/admin/dashboard" element={guarded('admin', <AdminDashboard />)} />
         {/* Users/Tests/Reports/Security/Settings rendered mockData.js and
             fake actions; they stay unrouted until wired to real data. */}
-        <Route path="/admin/users" element={guarded('admin', <ComingSoon title="Users" />)} />
-        <Route path="/admin/tests" element={guarded('admin', <ComingSoon title="Tests" />)} />
+        <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
+        <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
         <Route path="/admin/reports" element={guarded('admin', <ComingSoon title="Reports" />)} />
         <Route path="/admin/security" element={guarded('admin', <ComingSoon title="Security" />)} />
         <Route path="/admin/payouts" element={guarded('admin', <AdminPayouts />)} />
