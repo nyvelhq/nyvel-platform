@@ -294,7 +294,7 @@ export default function AdminDashboard() {
         </div>
 
         {loading || !stats ? (
-          <div className="card p-10 text-center text-sm text-slate-400 dark:text-slate-500">
+          <div className="card p-10 text-center text-sm text-slate-500 dark:text-slate-400">
             Loading platform metrics…
           </div>
         ) : (
@@ -382,7 +382,7 @@ export default function AdminDashboard() {
           <div className="card p-5 animate-fade-up" style={{ animationDelay: '430ms' }}>
             <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-4">Live Activity</h3>
             {stats.activity.length === 0 ? (
-              <p className="text-sm text-slate-400 dark:text-slate-500">No activity yet.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">No activity yet.</p>
             ) : (
               <div className="space-y-3">
                 {stats.activity.map((item) => {
@@ -406,7 +406,7 @@ export default function AdminDashboard() {
                           {item.event}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight truncate">{item.detail}</p>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{timeAgo(item.at)}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">{timeAgo(item.at)}</p>
                       </div>
                     </div>
                   );
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           {stats.topCompanies.length === 0 ? (
-            <p className="p-6 text-sm text-slate-400 dark:text-slate-500">No companies with recorded payouts yet.</p>
+            <p className="p-6 text-sm text-slate-500 dark:text-slate-400">No companies with recorded payouts yet.</p>
           ) : (
           <div className="overflow-x-auto">
             <table className="w-full data-table">
@@ -462,7 +462,7 @@ export default function AdminDashboard() {
                       </div>
                     </td>
                     <td data-label="Tests run" className="font-semibold text-slate-700 dark:text-slate-300">{co.tests}</td>
-                    <td data-label="Paid out" className="font-bold text-emerald-600 dark:text-emerald-400">${co.spend.toLocaleString()}</td>
+                    <td data-label="Paid out" className="font-bold text-emerald-700 dark:text-emerald-400">${co.spend.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -479,7 +479,7 @@ export default function AdminDashboard() {
               value: stats.fillRate,
               format: (n) => `${n.toFixed(1)}%`,
               sub: 'Tests that reached their full tester count',
-              color: 'text-emerald-600 dark:text-emerald-400',
+              color: 'text-emerald-700 dark:text-emerald-400',
             },
             {
               label: 'Avg. Time to First Result',
@@ -509,7 +509,7 @@ export default function AdminDashboard() {
                   <AnimatedCounter value={value} format={format} />
                 )}
               </p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">{sub}</p>
             </div>
           ))}
         </div>

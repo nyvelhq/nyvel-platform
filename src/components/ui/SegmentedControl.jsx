@@ -36,7 +36,7 @@ export default function SegmentedControl({ options, value, onChange, ariaLabel, 
             className={`relative rounded-md font-semibold transition-colors duration-200 ${sizeClasses}
               ${selected
                 ? 'text-slate-800 dark:text-slate-100'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}`}
           >
             {selected && (
               <motion.span

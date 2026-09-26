@@ -217,7 +217,7 @@ export default function CompanyTestDetail() {
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">
               Applicants
               {applicants.length > 0 && (
-                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1.5">({applicants.length})</span>
+                <span className="text-slate-500 dark:text-slate-400 font-normal ml-1.5">({applicants.length})</span>
               )}
             </h2>
             {pendingCount > 0 && (
@@ -228,7 +228,7 @@ export default function CompanyTestDetail() {
           </div>
 
           {loading ? (
-            <div className="p-10 text-center text-sm text-slate-400 dark:text-slate-500">Loading applicants…</div>
+            <div className="p-10 text-center text-sm text-slate-500 dark:text-slate-400">Loading applicants…</div>
           ) : applicants.length === 0 ? (
             <EmptyState
               icon={Users}
@@ -242,7 +242,7 @@ export default function CompanyTestDetail() {
                   <th>Tester</th>
                   <th>Applied</th>
                   <th>Status</th>
-                  <th></th>
+                  <th><span className="sr-only">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -305,7 +305,7 @@ export default function CompanyTestDetail() {
                             </Button>
                           </div>
                         ) : (
-                          <span className="text-xs text-slate-400 dark:text-slate-500 block text-right">Decided</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 block text-right">Decided</span>
                         )}
                       </td>
                     </tr>
@@ -321,13 +321,13 @@ export default function CompanyTestDetail() {
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">
               Findings
               {findings.length > 0 && (
-                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1.5">({findings.length})</span>
+                <span className="text-slate-500 dark:text-slate-400 font-normal ml-1.5">({findings.length})</span>
               )}
             </h2>
           </div>
 
           {loadingFindings ? (
-            <div className="p-10 text-center text-sm text-slate-400 dark:text-slate-500">Loading findings…</div>
+            <div className="p-10 text-center text-sm text-slate-500 dark:text-slate-400">Loading findings…</div>
           ) : findings.length === 0 ? (
             <EmptyState
               icon={FileSearch}

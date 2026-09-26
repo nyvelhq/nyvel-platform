@@ -159,7 +159,7 @@ export default function TesterTestDetail() {
   if (loading) {
     return (
       <PlatformLayout title="Test Details">
-        <div className="p-10 text-center text-sm text-slate-400 dark:text-slate-500">Loading test…</div>
+        <div className="p-10 text-center text-sm text-slate-500 dark:text-slate-400">Loading test…</div>
       </PlatformLayout>
     );
   }
@@ -211,7 +211,7 @@ export default function TesterTestDetail() {
             <div className="flex items-center gap-1.5">Type: <TypeBadge type={test.test_type} /></div>
             <div>
               Compensation:{' '}
-              <span className="font-medium text-emerald-600 dark:text-emerald-400">${Number(test.compensation) || 0}</span>
+              <span className="font-medium text-emerald-700 dark:text-emerald-400">${Number(test.compensation) || 0}</span>
             </div>
             <div>
               Due: <span className="font-medium text-slate-900 dark:text-slate-100">{test.end_date || '—'}</span>
@@ -328,7 +328,7 @@ export default function TesterTestDetail() {
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">
               Your Findings
               {findings.length > 0 && (
-                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1.5">({findings.length})</span>
+                <span className="text-slate-500 dark:text-slate-400 font-normal ml-1.5">({findings.length})</span>
               )}
             </h2>
           </div>
@@ -388,7 +388,7 @@ export default function TesterTestDetail() {
                         </Button>
                       </div>
                     )}
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       {f.submitted_at ? f.submitted_at.slice(0, 10) : ''}
                     </p>
                   </li>

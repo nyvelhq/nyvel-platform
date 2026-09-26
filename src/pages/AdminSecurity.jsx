@@ -124,21 +124,21 @@ export default function AdminSecurity() {
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium text-slate-700 dark:text-slate-300">Backup Status</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">Good</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">Good</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Last backup: 1 hour ago</p>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium text-slate-700 dark:text-slate-300">Encryption</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">AES-256</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">AES-256</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">All data encrypted in transit & at rest</p>
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium text-slate-700 dark:text-slate-300">DLP Status</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">Active</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">Active</span>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Data Loss Prevention enabled</p>
               </div>
@@ -148,7 +148,7 @@ export default function AdminSecurity() {
           <div className="card p-5">
             <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">Security Score</p>
             <div className="text-center">
-              <p className="font-display text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">94/100</p>
+              <p className="font-display text-4xl font-bold text-emerald-700 dark:text-emerald-400 mb-2">94/100</p>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Excellent security posture</p>
               <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400">
                 <p>✓ All critical patches applied</p>

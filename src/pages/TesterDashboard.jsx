@@ -269,8 +269,8 @@ export default function TesterDashboard() {
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{test.company}</p>
                       </div>
                       <div className="flex-shrink-0 text-right">
-                        <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">${test.compensation}</p>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500">per test</p>
+                        <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">${test.compensation}</p>
+                        <p className="text-[10px] text-slate-500 dark:text-slate-400">per test</p>
                       </div>
                     </div>
 
@@ -295,7 +295,7 @@ export default function TesterDashboard() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500 mb-4">
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-4">
                       {test.duration && (
                         <span className="flex items-center gap-1">
                           <Clock size={12} />
@@ -347,7 +347,7 @@ export default function TesterDashboard() {
                     <th>Progress</th>
                     <th>Compensation</th>
                     <th>Due</th>
-                    <th></th>
+                    <th><span className="sr-only">Actions</span></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,7 +356,7 @@ export default function TesterDashboard() {
                       <td>
                         <div>
                           <p className="font-medium text-slate-800 dark:text-slate-200">{app.testName}</p>
-                          <p className="text-xs text-slate-400 dark:text-slate-500">{app.company}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{app.company}</p>
                         </div>
                       </td>
                       <td data-label="Type"><TypeBadge type={app.type} /></td>
@@ -372,7 +372,7 @@ export default function TesterDashboard() {
                           <span className="text-xs text-slate-500 dark:text-slate-400 w-8 text-right">{app.progress}%</span>
                         </div>
                       </td>
-                      <td data-label="Pay" className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
+                      <td data-label="Pay" className="font-semibold text-emerald-700 dark:text-emerald-400">${app.compensation}</td>
                       <td data-label="Due" className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
                       <td>
                         <button
@@ -421,7 +421,7 @@ export default function TesterDashboard() {
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">All Time</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold font-display text-emerald-600 dark:text-emerald-400">${earnings.pendingPayout.toLocaleString()}</p>
+                  <p className="text-2xl font-bold font-display text-emerald-700 dark:text-emerald-400">${earnings.pendingPayout.toLocaleString()}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pending Payout</p>
                 </div>
               </div>

@@ -472,7 +472,7 @@ export default function AdminSettings() {
                     <p className="text-sm text-slate-700 dark:text-slate-300">{entry.summary}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{entry.user}</p>
                   </div>
-                  <span className="text-xs font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap">{entry.timestamp}</span>
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">{entry.timestamp}</span>
                 </div>
               ))}
             </div>

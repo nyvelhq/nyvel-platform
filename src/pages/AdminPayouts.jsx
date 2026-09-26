@@ -140,13 +140,13 @@ export default function AdminPayouts() {
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">
               Payable Testers
               {rows.length > 0 && (
-                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1.5">({rows.length})</span>
+                <span className="text-slate-500 dark:text-slate-400 font-normal ml-1.5">({rows.length})</span>
               )}
             </h2>
           </div>
 
           {loading ? (
-            <div className="p-10 text-center text-sm text-slate-400 dark:text-slate-500">Loading payouts…</div>
+            <div className="p-10 text-center text-sm text-slate-500 dark:text-slate-400">Loading payouts…</div>
           ) : loadError ? (
             <div className="p-6 flex flex-col sm:flex-row sm:items-center gap-3" role="alert">
               <AlertTriangle size={18} className="text-error-500 flex-shrink-0" aria-hidden="true" />
@@ -172,7 +172,7 @@ export default function AdminPayouts() {
                   <th>Accepted Findings</th>
                   <th>Amount</th>
                   <th>Status</th>
-                  <th></th>
+                  <th><span className="sr-only">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -185,7 +185,7 @@ export default function AdminPayouts() {
                     <td data-label="Test" className="text-sm text-slate-700 dark:text-slate-300">{r.testName}</td>
                     <td data-label="Company" className="text-sm text-slate-500 dark:text-slate-400">{r.company}</td>
                     <td data-label="Accepted findings" className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">{r.findingCount}</td>
-                    <td data-label="Amount" className="font-semibold text-emerald-600 dark:text-emerald-400">${r.amount.toLocaleString()}</td>
+                    <td data-label="Amount" className="font-semibold text-emerald-700 dark:text-emerald-400">${r.amount.toLocaleString()}</td>
                     <td data-label="Status">
                       <div>
                         {r.status === 'paid' ? (
@@ -208,7 +208,7 @@ export default function AdminPayouts() {
                           </Button>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400 dark:text-slate-500 block text-right">Paid</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 block text-right">Paid</span>
                       )}
                     </td>
                   </tr>

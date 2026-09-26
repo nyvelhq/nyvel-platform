@@ -117,35 +117,35 @@ export default function TesterOnboarding() {
               <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Tell us about yourself</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="form-label">First Name *</label>
-                  <input className="form-input" placeholder="Jane" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} />
+                  <label htmlFor="ob-first" className="form-label">First Name *</label>
+                  <input id="ob-first" className="form-input" placeholder="Jane" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} />
                 </div>
                 <div>
-                  <label className="form-label">Last Name *</label>
-                  <input className="form-input" placeholder="Smith" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">Country</label>
-                  <input className="form-input" value={form.country} onChange={(e) => set('country', e.target.value)} />
-                </div>
-                <div>
-                  <label className="form-label">City</label>
-                  <input className="form-input" placeholder="San Francisco" value={form.city} onChange={(e) => set('city', e.target.value)} />
+                  <label htmlFor="ob-last" className="form-label">Last Name *</label>
+                  <input id="ob-last" className="form-input" placeholder="Smith" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="form-label">Age</label>
-                  <select className="form-input" value={form.age} onChange={(e) => set('age', e.target.value)}>
+                  <label htmlFor="ob-country" className="form-label">Country</label>
+                  <input id="ob-country" className="form-input" value={form.country} onChange={(e) => set('country', e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor="ob-city" className="form-label">City</label>
+                  <input id="ob-city" className="form-input" placeholder="San Francisco" value={form.city} onChange={(e) => set('city', e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="ob-age" className="form-label">Age</label>
+                  <select id="ob-age" className="form-input" value={form.age} onChange={(e) => set('age', e.target.value)}>
                     <option value="">Select age range</option>
                     {['18-24', '25-34', '35-44', '45-54', '55-64', '65+'].map((a) => <option key={a}>{a}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="form-label">Occupation</label>
-                  <input className="form-input" placeholder="Software Engineer" value={form.occupation} onChange={(e) => set('occupation', e.target.value)} />
+                  <label htmlFor="ob-occupation" className="form-label">Occupation</label>
+                  <input id="ob-occupation" className="form-input" placeholder="Software Engineer" value={form.occupation} onChange={(e) => set('occupation', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -156,10 +156,10 @@ export default function TesterOnboarding() {
             <div className="space-y-5">
               <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Your devices & setup</h2>
               <div>
-                <label className="form-label">Devices you own (select all that apply)</label>
-                <div className="flex flex-wrap gap-2">
+                <p id="ob-devices" className="form-label">Devices you own (select all that apply)</p>
+                <div role="group" aria-labelledby="ob-devices" className="flex flex-wrap gap-2">
                   {deviceOptions.map((d) => (
-                    <button key={d} type="button" onClick={() => toggleArr('devices', d)}
+                    <button key={d} type="button" aria-pressed={form.devices.includes(d)} onClick={() => toggleArr('devices', d)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
                         ${form.devices.includes(d) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-300 dark:hover:border-brand-700'}`}>
                       {d}
@@ -168,22 +168,22 @@ export default function TesterOnboarding() {
                 </div>
               </div>
               <div>
-                <label className="form-label">OS Versions available</label>
-                <div className="flex flex-wrap gap-2">
+                <p id="ob-os" className="form-label">OS Versions available</p>
+                <div role="group" aria-labelledby="ob-os" className="flex flex-wrap gap-2">
                   {osVersions.map((o) => (
-                    <button key={o} type="button" onClick={() => toggleArr('osVersions', o)}
+                    <button key={o} type="button" aria-pressed={form.osVersions.includes(o)} onClick={() => toggleArr('osVersions', o)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
-                        ${form.osVersions.includes(o) ? 'bg-accent-500 border-accent-500 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-accent-300 dark:hover:border-accent-700'}`}>
+                        ${form.osVersions.includes(o) ? 'bg-accent-500 border-accent-500 text-slate-950' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-accent-300 dark:hover:border-accent-700'}`}>
                       {o}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="form-label">Primary Internet Connection</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <p id="ob-connection" className="form-label">Primary Internet Connection</p>
+                <div role="group" aria-labelledby="ob-connection" className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {connectionTypes.map((c) => (
-                    <button key={c} type="button" onClick={() => set('connection', c)}
+                    <button key={c} type="button" aria-pressed={form.connection === c} onClick={() => set('connection', c)}
                       className={`py-2 px-3 text-sm rounded-lg border font-medium transition-all text-left
                         ${form.connection === c ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 dark:border-brand-400 text-brand-700 dark:text-brand-300' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-600'}`}>
                       {c}
@@ -199,10 +199,10 @@ export default function TesterOnboarding() {
             <div className="space-y-5">
               <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Skills & expertise</h2>
               <div>
-                <label className="form-label">Testing specialties (select all that apply)</label>
-                <div className="flex flex-wrap gap-2">
+                <p id="ob-skills" className="form-label">Testing specialties (select all that apply)</p>
+                <div role="group" aria-labelledby="ob-skills" className="flex flex-wrap gap-2">
                   {skillOptions.map((s) => (
-                    <button key={s} type="button" onClick={() => toggleArr('skills', s)}
+                    <button key={s} type="button" aria-pressed={form.skills.includes(s)} onClick={() => toggleArr('skills', s)}
                       className={`px-3 py-1.5 text-sm rounded-lg border font-medium transition-all
                         ${form.skills.includes(s) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-brand-300 dark:hover:border-brand-700'}`}>
                       {s}
@@ -211,10 +211,10 @@ export default function TesterOnboarding() {
                 </div>
               </div>
               <div>
-                <label className="form-label">Years of testing experience</label>
-                <div className="grid grid-cols-4 gap-2">
+                <p id="ob-years" className="form-label">Years of testing experience</p>
+                <div role="group" aria-labelledby="ob-years" className="grid grid-cols-4 gap-2">
                   {['< 1 year', '1-3 years', '3-5 years', '5+ years'].map((y) => (
-                    <button key={y} type="button" onClick={() => set('yearsExp', y)}
+                    <button key={y} type="button" aria-pressed={form.yearsExp === y} onClick={() => set('yearsExp', y)}
                       className={`py-2 text-xs rounded-lg border font-medium transition-all
                         ${form.yearsExp === y ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 dark:border-brand-400 text-brand-700 dark:text-brand-300' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
                       {y}
@@ -230,8 +230,9 @@ export default function TesterOnboarding() {
             <div className="space-y-5">
               <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-5">Almost done!</h2>
               <div>
-                <label className="form-label">Short Bio</label>
+                <label htmlFor="ob-bio" className="form-label">Short Bio</label>
                 <textarea
+                  id="ob-bio"
                   className="form-input resize-none"
                   rows={4}
                   maxLength={2000}
@@ -241,8 +242,9 @@ export default function TesterOnboarding() {
                 />
               </div>
               <div>
-                <label className="form-label">LinkedIn Profile (optional)</label>
+                <label htmlFor="ob-linkedin" className="form-label">LinkedIn Profile (optional)</label>
                 <input
+                  id="ob-linkedin"
                   className="form-input"
                   placeholder="https://linkedin.com/in/your-name"
                   maxLength={300}

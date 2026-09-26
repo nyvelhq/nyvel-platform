@@ -107,7 +107,7 @@ export default function StatCard({
         </p>
         <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">{label}</p>
         {trendCaption && (
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{trendCaption}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{trendCaption}</p>
         )}
       </div>
     </div>

@@ -284,7 +284,7 @@ export default function PlatformLayout({ children, title }) {
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 hidden sm:block">
                   {user?.name?.split(' ')[0]}
                 </span>
-                <ChevronDown size={14} className="hidden sm:block text-slate-400 dark:text-slate-500" aria-hidden="true" />
+                <ChevronDown size={14} className="hidden sm:block text-slate-500 dark:text-slate-400" aria-hidden="true" />
               </button>
 
               {userMenuOpen && (

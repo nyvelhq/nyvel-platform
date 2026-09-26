@@ -88,7 +88,7 @@ export default function RequestAccess() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex">
+    <main className="min-h-screen bg-slate-950 flex">
       <div className="hidden lg:flex flex-col justify-between w-[480px] flex-shrink-0 bg-gradient-to-br from-slate-900 to-slate-950 border-r border-white/10 p-12">
         <div>
           <Link to="/" className="flex items-center gap-2.5 mb-16">
@@ -207,6 +207,6 @@ export default function RequestAccess() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

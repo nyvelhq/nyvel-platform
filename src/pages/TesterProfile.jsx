@@ -51,7 +51,7 @@ export default function TesterProfile() {
     { label: 'Applications', value: myApplications.length, color: 'text-slate-700 dark:text-slate-300' },
     { label: 'Tests Completed', value: earnings.completedTests, color: 'text-brand-600 dark:text-brand-400' },
     { label: 'Findings Accepted', value: earnings.acceptedFindings, color: 'text-brand-600 dark:text-brand-400' },
-    { label: 'Total Earned', value: `$${earnings.totalEarned.toLocaleString()}`, color: 'text-emerald-600 dark:text-emerald-400' },
+    { label: 'Total Earned', value: `$${earnings.totalEarned.toLocaleString()}`, color: 'text-emerald-700 dark:text-emerald-400' },
     { label: 'Member Since', value: memberSince, color: 'text-slate-500 dark:text-slate-400' },
   ];
   const emptyNote = (text) => (
@@ -168,7 +168,7 @@ export default function TesterProfile() {
 
             <div className="card rounded-2xl p-5 animate-fade-up" style={{ animationDelay: '200ms' }}>
               <h3 className="font-semibold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
-                <Monitor size={16} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
+                <Monitor size={16} className="text-slate-500 dark:text-slate-400" aria-hidden="true" />
                 Devices &amp; Platforms
               </h3>
               {!devices.length && emptyNote('No devices added yet.')}
@@ -204,10 +204,10 @@ export default function TesterProfile() {
                   <tr key={app.id} className="table-row-enter" style={{ animationDelay: `${i * 60}ms` }}>
                     <td>
                       <p className="font-medium text-slate-800 dark:text-slate-200">{app.testName}</p>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">{app.company}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{app.company}</p>
                     </td>
                     <td data-label="Status"><StatusBadge status={app.status} /></td>
-                    <td data-label="Pay" className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
+                    <td data-label="Pay" className="font-semibold text-emerald-700 dark:text-emerald-400">${app.compensation}</td>
                     <td data-label="Due" className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
                   </tr>
                 ))}

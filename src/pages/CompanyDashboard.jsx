@@ -107,7 +107,8 @@ export default function CompanyDashboard() {
               </p>
               {severityTotal > 0 && (
               <div className="md:flex md:items-center md:gap-8">
-              <div className="relative cursor-pointer md:w-64 flex-shrink-0">
+              {/* The legend buttons beside the chart are the accessible version of it. */}
+              <div className="relative cursor-pointer md:w-64 flex-shrink-0" aria-hidden="true">
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
@@ -147,6 +148,8 @@ export default function CompanyDashboard() {
                   return (
                     <button
                       key={item.name}
+                      type="button"
+                      aria-pressed={active}
                       onClick={() => toggleSeverityFilter(item.name)}
                       className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md border text-left transition-colors ${
                         active
@@ -215,7 +218,7 @@ export default function CompanyDashboard() {
                   <th>Testers</th>
                   <th>Issues</th>
                   <th>Due Date</th>
-                  <th></th>
+                  <th><span className="sr-only">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -269,9 +272,10 @@ export default function CompanyDashboard() {
                           e.stopPropagation();
                           setDetailTest(test);
                         }}
-                        className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                        aria-label={`Quick view: ${test.name}`}
+                        className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLink size={14} aria-hidden="true" />
                       </button>
                     </td>
                   </tr>

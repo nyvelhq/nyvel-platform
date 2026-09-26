@@ -49,7 +49,7 @@ export default function Testimonials() {
                 <div className="w-11 h-11 rounded-xl bg-brand-50 flex items-center justify-center mb-5">
                   <Icon size={20} className="text-brand-600" />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-accent-600 mb-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-accent-700 mb-2">
                   {tag}
                 </p>
                 <h3 className="font-display font-bold text-lg text-slate-900 mb-3">{title}</h3>

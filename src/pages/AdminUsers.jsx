@@ -344,14 +344,14 @@ export default function AdminUsers() {
             {[
               { label: 'Total Companies', value: stats.companies, sub: 'Active accounts', color: 'text-violet-600 dark:text-violet-400' },
               { label: 'Total Testers', value: stats.testers, sub: 'Verified testers', color: 'text-cyan-600 dark:text-cyan-400' },
-              { label: 'Active Users', value: stats.activeUsers, sub: 'Online in last 30 days', color: 'text-emerald-600 dark:text-emerald-400' },
+              { label: 'Active Users', value: stats.activeUsers, sub: 'Online in last 30 days', color: 'text-emerald-700 dark:text-emerald-400' },
             ].map(({ label, value, sub, color }, i) => (
               <div key={label} className="card p-5 animate-fade-up" style={{ animationDelay: `${80 + i * 70}ms` }}>
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
                 <p className={`font-display text-3xl font-bold ${color}`}>
                   <AnimatedCounter value={value} />
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">{sub}</p>
               </div>
             ))}
           </div>
@@ -487,7 +487,7 @@ export default function AdminUsers() {
                     : [
                         { label: 'Rating', value: `${(safeProp(detailUser, 'rating', 0)).toFixed(1)} / 5.0` },
                         { label: 'Tests Completed', value: safeProp(detailUser, 'testsCompleted', 0) },
-                        { label: 'Total Earnings', value: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(safeProp(detailUser, 'earnings', 0))}</span> },
+                        { label: 'Total Earnings', value: <span className="font-semibold text-emerald-700 dark:text-emerald-400">{formatCurrency(safeProp(detailUser, 'earnings', 0))}</span> },
                       ]),
                 ]
               : []
@@ -643,7 +643,7 @@ export default function AdminUsers() {
                                     <span className="text-slate-300 dark:text-slate-600">•</span>
                                     <span>{safeProp(user, 'testsCompleted', 0)} completed</span>
                                     <span className="text-slate-300 dark:text-slate-600">•</span>
-                                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                                    <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
                                       {formatCurrency(safeProp(user, 'earnings', 0))}
                                     </span>
                                   </>

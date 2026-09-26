@@ -84,11 +84,12 @@ export function BatchActionsBar({ selectedCount, onClearSelection, onDelete, onE
 // keeps the visual size right for a dense table while giving mobile a
 // tap target closer to the 44px minimum (labels forward clicks to the
 // input they wrap, so this doesn't change the click behavior).
-export function SelectAllCheckbox({ checked, indeterminate, onToggle, disabled = false }) {
+export function SelectAllCheckbox({ checked, indeterminate, onToggle, disabled = false, label = 'Select all rows' }) {
   return (
     <label className="inline-flex items-center justify-center w-11 h-11 -m-[14px] cursor-pointer">
       <input
         type="checkbox"
+        aria-label={label}
         checked={checked}
         ref={(el) => {
           if (el) el.indeterminate = indeterminate;
@@ -101,11 +102,12 @@ export function SelectAllCheckbox({ checked, indeterminate, onToggle, disabled =
   );
 }
 
-export function RowCheckbox({ checked, onToggle, disabled = false }) {
+export function RowCheckbox({ checked, onToggle, disabled = false, label = 'Select row' }) {
   return (
     <label className="inline-flex items-center justify-center w-11 h-11 -m-[14px] cursor-pointer">
       <input
         type="checkbox"
+        aria-label={label}
         checked={checked}
         onChange={onToggle}
         disabled={disabled}

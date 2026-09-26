@@ -391,7 +391,7 @@ export default function AdminTests() {
             {[
               { label: 'Active Tests', value: stats.active, sub: 'Currently running', color: 'text-cyan-600 dark:text-cyan-400' },
               { label: 'In Progress', value: stats.inProgress, sub: 'Awaiting completion', color: 'text-amber-600 dark:text-amber-400' },
-              { label: 'Completed', value: stats.completed, sub: 'Total finished', color: 'text-emerald-600 dark:text-emerald-400' },
+              { label: 'Completed', value: stats.completed, sub: 'Total finished', color: 'text-emerald-700 dark:text-emerald-400' },
               { label: 'Issues Reported', value: stats.totalIssues, sub: `${stats.totalCritical} critical`, color: 'text-error-600 dark:text-error-400', onClick: handleDrillIntoIssues },
             ].map(({ label, value, sub, color, onClick }, i) => (
               <div
@@ -405,7 +405,7 @@ export default function AdminTests() {
                 <p className={`font-display text-3xl font-bold ${color}`}>
                   <AnimatedCounter value={value} />
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1.5">{sub}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">{sub}</p>
               </div>
             ))}
           </div>

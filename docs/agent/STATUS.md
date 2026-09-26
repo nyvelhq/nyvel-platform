@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-05)._
+_Last updated: 2026-09-26 by the orchestrator (A11Y-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -141,15 +141,26 @@ runs before merging; test it on a local Postgres like 0006/0007.
    show an error if it fails; `sessionStorage` copy removed. Completion
    time server-stamped; lengths, list sizes and http(s)-only LinkedIn
    enforced in the DB. 18 checks in `supabase/tests/50_tester_profiles.sql`,
-   11 new unit tests. — _status: in PR —
+   11 new unit tests. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/30_
-17. **A11Y-01 Accessibility + dead links** — "Join as Tester"/"Talk to
-   Sales" nearly invisible (dark text on navy); small grey text below 4.5:1
-   in several places; login labels lack `htmlFor`, show-password button
-   lacks `aria-label`; password-gate error lacks `role="alert"`; admin
-   checkboxes unnamed; footer links that do nothing (remove them — Privacy/
-   Terms pages themselves are Eben-owned below). _Size S–M._ — _status: not
-   started_
+17. **A11Y-01 Accessibility + dead links** — audited every page with
+   axe-core (WCAG 2 A/AA, light and dark) and fixed what it found:
+   - small grey text is now `slate-500` on light / `slate-400` on dark;
+   - brand teal is 4% darker so it passes 4.5:1;
+   - green money amounts and the success button are one shade darker;
+   - amber buttons, badges and the tester tab use dark text instead of white;
+   - the sidebar, tabs, pricing and footer text pass contrast.
+
+   Also:
+   - login fields are labelled and the show-password button is named;
+   - the gate error is announced;
+   - onboarding inputs are labelled and chip groups use `aria-pressed`;
+   - pagination, quick-view and admin checkboxes are named;
+   - action columns have headers and public pages have a `<main>`;
+   - heading levels are fixed;
+   - the footer's dead links and non-working social buttons are removed.
+
+   _status: in PR — PR_LINK_
 18. **SEC-04 Cap findings per tester per test** — no limit today; one
    accepted tester can flood a company's triage queue (STRIDE D3). _Size S ·
    migration._ — _status: not started_
@@ -206,8 +217,8 @@ runs before merging; test it on a local Postgres like 0006/0007.
   bump `version` in `src/content/testerNda.js` when it changes.
 - Privacy Policy and Terms pages (legal text) — footer links currently go
   nowhere.
-- Confirm or drop the service claims still on the site: "Screened &
-  verified" testers, "Professional QA review" / "QA-led"; and the pricing
+- Confirm or drop the service claims still on the site: the footer's
+  "GDPR & CCPA-aligned" badge, "Screened & verified" testers, "Professional QA review" / "QA-led"; and the pricing
   ($299/$899, plan limits, SLA).
 - Pick a monitoring option from `docs/ops/RUNBOOK.md` (Vercel Analytics →
   uptime checker → Sentry) and check Supabase backups/PITR + auth rate
