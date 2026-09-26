@@ -24,6 +24,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminPayouts from './pages/AdminPayouts';
 import AdminUsers from './pages/AdminUsers';
 import AdminTests from './pages/AdminTests';
+import AdminReports from './pages/AdminReports';
 import AdminRequests from './pages/AdminRequests';
 import ComingSoon from './pages/ComingSoon';
 
@@ -318,7 +319,7 @@ function AppRoutes() {
             fake actions; they stay unrouted until wired to real data. */}
         <Route path="/admin/users" element={guarded('admin', <AdminUsers />)} />
         <Route path="/admin/tests" element={guarded('admin', <AdminTests />)} />
-        <Route path="/admin/reports" element={guarded('admin', <ComingSoon title="Reports" />)} />
+        <Route path="/admin/reports" element={guarded('admin', <AdminReports />)} />
         <Route path="/admin/security" element={guarded('admin', <ComingSoon title="Security" />)} />
         <Route path="/admin/payouts" element={guarded('admin', <AdminPayouts />)} />
         <Route path="/admin/requests" element={guarded('admin', <AdminRequests />)} />

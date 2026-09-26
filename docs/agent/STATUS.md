@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-07)._
+_Last updated: 2026-09-26 by the orchestrator (ADM-02)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -226,11 +226,21 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - **Tests:** 13 checks in `supabase/tests/70_finding_messages.sql`, 3 unit
      tests.
 
-   _Size S–M · migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/37_
-23. **ADM-02 Admin Reports / Settings** — currently "Coming soon"; rebuild
-   Reports on real payouts/findings data; Settings only once there's
-   something real to configure. Security page stays hidden until real
-   signals exist. _Size M._ — _status: not started_
+   _Size S–M · migration._ — _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/37_
+23. **ADM-02 Admin Reports / Settings** — `/admin/reports` rebuilt on real
+   data, with a 30-day / 90-day / all-time switch:
+   - findings submitted and still waiting;
+   - acceptance rate, of decided findings;
+   - median time from submission to latest review;
+   - amount paid out;
+   - findings by severity;
+   - top companies by accepted findings;
+   - a by-month table with a CSV download.
+
+   The counting logic is in `src/utils/adminReports.js`, with 6 unit
+   tests. **Settings and Security are removed from the admin sidebar** until
+   they show or change something real; their URLs still land on "Coming
+   soon". No migration. — _status: in PR — PR_LINK_
 24. **QA-01 End-to-end test framework (Playwright + TypeScript)** — agreed
    with Eben 2026-09-26; start **after items 15–23 are done**.
    - Lives in this repo under `e2e/` (own `package.json`/`tsconfig`, TypeScript;
