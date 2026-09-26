@@ -101,7 +101,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    with a sign-off checklist, and documented branch-protection settings
    (RUNBOOK §4.1). The new DB tests immediately caught a bug in 0007:
    `set_test_status` was callable by anon / profile-less users (NULL from
-   `is_admin()`), fixed by migration 0009. — _status: in PR — DEV01_PR_LINK_
+   `is_admin()`), fixed by migration 0009. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/25_
 12. **SEC-02 Make paid payouts immutable + auditable** — `payouts` is
    "append-only once paid" by convention only; an admin update silently
    rewrites amount/recipient with no history. Trigger rejecting updates to
