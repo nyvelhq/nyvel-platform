@@ -68,4 +68,50 @@ select tests.check((select severity = 'high' from public.findings where id = '00
   '0011: admin can correct a finding');
 reset role;
 
+-- ------------------------------------- 0014: cap on untriaged findings
+-- aa's earlier findings (f1, f2) are already 'accepted' by this point, so
+-- the untriaged count for aa on e1 starts at 0.
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000aa';
+insert into public.findings (test_id, tester_id, title, description, severity)
+select '00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000aa',
+       'Bug ' || g, 'Steps', 'low'
+from generate_series(1, 20) g;
+select tests.check((select count(*) from public.findings
+  where test_id = '00000000-0000-0000-0000-0000000000e1'
+    and tester_id = '00000000-0000-0000-0000-0000000000aa'
+    and status = 'open') = 20,
+  '0014: 20 open findings insert cleanly');
+select tests.expect_error($$insert into public.findings (test_id, tester_id, title, description, severity)
+  values ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000aa', 'One too many', 'Steps', 'low')$$,
+  'awaiting triage', '0014: the 21st untriaged finding is rejected');
+
+-- a different tester on the same test is not blocked by aa's queue
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000dd';
+insert into public.findings (test_id, tester_id, title, description, severity)
+  values ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000dd', 'Different tester', 'Steps', 'low');
+select tests.check((select count(*) from public.findings
+  where test_id = '00000000-0000-0000-0000-0000000000e1' and tester_id = '00000000-0000-0000-0000-0000000000dd') = 1,
+  '0014: another tester is not blocked by aa''s queue');
+
+-- once the company triages one down, aa has room again
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000c1';
+update public.findings set status = 'accepted'
+  where id = (
+    select id from public.findings
+    where test_id = '00000000-0000-0000-0000-0000000000e1'
+      and tester_id = '00000000-0000-0000-0000-0000000000aa'
+      and status = 'open'
+    limit 1
+  );
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000aa';
+insert into public.findings (test_id, tester_id, title, description, severity)
+  values ('00000000-0000-0000-0000-0000000000e1', '00000000-0000-0000-0000-0000000000aa', 'Room again', 'Steps', 'low');
+select tests.check((select count(*) from public.findings
+  where test_id = '00000000-0000-0000-0000-0000000000e1'
+    and tester_id = '00000000-0000-0000-0000-0000000000aa'
+    and status = 'open') = 20,
+  '0014: triaging one down frees a slot for a new submission');
+reset role;
+
 \echo 'All finding checks passed.'

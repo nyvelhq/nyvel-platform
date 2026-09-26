@@ -4,7 +4,9 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-05)._
+_Last updated: 2026-09-26 by the orchestrator (SEC-04). Also corrected two
+stale entries below: UX-05 (PR #30) had already merged, and A11Y-01 already
+had an open PR (#31) that this file didn't reflect yet._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -141,18 +143,19 @@ runs before merging; test it on a local Postgres like 0006/0007.
    show an error if it fails; `sessionStorage` copy removed. Completion
    time server-stamped; lengths, list sizes and http(s)-only LinkedIn
    enforced in the DB. 18 checks in `supabase/tests/50_tester_profiles.sql`,
-   11 new unit tests. — _status: in PR —
+   11 new unit tests. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/30_
 17. **A11Y-01 Accessibility + dead links** — "Join as Tester"/"Talk to
    Sales" nearly invisible (dark text on navy); small grey text below 4.5:1
    in several places; login labels lack `htmlFor`, show-password button
    lacks `aria-label`; password-gate error lacks `role="alert"`; admin
    checkboxes unnamed; footer links that do nothing (remove them — Privacy/
-   Terms pages themselves are Eben-owned below). _Size S–M._ — _status: not
-   started_
+   Terms pages themselves are Eben-owned below). _Size S–M._ — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/31_
 18. **SEC-04 Cap findings per tester per test** — no limit today; one
    accepted tester can flood a company's triage queue (STRIDE D3). _Size S ·
-   migration._ — _status: not started_
+   migration._ — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/32_
 19. **ADM-01 Admin Users & Tests on real data** — both are "Coming soon"
    since UX-01; rebuild on `profiles`/`clients`/`tests` reusing the existing
    table UI in `AdminUsers.jsx`/`AdminTests.jsx`, with read-only views first
@@ -385,3 +388,33 @@ runs before merging; test it on a local Postgres like 0006/0007.
   may be delivered offline (vetting, NDAs, "professional QA review") and the
   plan prices were left as-is and flagged for Eben. New pure helpers in
   `src/utils/dashboardStats.js` + 7 new tests (34 total). PR: https://github.com/nyvelhq/nyvel-platform/pull/21
+- **(Entries for PR #22–#31 were not backfilled into this log by the runs
+  that shipped them — see each PR's own description for its acceptance
+  criteria and test evidence. Flagging the gap rather than reconstructing
+  history I didn't verify.)**
+- **SEC-04** — `docs/security/STRIDE_THREAT_MODEL.md`'s D3 finding: no limit
+  on how many findings an accepted tester could submit per test, so one
+  tester could flood a company's triage queue. Migration
+  `0014_cap_findings_per_tester.sql` adds a `before insert` trigger on
+  `public.findings` that rejects a new finding once the tester already has
+  20 **untriaged** (`open` or `more_info`) findings on that test — accepted/
+  rejected findings don't count, so triaging the queue down (or a tester
+  replying to a "more info" request) always reopens room. 20 matches the
+  list-size cap already used in migration 0013. ADR:
+  `docs/adr/0005-cap-findings-per-tester.md`. No app code changed —
+  `submitFinding` in `DataContext.jsx` already surfaces `error.message` from
+  a rejected insert as-is.
+  Test evidence: `npm run test:db` (fresh Postgres 16) — schema + all 14
+  migrations apply, every migration re-applied cleanly a second time
+  (idempotent), and all 5 `supabase/tests/*.sql` files pass, including new
+  checks in `30_findings.sql`: 20 open findings insert, a 21st is rejected
+  with the "awaiting triage" message, a different tester on the same test is
+  unaffected, and triaging one finding down to `accepted` frees a slot for a
+  new submission. `npm run lint` (0 warnings), `npm test -- --watchAll=false`
+  (60/60 passing, unchanged — this item added no unit tests since the logic
+  is entirely in the trigger) and `npm run build` all pass.
+  While reading `docs/agent/STATUS.md` at the start of this run: UX-05 (#30)
+  had already merged and A11Y-01 (#31) already had an open PR, but both were
+  still marked stale here (UX-05 as "in PR", A11Y-01 as "not started") —
+  corrected both above rather than duplicating either item's work.
+  PR: (this PR)
