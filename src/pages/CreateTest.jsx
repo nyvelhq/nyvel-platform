@@ -167,7 +167,7 @@ export default function CreateTest() {
 
   return (
     <PlatformLayout title="Create New Test">
-      <div className="p-6 max-w-3xl mx-auto">
+      <div className="p-2 sm:p-6 max-w-3xl mx-auto">
         <Stepper steps={steps} currentStep={step} />
 
         {launched ? (

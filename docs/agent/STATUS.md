@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-03)._
+_Last updated: 2026-09-26 by the orchestrator (UX-04)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -122,13 +122,15 @@ runs before merging; test it on a local Postgres like 0006/0007.
    admin review at `/admin/requests`, every sign-up CTA relabelled and
    re-pointed ("Request access" / "Apply to test" / "Contact us"), login page
    links to both. No email sent; approving doesn't create an account. —
-   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/28_
-15. **UX-04 Mobile: core actions reachable on phones** — applicant
-   Accept/Decline, My Tests table and the page header are clipped at 390px
-   (cards use `overflow-hidden` with no scroll); switch key tables to
-   stacked cards below `md`, fix the header wrap/avatar cut-off, and the
-   landing page's 14px horizontal overflow (`LandingPage.jsx` security
-   badge row). _Size M._ — _status: not started_
+   _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/28_
+15. **UX-04 Mobile: core actions reachable on phones** — every `.data-table`
+   stacks into labelled cards below `md` (one CSS rule + `data-label` on
+   cells: applicants, My Tests, dashboard, My Applications, test history,
+   payouts, admin top companies); header title truncates, 80px theme toggle
+   fixed to 40px (`w-10` was 80px on this spacing scale), tighter phone
+   padding; test-detail header and finding headers stack on phones; landing
+   page 14px overflow fixed. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/29_
 16. **UX-05 Persist tester profiles** — onboarding answers (bio, skills,
    devices, location) live only in `sessionStorage` and vanish on logout or
    a new device; companies never see them. Add columns/table + RLS, save
@@ -165,6 +167,24 @@ runs before merging; test it on a local Postgres like 0006/0007.
    Reports on real payouts/findings data; Settings only once there's
    something real to configure. Security page stays hidden until real
    signals exist. _Size M._ — _status: not started_
+24. **QA-01 End-to-end test framework (Playwright + TypeScript)** — agreed
+   with Eben 2026-09-26; start **after items 15–23 are done**.
+   - Lives in this repo under `e2e/` (own `package.json`/`tsconfig`, TypeScript;
+     the React app stays JS) so tests change in the same PR as the code.
+   - Runs against a throwaway **local Supabase in CI** (Supabase CLI: schema +
+     all migrations), never production; real sign-in as company / tester /
+     admin / anon so access rules are exercised end to end. (Eben can switch
+     to a separate staging Supabase project later if preferred.)
+   - Page objects per screen, per-role auth fixtures, per-run test data
+     factories, desktop + mobile projects, axe accessibility checks, traces/
+     screenshots/HTML report uploaded on failure.
+   - Two tiers: `@smoke` core company↔tester loop on every PR (required
+     check); full positive/negative/edge regression on merge + nightly.
+   - Keep-current rule: a UI change isn't done until its e2e tests are
+     added/updated — add to the PR template and `docs/qa/DEFINITION_OF_DONE.md`.
+   - Phase 1 harness + smoke; then one area per PR (auth & gate, test
+     creation, applications & NDA, findings triage & replies, payouts, access
+     requests, admin). _Size L · phased._ — _status: not started_
 
 ### Eben-owned (decisions or dashboard work, not code — do in parallel)
 

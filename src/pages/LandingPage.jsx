@@ -88,7 +88,7 @@ export default function LandingPage() {
                 </p>
               </div>
             </ScrollReveal>
-            <div className="flex items-center gap-8 flex-shrink-0">
+            <div className="grid grid-cols-4 gap-3 sm:flex sm:items-center sm:gap-8 flex-shrink-0">
               {[
                 { k: 'Priv', label: 'Private findings' },
                 { k: 'Enc', label: 'Encrypted data' },

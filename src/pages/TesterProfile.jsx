@@ -58,7 +58,7 @@ export default function TesterProfile() {
 
   return (
     <PlatformLayout title="My Profile">
-      <div className="p-6 max-w-4xl mx-auto space-y-6">
+      <div className="p-2 sm:p-6 max-w-4xl mx-auto space-y-6">
         {/* Profile header */}
         <div className="card rounded-2xl overflow-hidden animate-fade-up">
           <div className="h-24 bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900" />
@@ -197,9 +197,9 @@ export default function TesterProfile() {
                       <p className="font-medium text-slate-800 dark:text-slate-200">{app.testName}</p>
                       <p className="text-xs text-slate-400 dark:text-slate-500">{app.company}</p>
                     </td>
-                    <td><StatusBadge status={app.status} /></td>
-                    <td className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
-                    <td className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
+                    <td data-label="Status"><StatusBadge status={app.status} /></td>
+                    <td data-label="Pay" className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
+                    <td data-label="Due" className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
                   </tr>
                 ))}
               </tbody>

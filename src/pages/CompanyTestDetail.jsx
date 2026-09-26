@@ -141,7 +141,7 @@ export default function CompanyTestDetail() {
   if (!test) {
     return (
       <PlatformLayout title="Test Details">
-        <div className="p-8">
+        <div className="p-2 sm:p-8">
           <EmptyState
             icon={Users}
             title="Test not found"
@@ -158,7 +158,7 @@ export default function CompanyTestDetail() {
 
   return (
     <PlatformLayout title={test.name}>
-      <div className="p-8 space-y-6 max-w-4xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-4xl">
         <button
           onClick={() => navigate('/company/tests')}
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
@@ -166,12 +166,12 @@ export default function CompanyTestDetail() {
           <ArrowLeft size={14} /> Back to My Tests
         </button>
 
-        <div className="card p-6 space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
+        <div className="card p-3 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
               <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">{test.name}</h1>
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-row-reverse sm:flex-col items-center sm:items-end justify-end gap-2 flex-wrap">
               <StatusBadge status={test.status} />
               {test.status === 'Active' && (
                 <Button size="sm" variant="secondary" icon={<CheckCircle2 size={14} />} onClick={() => setStatusConfirm('complete')}>
@@ -259,11 +259,11 @@ export default function CompanyTestDetail() {
                           </div>
                         )}
                       </td>
-                      <td className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      <td data-label="Applied" className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {a.applied_at ? a.applied_at.slice(0, 10) : ''}
                       </td>
 
-                      <td>
+                      <td data-label="Status">
                         <Badge label={badge.label} color={badge.color} dot />
                       </td>
                       <td>
@@ -323,14 +323,14 @@ export default function CompanyTestDetail() {
                 const promptingThis = reasonPromptFor?.findingId === f.id;
                 return (
                   <li key={f.id} className="p-4 space-y-2">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
                       <div>
                         <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{f.title}</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
                           {f.profiles?.name || 'Unnamed tester'} · {f.submitted_at ? f.submitted_at.slice(0, 10) : ''}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
                         <PriorityBadge priority={f.severity.charAt(0).toUpperCase() + f.severity.slice(1)} />
                         <Badge label={badge.label} color={badge.color} dot />
                       </div>

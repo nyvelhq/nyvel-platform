@@ -117,7 +117,7 @@ export default function AdminPayouts() {
 
   return (
     <PlatformLayout title="Payouts">
-      <div className="p-8 space-y-6">
+      <div className="p-2 sm:p-8 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <StatCard
             label="Pending Payouts"
@@ -182,21 +182,23 @@ export default function AdminPayouts() {
                       <div className="font-medium text-slate-800 dark:text-slate-200">{r.testerName}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">{r.testerEmail}</div>
                     </td>
-                    <td className="text-sm text-slate-700 dark:text-slate-300">{r.testName}</td>
-                    <td className="text-sm text-slate-500 dark:text-slate-400">{r.company}</td>
-                    <td className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">{r.findingCount}</td>
-                    <td className="font-semibold text-emerald-600 dark:text-emerald-400">${r.amount.toLocaleString()}</td>
-                    <td>
-                      {r.status === 'paid' ? (
-                        <Badge label="Paid" color="success" dot />
-                      ) : (
-                        <Badge label="Pending" color="warning" dot />
-                      )}
-                      {r.paidAt && (
-                        <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                          {r.paidAt.slice(0, 10)}
-                        </div>
-                      )}
+                    <td data-label="Test" className="text-sm text-slate-700 dark:text-slate-300">{r.testName}</td>
+                    <td data-label="Company" className="text-sm text-slate-500 dark:text-slate-400">{r.company}</td>
+                    <td data-label="Accepted findings" className="text-sm text-slate-500 dark:text-slate-400 tabular-nums">{r.findingCount}</td>
+                    <td data-label="Amount" className="font-semibold text-emerald-600 dark:text-emerald-400">${r.amount.toLocaleString()}</td>
+                    <td data-label="Status">
+                      <div>
+                        {r.status === 'paid' ? (
+                          <Badge label="Paid" color="success" dot />
+                        ) : (
+                          <Badge label="Pending" color="warning" dot />
+                        )}
+                        {r.paidAt && (
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                            {r.paidAt.slice(0, 10)}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td>
                       {r.status === 'pending' ? (
