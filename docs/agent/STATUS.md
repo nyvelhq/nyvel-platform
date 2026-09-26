@@ -188,7 +188,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
 
    The counting logic is in `src/utils/adminDirectory.js`, with 5 unit
    tests. No migration: admin RLS already allowed these reads. — _status:
-   in PR — PR_LINK_
+   in PR — https://github.com/nyvelhq/nyvel-platform/pull/34_
 20. **UX-06 "Needs your attention" links** — the company dashboard's
    "Applicants to Review"/"Findings to Triage" cards should link to the
    tests that need action; same for the tester's "Pending Payout". Also
