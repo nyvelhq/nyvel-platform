@@ -107,7 +107,7 @@ function Harness({ onReady }) {
   return null;
 }
 
-async function renderApi() {
+async function mountDataApi() {
   let api;
   render(
     <DataProvider>
@@ -123,7 +123,7 @@ const lastCall = (table, op) =>
 
 describe('addCompanyTest', () => {
   it('only writes columns that exist on public.tests', async () => {
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().addCompanyTest({
@@ -153,7 +153,7 @@ describe('addCompanyTest', () => {
 
   it('fails with a clear error instead of inserting when the account has no client_id', async () => {
     __setAuth({ user: { id: 'user-1', role: 'company' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     let result;
     await act(async () => {
@@ -191,7 +191,7 @@ describe('loadCompanyTests (derived company test rows)', () => {
       error: null,
     });
 
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().companyTests).toHaveLength(2));
 
     const [t1, t2] = getApi().companyTests;
@@ -211,14 +211,14 @@ describe('loadMyEarnings (tester payouts + accepted findings)', () => {
     });
     __setResponse('findings', { data: [{ test_id: 't1' }, { test_id: 't2' }], error: null });
 
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().myPayouts).toHaveLength(1));
     expect(getApi().myAcceptedFindingTestIds).toEqual(['t1', 't2']);
   });
 
   it('loads nothing for a non-tester', async () => {
     __setResponse('payouts', { data: [{ test_id: 't1', amount: 50, status: 'paid' }], error: null });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().dataLoading).toBe(false));
     expect(getApi().myPayouts).toEqual([]);
   });
@@ -240,7 +240,7 @@ describe('loadAvailableTests (derived tester-facing test rows)', () => {
       error: null,
     });
 
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().availableTests).toHaveLength(1));
 
     expect(getApi().availableTests[0]).toMatchObject({
@@ -264,7 +264,7 @@ describe('loadMyApplications (derived tester applications)', () => {
       error: null,
     });
 
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().myApplications).toHaveLength(4));
 
     const byId = Object.fromEntries(getApi().myApplications.map((a) => [a.id, a]));
@@ -279,7 +279,7 @@ describe('loadMyApplications (derived tester applications)', () => {
 describe('applyToTest / hasApplied', () => {
   it('inserts an application for the signed-in tester', async () => {
     __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().applyToTest({ id: 'test-1' });
@@ -294,7 +294,7 @@ describe('applyToTest / hasApplied', () => {
       data: [{ id: 'app1', test_id: 'test-1', status: 'pending', applied_at: '2026-06-01T00:00:00Z', tests: { id: 'test-1', title: 'T', test_type: 'Bug Hunt', status: 'open', compensation: 10, end_date: '2026-07-01', clients: {} } }],
       error: null,
     });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await waitFor(() => expect(getApi().myApplications).toHaveLength(1));
 
     expect(getApi().hasApplied('test-1')).toBe(true);
@@ -306,7 +306,7 @@ describe('applyToTest / hasApplied', () => {
 
   it('records the accepted NDA version when applying to an NDA-required test', async () => {
     __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().applyToTest({ id: 'test-1', nda: true }, { ndaVersion: 'v1-test' });
@@ -319,7 +319,7 @@ describe('applyToTest / hasApplied', () => {
 
   it('refuses to apply to an NDA-required test without an accepted NDA version', async () => {
     __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     let result;
     await act(async () => {
@@ -333,7 +333,7 @@ describe('applyToTest / hasApplied', () => {
 
 describe('acceptApplication / declineApplication', () => {
   it('updates the application status, decided_by and the target row', async () => {
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().acceptApplication('app-1');
@@ -354,7 +354,7 @@ describe('acceptApplication / declineApplication', () => {
 describe('submitFinding', () => {
   it('inserts a finding attributed to the signed-in tester', async () => {
     __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     let result;
     await act(async () => {
@@ -369,7 +369,7 @@ describe('submitFinding', () => {
 
   it('refuses to submit when nobody is signed in, without calling Supabase', async () => {
     __setAuth({ user: null, isAuthenticated: false });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     let result;
     await act(async () => {
@@ -383,7 +383,7 @@ describe('submitFinding', () => {
 
 describe('triageFinding', () => {
   it('records the decision, reviewer and reason, and targets the right finding', async () => {
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().triageFinding('finding-1', 'accepted', null);
@@ -404,7 +404,7 @@ describe('triageFinding', () => {
 describe('markPayoutPaid', () => {
   it('upserts a paid payout keyed on (test_id, tester_id)', async () => {
     __setAuth({ user: { id: 'admin-1', role: 'admin' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
 
     await act(async () => {
       await getApi().markPayoutPaid({ testId: 't1', testerId: 'tester-1', amount: 50 });
@@ -420,7 +420,7 @@ describe('setTestStatus / respondToFinding (migration 0007 RPCs)', () => {
   const rpcCall = (fn) => [...__getCalls()].reverse().find((c) => c.op === 'rpc' && c.fn === fn);
 
   it('calls set_test_status with the test id and target status', async () => {
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     let result;
     await act(async () => {
       result = await getApi().setTestStatus('test-1', 'complete');
@@ -431,7 +431,7 @@ describe('setTestStatus / respondToFinding (migration 0007 RPCs)', () => {
 
   it('passes the server error back instead of swallowing it', async () => {
     __setResponse('rpc:set_test_status', { data: null, error: { message: 'You can only change the status of your own tests.' } });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     let result;
     await act(async () => {
       result = await getApi().setTestStatus('test-1', 'complete');
@@ -441,7 +441,7 @@ describe('setTestStatus / respondToFinding (migration 0007 RPCs)', () => {
 
   it('calls respond_to_finding with the finding id and reply', async () => {
     __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
-    const getApi = await renderApi();
+    const getApi = await mountDataApi();
     await act(async () => {
       await getApi().respondToFinding('finding-1', 'Build 1.4.2');
     });

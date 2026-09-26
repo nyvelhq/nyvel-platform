@@ -26,6 +26,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "lint": "eslint src --ext .js,.jsx --max-warnings=0",
+    "test:db": "bash scripts/test-db.sh",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

@@ -179,9 +179,37 @@ source of confusion while writing this doc.
   PR preview deployments (one per PR, visible as a check — you've seen
   these on recent PRs) are the actual staging-like environment in
   practice, not `develop`.
-- **`.github/workflows/ci.yml`** is the real gate now that main's branch
-  protection requires its checks (lint/build/test) to pass before merge —
-  see `docs/agent/STATUS.md`'s F-05 entry.
+- **`.github/workflows/ci.yml`** is the real gate: four jobs — Lint & Code
+  Quality (`npm run lint`, zero warnings), Build Application, Run Tests,
+  and Database Migrations & Access Rules (`scripts/test-db.sh`: applies
+  `schema.sql` + every migration twice to Postgres 15 and runs
+  `supabase/tests/*.sql` as real tester/company/admin/anon users). Run the
+  database check locally with `npm run test:db` against an empty Postgres.
+
+### 4.1 Merging PRs without bypassing branch protection
+
+PRs opened by Claude are authored by the `nyvelhq` account, which is also
+the account that reviews and merges. GitHub never lets a PR's author approve
+it, so a "require 1 approval" rule can never be met and forces "bypass rules
+and merge". Recommended `main` settings (GitHub → Settings → Branches →
+`main` rule, or Rules → Rulesets):
+
+- **Require a pull request before merging:** on, **Required approvals: 0**.
+  The merge click is the approval, after ticking the PR template's sign-off
+  checklist.
+- **Require status checks to pass:** on, with all four CI jobs required —
+  `Lint & Code Quality`, `Build Application`, `Run Tests`,
+  `Database Migrations & Access Rules`. Keep "Require branches to be up to
+  date" on.
+- **Do not allow bypassing the above settings** (classic: "Include
+  administrators"): on, so nobody — including the owner — can merge red CI.
+- If a real second approver is wanted later: add a second person as a
+  collaborator and set approvals back to 1, or connect Claude through a
+  separate GitHub account so its PRs have a different author.
+
+Database changes still need Eben to run the migration in the Supabase SQL
+editor before merging; CI proves the SQL works on a clean Postgres, not that
+it has been applied to production.
 
 ## 5. Related reading
 

@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, develop]
 
+# A newer push to the same PR cancels the older, now-irrelevant run.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Lint & Code Quality
@@ -17,7 +22,7 @@ jobs:
           node-version: '18'
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint 2>/dev/null || echo "No lint script"
+      - run: npm run lint
 
   build:
     name: Build Application
@@ -51,3 +56,28 @@ jobs:
       - run: npm test -- --coverage --watchAll=false --passWithNoTests
         env:
           CI: true
+
+  database:
+    name: Database Migrations & Access Rules
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/test-db.sh
