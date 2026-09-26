@@ -226,7 +226,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - **Tests:** 13 checks in `supabase/tests/70_finding_messages.sql`, 3 unit
      tests.
 
-   _Size S–M · migration._ — _status: in PR — PR_LINK_
+   _Size S–M · migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/37_
 23. **ADM-02 Admin Reports / Settings** — currently "Coming soon"; rebuild
    Reports on real payouts/findings data; Settings only once there's
    something real to configure. Security page stays hidden until real
