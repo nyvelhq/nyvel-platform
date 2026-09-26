@@ -177,7 +177,7 @@ export default function CreateTest() {
             </div>
             <h2 className="font-display font-bold text-xl text-slate-900 dark:text-slate-50 mb-1.5">Test launched</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed mb-6">
-              {launchedName} is live. Matching testers are being notified now — first results usually arrive within 24 hours.
+              {launchedName} is live. Testers can now find it under Available Tests and apply.
             </p>
             <div className="flex items-center gap-3">
               <Button variant="secondary" icon={<RotateCcw size={14} />} onClick={resetWizard}>

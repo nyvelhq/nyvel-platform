@@ -77,6 +77,17 @@ QA pass.
       existing example) if the claim being fixed is the kind that could
       quietly resurface in a different file.
 
+## End-to-end tests (QA-01)
+
+- [ ] Any change to what a user sees or does has its e2e tests added or
+      updated in `e2e/` **in the same PR**. Selectors live in `e2e/pages/`,
+      so renaming a button means updating the page object, not every test.
+- [ ] A change to the core company ↔ tester loop keeps the `@smoke` test
+      green; new core paths get an `@smoke` tag.
+- [ ] Run `npm run test:smoke` in `e2e/` locally (see `e2e/README.md`) or rely
+      on the "E2E (Playwright)" CI check. Never skip or delete a failing
+      e2e test to get green; fix the code or the test.
+
 ## Before opening the PR
 
 - [ ] `docs/agent/STATUS.md` is updated in the same PR: the queue item

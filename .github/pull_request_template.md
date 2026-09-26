@@ -17,7 +17,8 @@
 
 ## Reviewer sign-off (Eben)
 
-- [ ] CI is green (lint, build, tests, database access rules)
+- [ ] CI is green (lint, build, tests, database access rules, E2E)
+- [ ] UI changes have their e2e tests added or updated in `e2e/`
 - [ ] Any migration above has been run in Supabase
 - [ ] Checked the "verify live" steps below after deploy
 
