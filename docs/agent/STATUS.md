@@ -115,7 +115,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    tester, test and submitted_at are rejected; reviewed_by/reviewed_at are
    server-stamped. Admins/SQL editor can still correct. 11 checks in
    `supabase/tests/30_findings.sql`. _Size S · migration._ — _status: in PR —
-   SEC03_PR_LINK_
+   https://github.com/nyvelhq/nyvel-platform/pull/27_
 14. **UX-03 Real entry points (request access / apply to test)** — every
    "Start Free", "Join as Tester", "Talk to Sales" and pricing CTA lands on a
    login page that can't create an account. Replace with honest "Request
