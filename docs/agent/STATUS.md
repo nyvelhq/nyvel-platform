@@ -141,7 +141,8 @@ runs before merging; test it on a local Postgres like 0006/0007.
    show an error if it fails; `sessionStorage` copy removed. Completion
    time server-stamped; lengths, list sizes and http(s)-only LinkedIn
    enforced in the DB. 18 checks in `supabase/tests/50_tester_profiles.sql`,
-   11 new unit tests. — _status: in PR — PR_LINK_
+   11 new unit tests. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/30_
 17. **A11Y-01 Accessibility + dead links** — "Join as Tester"/"Talk to
    Sales" nearly invisible (dark text on navy); small grey text below 4.5:1
    in several places; login labels lack `htmlFor`, show-password button
