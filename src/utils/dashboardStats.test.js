@@ -1,4 +1,4 @@
-import { deriveTesterEarnings, deriveCompanySummary } from './dashboardStats';
+import { deriveTesterEarnings, deriveCompanySummary, testsNeedingAction, pluralize } from './dashboardStats';
 
 const now = new Date('2026-09-25T12:00:00Z');
 
@@ -29,7 +29,7 @@ describe('deriveTesterEarnings', () => {
     const e = deriveTesterEarnings({
       now,
       applications: [
-        { sourceTestId: 't1', status: 'Active', compensation: 75 },
+        { sourceTestId: 't1', testName: 'Checkout', status: 'Active', compensation: 75 },
         { sourceTestId: 't2', status: 'Completed', compensation: 50 },
         { sourceTestId: 't3', status: 'Active', compensation: 40 },
         { sourceTestId: 't4', status: 'Pending', compensation: 60 },
@@ -39,6 +39,7 @@ describe('deriveTesterEarnings', () => {
       payouts: [{ test_id: 't2', amount: 50, status: 'paid', paid_at: '2026-09-01T00:00:00Z' }],
     });
     expect(e.pendingPayout).toBe(75);
+    expect(e.pendingPayoutTests).toEqual([{ id: 't1', name: 'Checkout', amount: 75 }]);
     expect(e.activeTests).toBe(2);
     expect(e.completedTests).toBe(1);
     expect(e.acceptedFindings).toBe(5);
@@ -61,4 +62,28 @@ describe('deriveCompanySummary', () => {
     expect(s.activeTests + s.acceptedTesters + s.applicantsToReview + s.findingsToTriage).toBe(0);
     expect(s.severity.every((x) => x.value === 0)).toBe(true);
   });
+});
+
+describe('testsNeedingAction', () => {
+  it('lists only tests with a waiting count, largest first', () => {
+    const rows = testsNeedingAction(
+      [
+        { id: 'a', name: 'Alpha', pendingApplicants: 1 },
+        { id: 'b', name: 'Beta', pendingApplicants: 0 },
+        { id: 'c', name: 'Gamma', pendingApplicants: 4 },
+        { id: 'd', name: 'Delta' },
+      ],
+      'pendingApplicants'
+    );
+    expect(rows).toEqual([
+      { id: 'c', name: 'Gamma', count: 4 },
+      { id: 'a', name: 'Alpha', count: 1 },
+    ]);
+  });
+});
+
+it('pluralize drops the trailing s only for one', () => {
+  expect(pluralize(1, 'bugs')).toBe('1 bug');
+  expect(pluralize(0, 'bugs')).toBe('0 bugs');
+  expect(pluralize(3, 'issues')).toBe('3 issues');
 });

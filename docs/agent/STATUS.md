@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (ADM-01)._
+_Last updated: 2026-09-26 by the orchestrator (UX-06)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -188,11 +188,14 @@ runs before merging; test it on a local Postgres like 0006/0007.
 
    The counting logic is in `src/utils/adminDirectory.js`, with 5 unit
    tests. No migration: admin RLS already allowed these reads. — _status:
-   in PR — https://github.com/nyvelhq/nyvel-platform/pull/34_
+   done — merged via https://github.com/nyvelhq/nyvel-platform/pull/34_
 20. **UX-06 "Needs your attention" links** — the company dashboard's
-   "Applicants to Review"/"Findings to Triage" cards should link to the
-   tests that need action; same for the tester's "Pending Payout". Also
-   "1 bugs" pluralisation. _Size S._ — _status: not started_
+   "Applicants to Review" and "Findings to Triage" cards list up to three
+   tests waiting on the company, each linking to that test, plus
+   "+N more". The tester's "Pending Payout" card lists the tests they're
+   owed for, linking to each. Adds a shared `ActionList` and a StatCard
+   `footer` slot. Fixes "1 bugs" → "1 bug" (`pluralize` helper). 3 new
+   unit tests. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/35_
 21. **POL-01 Visual consistency** — emoji icons in test-type cards vs lucide
    elsewhere; severity and status badges sharing colours ("Low" = "Accepted"
    green); internal test IDs in the My Tests table; password gate branding
