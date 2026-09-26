@@ -160,7 +160,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - heading levels are fixed;
    - the footer's dead links and non-working social buttons are removed.
 
-   _status: in PR — PR_LINK_
+   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/31_
 18. **SEC-04 Cap findings per tester per test** — no limit today; one
    accepted tester can flood a company's triage queue (STRIDE D3). _Size S ·
    migration._ — _status: not started_
