@@ -38,8 +38,8 @@ const adminNav = [
   { label: 'Payouts', icon: DollarSign, href: '/admin/payouts' },
   { label: 'Requests', icon: Inbox, href: '/admin/requests' },
   { label: 'Reports', icon: BarChart3, href: '/admin/reports' },
-  { label: 'Security', icon: Shield, href: '/admin/security' },
-  { label: 'Settings', icon: Settings, href: '/admin/settings' },
+  // Security and Settings stay out of the nav until they show or change
+  // something real (ADM-02); their routes still land on "Coming soon".
 ];
 
 const navByRole = { company: companyNav, tester: testerNav, admin: adminNav };
