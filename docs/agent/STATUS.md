@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (SEC-02)._
+_Last updated: 2026-09-26 by the orchestrator (SEC-03)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -107,15 +107,15 @@ runs before merging; test it on a local Postgres like 0006/0007.
    paid_at/paid_by are server-stamped; every insert/update/delete is logged
    to `payout_history` (admin-read-only, no FKs so it survives deletes).
    SQL-editor corrections still possible and logged. 17 new checks in
-   `supabase/tests/20_payouts.sql`. _Size S–M · migration._ — _status: in PR —
-   https://github.com/nyvelhq/nyvel-platform/pull/26_
-13. **SEC-03 Stop companies editing a tester's finding content** — the 0004
-   triage policy lets a company UPDATE any column, so it can rewrite a
-   finding's title/description/severity — the tester's own record of what
-   they reported, which matters in any dispute.
-   Restrict company updates to triage fields (status, review_reason,
-   reviewed_by/at) via trigger or RPC. _Size S · migration._ — _status: not
-   started_
+   `supabase/tests/20_payouts.sql`. _Size S–M · migration._ — _status: done —
+   merged via https://github.com/nyvelhq/nyvel-platform/pull/26_
+13. **SEC-03 Stop companies editing a tester's finding content** — migration
+   0011: a company can change only triage fields (status to accepted /
+   rejected / more_info, review_reason); title, description, severity,
+   tester, test and submitted_at are rejected; reviewed_by/reviewed_at are
+   server-stamped. Admins/SQL editor can still correct. 11 checks in
+   `supabase/tests/30_findings.sql`. _Size S · migration._ — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/27_
 14. **UX-03 Real entry points (request access / apply to test)** — every
    "Start Free", "Join as Tester", "Talk to Sales" and pricing CTA lands on a
    login page that can't create an account. Replace with honest "Request
