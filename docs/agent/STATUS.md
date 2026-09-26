@@ -108,7 +108,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    to `payout_history` (admin-read-only, no FKs so it survives deletes).
    SQL-editor corrections still possible and logged. 17 new checks in
    `supabase/tests/20_payouts.sql`. _Size S–M · migration._ — _status: in PR —
-   SEC02_PR_LINK_
+   https://github.com/nyvelhq/nyvel-platform/pull/26_
 13. **SEC-03 Stop companies editing a tester's finding content** — the 0004
    triage policy lets a company UPDATE any column, so it can rewrite a
    finding's title/description/severity — the tester's own record of what
