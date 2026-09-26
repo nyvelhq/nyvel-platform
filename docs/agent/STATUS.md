@@ -64,7 +64,7 @@ _Last updated: 2026-09-26 by the orchestrator (UX-01 NDA follow-up)._
    landing page's live-metrics ledger, activity ticker, country/turnaround/
    free-trial claims and unbuilt pricing features. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/21_; NDA-claim follow-up in
-   NDA_PR_LINK_
+   https://github.com/nyvelhq/nyvel-platform/pull/22_
 9. **UX-02 Close the loop** — the core company↔tester flow dead-ends in
    four places: show the test briefing (and NDA flag) to accepted testers;
    let a company mark a test complete; let a tester reply to a
