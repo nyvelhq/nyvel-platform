@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileSearch, Send, FileLock2, ClipboardList } from 'lucide-react';
+import { MAX_FINDINGS_PER_TEST, MAX_FINDING_TITLE, MAX_FINDING_DESCRIPTION } from '../lib/findingLimits';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import { Badge, TypeBadge, PriorityBadge } from '../components/ui/Badge';
@@ -277,7 +278,18 @@ export default function TesterTestDetail() {
 
         {isAccepted && !isComplete && (
           <div className="card p-3 sm:p-6 space-y-4">
-            <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">Submit a Finding</h2>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">Submit a Finding</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {findings.length} of {MAX_FINDINGS_PER_TEST} findings used
+              </p>
+            </div>
+            {findings.length >= MAX_FINDINGS_PER_TEST ? (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                You&apos;ve reached the limit of {MAX_FINDINGS_PER_TEST} findings for this test. Add details to one of
+                your findings below if the company asks for more information.
+              </p>
+            ) : (
             <form onSubmit={handleSubmitFinding} className="space-y-4">
               <div>
                 <label className="form-label" htmlFor="finding-title">Title</label>
@@ -286,6 +298,7 @@ export default function TesterTestDetail() {
                   type="text"
                   className="form-input"
                   placeholder="e.g. Checkout button unresponsive on iOS Safari"
+                  maxLength={MAX_FINDING_TITLE}
                   value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 />
@@ -296,6 +309,7 @@ export default function TesterTestDetail() {
                   id="finding-description"
                   className="form-input min-h-[100px] resize-none"
                   placeholder="Steps to reproduce, expected vs. actual behavior, device/browser info..."
+                  maxLength={MAX_FINDING_DESCRIPTION}
                   value={form.description}
                   onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 />
@@ -315,11 +329,12 @@ export default function TesterTestDetail() {
                   ))}
                 </select>
               </div>
-              {formError && <p className="text-sm text-error-600 dark:text-error-400">{formError}</p>}
+              {formError && <p className="text-sm text-error-600 dark:text-error-400" role="alert">{formError}</p>}
               <Button type="submit" loading={submitting}>
-                <Send size={14} className="mr-1.5" /> Submit Finding
+                <Send size={14} className="mr-1.5" aria-hidden="true" /> Submit Finding
               </Button>
             </form>
+            )}
           </div>
         )}
 

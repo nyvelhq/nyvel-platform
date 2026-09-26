@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (A11Y-01)._
+_Last updated: 2026-09-26 by the orchestrator (SEC-04)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -160,10 +160,19 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - heading levels are fixed;
    - the footer's dead links and non-working social buttons are removed.
 
-   _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/31_
-18. **SEC-04 Cap findings per tester per test** — no limit today; one
-   accepted tester can flood a company's triage queue (STRIDE D3). _Size S ·
-   migration._ — _status: not started_
+   _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/31_
+18. **SEC-04 Cap findings per tester per test** — migration 0014:
+   - a trigger allows at most 25 findings per tester per test (all statuses
+     count);
+   - titles are limited to 200 characters and descriptions to 5,000;
+   - inserts for the same tester and test are serialised so two at once
+     can't both slip under the cap;
+   - admins and the SQL editor are exempt.
+
+   The finding form shows "N of 25 findings used", replaces the form with a
+   message at the cap, and limits field lengths to match. 7 checks in
+   `supabase/tests/60_findings_cap.sql`; STRIDE D3 marked fixed. _Size S ·
+   migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/33_
 19. **ADM-01 Admin Users & Tests on real data** — both are "Coming soon"
    since UX-01; rebuild on `profiles`/`clients`/`tests` reusing the existing
    table UI in `AdminUsers.jsx`/`AdminTests.jsx`, with read-only views first
@@ -206,6 +215,8 @@ runs before merging; test it on a local Postgres like 0006/0007.
 
 ### Eben-owned (decisions or dashboard work, not code — do in parallel)
 
+- Run migration `0014_findings_cap.sql` (SEC-04) in the Supabase SQL editor
+  before merging its PR.
 - Run migration `0013_tester_profiles.sql` (UX-05) in the Supabase SQL
   editor before or right after merging its PR. Until it runs, finishing
   onboarding shows "Couldn't save your profile" and applicant rows say "No
