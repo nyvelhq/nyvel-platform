@@ -189,7 +189,7 @@ export default function CompanyTests() {
                             <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                             <div className="flex gap-1 mt-1">
                               {test.platform.map((p) => (
-                                <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium">
+                                <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded font-medium">
                                   {p}
                                 </span>
                               ))}

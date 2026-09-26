@@ -110,7 +110,7 @@ export default function CompanyDashboard() {
               {/* The legend buttons beside the chart are the accessible version of it. */}
               <div className="relative cursor-pointer md:w-64 flex-shrink-0" aria-hidden="true">
                 <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
+                  <PieChart accessibilityLayer={false}>
                     <Pie
                       data={issuesBySeverity}
                       cx="50%"
@@ -120,6 +120,7 @@ export default function CompanyDashboard() {
                       paddingAngle={3}
                       dataKey="value"
                       isAnimationActive={false}
+                      rootTabIndex={-1}
                       onClick={(entry) => toggleSeverityFilter(entry.name)}
                     >
                       {issuesBySeverity.map((entry, i) => (
@@ -241,7 +242,7 @@ export default function CompanyDashboard() {
                       <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                       <div className="flex gap-1 mt-1">
                         {test.platform.map((p) => (
-                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium">
+                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded font-medium">
                             {p}
                           </span>
                         ))}
