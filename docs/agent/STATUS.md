@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (UX-04)._
+_Last updated: 2026-09-26 by the orchestrator (UX-05)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -129,13 +129,19 @@ runs before merging; test it on a local Postgres like 0006/0007.
    payouts, admin top companies); header title truncates, 80px theme toggle
    fixed to 40px (`w-10` was 80px on this spacing scale), tighter phone
    padding; test-detail header and finding headers stack on phones; landing
-   page 14px overflow fixed. — _status: in PR —
+   page 14px overflow fixed. — _status: done — merged via
    https://github.com/nyvelhq/nyvel-platform/pull/29_
-16. **UX-05 Persist tester profiles** — onboarding answers (bio, skills,
-   devices, location) live only in `sessionStorage` and vanish on logout or
-   a new device; companies never see them. Add columns/table + RLS, save
-   from onboarding/profile, show skills/devices to companies on applicant
-   rows. _Size M · migration · Architect pass._ — _status: not started_
+16. **UX-05 Persist tester profiles** — new `tester_profiles` table
+   (migration 0013, `docs/adr/0004-tester-profiles.md`): the tester reads and
+   writes their own row, admins all rows; companies read no rows directly
+   and instead call `applicant_profiles(test_id)`, which returns skills,
+   devices, OS versions, connection, experience, country and bio for
+   testers who applied to their own test (city, age, occupation, LinkedIn
+   stay private). Onboarding and the bio editor now wait for the save and
+   show an error if it fails; `sessionStorage` copy removed. Completion
+   time server-stamped; lengths, list sizes and http(s)-only LinkedIn
+   enforced in the DB. 18 checks in `supabase/tests/50_tester_profiles.sql`,
+   11 new unit tests. — _status: in PR — PR_LINK_
 17. **A11Y-01 Accessibility + dead links** — "Join as Tester"/"Talk to
    Sales" nearly invisible (dark text on navy); small grey text below 4.5:1
    in several places; login labels lack `htmlFor`, show-password button
@@ -188,6 +194,10 @@ runs before merging; test it on a local Postgres like 0006/0007.
 
 ### Eben-owned (decisions or dashboard work, not code — do in parallel)
 
+- Run migration `0013_tester_profiles.sql` (UX-05) in the Supabase SQL
+  editor before or right after merging its PR. Until it runs, finishing
+  onboarding shows "Couldn't save your profile" and applicant rows say "No
+  tester profile yet".
 - Verify migrations 0005, 0006 and 0007 are applied in production (0007
   check: `select count(*) from public.tests where briefing is not null;`
   should be 0).

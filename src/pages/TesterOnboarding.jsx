@@ -6,6 +6,7 @@ import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import Stepper from '../components/ui/Stepper';
 import { useAuth } from '../App';
+import { useToast } from '../context/ToastContext';
 import { duration, ease } from '../motion/tokens';
 
 // Step content slides/fades in the direction of travel (forward = from the right)
@@ -36,6 +37,7 @@ const steps = [
 export default function TesterOnboarding() {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
+  const { addToast } = useToast();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -55,7 +57,7 @@ export default function TesterOnboarding() {
       osVersions: user?.osVersions || [],
       connection: user?.connection || '',
       skills: user?.skills || [],
-      yearsExp: user?.yearsExp || '1-3',
+      yearsExp: user?.yearsExp || '1-3 years',
       bio: user?.bio || '',
       linkedin: user?.linkedin || '',
     };
@@ -68,14 +70,15 @@ export default function TesterOnboarding() {
       [key]: f[key].includes(val) ? f[key].filter((v) => v !== val) : [...f[key], val],
     }));
 
+  const linkedinInvalid = form.linkedin.trim() !== '' && !/^https?:\/\/\S+$/i.test(form.linkedin.trim());
+
   const step1Missing = [];
   if (!form.firstName) step1Missing.push('your first name');
   if (!form.lastName) step1Missing.push('your last name');
 
   const handleComplete = async () => {
     setSubmitting(true);
-    await new Promise((res) => setTimeout(res, 1000));
-    updateUser({
+    const { error } = await updateUser({
       profileComplete: true,
       name: `${form.firstName} ${form.lastName}`.trim(),
       country: form.country,
@@ -90,6 +93,12 @@ export default function TesterOnboarding() {
       bio: form.bio,
       linkedin: form.linkedin,
     });
+    setSubmitting(false);
+    if (error) {
+      addToast(`Couldn't save your profile: ${error.message || 'please try again.'}`, 'error');
+      return;
+    }
+    addToast('Profile saved', 'success');
     navigate('/tester/dashboard');
   };
 
@@ -225,6 +234,7 @@ export default function TesterOnboarding() {
                 <textarea
                   className="form-input resize-none"
                   rows={4}
+                  maxLength={2000}
                   placeholder="Tell companies a bit about yourself — your background, testing experience, and what you're passionate about..."
                   value={form.bio}
                   onChange={(e) => set('bio', e.target.value)}
@@ -232,13 +242,23 @@ export default function TesterOnboarding() {
               </div>
               <div>
                 <label className="form-label">LinkedIn Profile (optional)</label>
-                <input className="form-input" placeholder="https://linkedin.com/in/your-name" value={form.linkedin} onChange={(e) => set('linkedin', e.target.value)} />
+                <input
+                  className="form-input"
+                  placeholder="https://linkedin.com/in/your-name"
+                  maxLength={300}
+                  aria-invalid={linkedinInvalid}
+                  value={form.linkedin}
+                  onChange={(e) => set('linkedin', e.target.value)}
+                />
+                {linkedinInvalid && (
+                  <p className="text-xs text-error-600 dark:text-error-400 mt-1">Enter a full link starting with https://</p>
+                )}
               </div>
 
               <div className="bg-success-50/70 dark:bg-success-900/20 border border-success-200/70 dark:border-success-800/50 rounded-xl p-4 text-sm text-success-800 dark:text-success-200">
                 <p className="font-semibold mb-1">✅ Your profile is ready to launch</p>
                 <p className="text-success-700 dark:text-success-300 text-xs">
-                  Once submitted, you'll be able to browse available tests and start earning. Your profile will be reviewed and verified within 24 hours.
+                  Your profile is saved to your account. Companies see your skills, devices, country and bio when you apply to their tests. Your city, age, occupation and LinkedIn stay private.
                 </p>
               </div>
             </div>
@@ -268,7 +288,7 @@ export default function TesterOnboarding() {
                 </Button>
               </div>
             ) : (
-              <Button onClick={handleComplete} loading={submitting}>
+              <Button onClick={handleComplete} loading={submitting} disabled={linkedinInvalid}>
                 {submitting ? 'Setting up...' : 'Complete Profile'}
               </Button>
             )}
