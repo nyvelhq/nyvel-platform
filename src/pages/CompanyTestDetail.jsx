@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, FileSearch } from 'lucide-react';
+import { ArrowLeft, Users, FileSearch, CheckCircle2, RotateCcw } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import { Badge, StatusBadge, TypeBadge, PriorityBadge } from '../components/ui/Badge';
 import EmptyState from '../components/ui/EmptyState';
 import { supabase } from '../lib/supabaseClient';
 import { useAppData } from '../context/DataContext';
+import { useToast } from '../context/ToastContext';
+import { ConfirmationModal } from '../components/admin/ConfirmationModal';
 
 // Applicant decision -> badge. Deliberately literal (Pending/Accepted/
 // Declined) rather than reusing DataContext's tester-facing status labels —
@@ -36,7 +38,8 @@ const findingStatusBadge = {
 export default function CompanyTestDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { companyTests, acceptApplication, declineApplication, triageFinding } = useAppData();
+  const { companyTests, acceptApplication, declineApplication, triageFinding, setTestStatus } = useAppData();
+  const { addToast } = useToast();
   const test = companyTests.find((t) => t.id === id);
 
   const [applicants, setApplicants] = useState([]);
@@ -52,6 +55,9 @@ export default function CompanyTestDetail() {
   // immediately the way Accept does.
   const [reasonPromptFor, setReasonPromptFor] = useState(null);
   const [reasonDraft, setReasonDraft] = useState('');
+  const [briefing, setBriefing] = useState(null);
+  const [statusConfirm, setStatusConfirm] = useState(null); // 'complete' | 'open' | null
+  const [changingStatus, setChangingStatus] = useState(false);
 
   const loadApplicants = useCallback(async () => {
     setLoading(true);
@@ -80,7 +86,7 @@ export default function CompanyTestDetail() {
       .from('findings')
       // findings also has two FKs into profiles (tester_id, reviewed_by) —
       // same embed-ambiguity gotcha as applications, see loadApplicants above.
-      .select('id, title, description, severity, status, review_reason, submitted_at, profiles!tester_id(name, email)')
+      .select('*, profiles!tester_id(name, email)')
       .eq('test_id', id)
       .order('submitted_at', { ascending: false });
 
@@ -93,10 +99,27 @@ export default function CompanyTestDetail() {
     setLoadingFindings(false);
   }, [id]);
 
+  const loadBriefing = useCallback(async () => {
+    const { data, error } = await supabase.from('test_briefings').select('briefing').eq('test_id', id).maybeSingle();
+    if (error) console.error('loadBriefing:', error.message);
+    setBriefing(data?.briefing || '');
+  }, [id]);
+
   useEffect(() => {
     loadApplicants();
     loadFindings();
-  }, [loadApplicants, loadFindings]);
+    loadBriefing();
+  }, [loadApplicants, loadFindings, loadBriefing]);
+
+  const handleStatusChange = async () => {
+    const next = statusConfirm;
+    setChangingStatus(true);
+    const { error } = await setTestStatus(id, next);
+    setChangingStatus(false);
+    setStatusConfirm(null);
+    if (error) addToast(error.message || 'Could not update the test status.', 'error');
+    else addToast(next === 'complete' ? 'Test marked complete' : 'Test reopened', 'success');
+  };
 
   const handleDecision = async (applicationId, decision) => {
     setActingOn(applicationId);
@@ -147,9 +170,20 @@ export default function CompanyTestDetail() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">{test.name}</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-1">{test.id}</p>
             </div>
-            <StatusBadge status={test.status} />
+            <div className="flex flex-col items-end gap-2">
+              <StatusBadge status={test.status} />
+              {test.status === 'Active' && (
+                <Button size="sm" variant="secondary" icon={<CheckCircle2 size={14} />} onClick={() => setStatusConfirm('complete')}>
+                  Mark complete
+                </Button>
+              )}
+              {test.status === 'Completed' && (
+                <Button size="sm" variant="secondary" icon={<RotateCcw size={14} />} onClick={() => setStatusConfirm('open')}>
+                  Reopen test
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1.5">Type: <TypeBadge type={test.type} /></div>
@@ -162,6 +196,15 @@ export default function CompanyTestDetail() {
             <div>
               Due: <span className="font-medium text-slate-900 dark:text-slate-100">{test.dueDate || '—'}</span>
             </div>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Briefing</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+              Visible to you, Nyvel admins and testers you accept{test.nda ? ' who have accepted the NDA' : ''}.
+            </p>
+            <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+              {briefing === null ? 'Loading…' : briefing || 'No briefing was added to this test.'}
+            </p>
           </div>
         </div>
 
@@ -210,7 +253,9 @@ export default function CompanyTestDetail() {
                         <div className="text-xs text-slate-500 dark:text-slate-400">{a.profiles?.email}</div>
                         {test?.nda && (
                           <div className={`text-xs mt-0.5 whitespace-nowrap ${a.nda_accepted_at ? 'text-success-700 dark:text-success-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                            {a.nda_accepted_at ? `NDA accepted ${a.nda_accepted_at.slice(0, 10)}` : 'No NDA on record'}
+                            {a.nda_accepted_at
+                              ? `NDA accepted ${new Date(a.nda_accepted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+                              : 'No NDA on record'}
                           </div>
                         )}
                       </td>
@@ -292,7 +337,14 @@ export default function CompanyTestDetail() {
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{f.description}</p>
                     {f.review_reason && (
-                      <p className="text-xs text-slate-500 dark:text-slate-400 italic">Reviewer note: {f.review_reason}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+                        {f.tester_response ? 'You asked' : 'Reviewer note'}: {f.review_reason}
+                      </p>
+                    )}
+                    {f.tester_response && (
+                      <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
+                        <span className="font-semibold">Tester replied:</span> {f.tester_response}
+                      </p>
                     )}
 
                     {f.status === 'open' && (
@@ -369,6 +421,17 @@ export default function CompanyTestDetail() {
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={!!statusConfirm}
+        title={statusConfirm === 'complete' ? 'Mark this test complete?' : 'Reopen this test?'}
+        message={statusConfirm === 'complete'
+          ? 'Testers will no longer be able to submit findings, and it will leave the list of open tests. You can still review existing findings, and you can reopen it later.'
+          : 'The test will be listed for testers again and accepted testers can submit findings.'}
+        confirmText={statusConfirm === 'complete' ? 'Mark complete' : 'Reopen'}
+        onConfirm={handleStatusChange}
+        onCancel={() => setStatusConfirm(null)}
+        isLoading={changingStatus}
+      />
     </PlatformLayout>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileSearch, Send, FileLock2 } from 'lucide-react';
+import { ArrowLeft, FileSearch, Send, FileLock2, ClipboardList } from 'lucide-react';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import Button from '../components/ui/Button';
 import { Badge, TypeBadge, PriorityBadge } from '../components/ui/Badge';
@@ -40,7 +40,7 @@ export default function TesterTestDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { applyToTest, submitFinding } = useAppData();
+  const { applyToTest, submitFinding, respondToFinding } = useAppData();
 
   const [test, setTest] = useState(null);
   const [application, setApplication] = useState(null); // {id, status} or null
@@ -49,6 +49,10 @@ export default function TesterTestDetail() {
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState('');
   const [ndaOpen, setNdaOpen] = useState(false);
+  const [briefing, setBriefing] = useState(null);
+  const [replyDrafts, setReplyDrafts] = useState({});
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyError, setReplyError] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', severity: 'medium' });
   const [formError, setFormError] = useState('');
@@ -64,7 +68,7 @@ export default function TesterTestDetail() {
         user?.id
           ? supabase
               .from('findings')
-              .select('id, title, description, severity, status, review_reason, submitted_at')
+              .select('*')
               .eq('test_id', id)
               .eq('tester_id', user.id)
               .order('submitted_at', { ascending: false })
@@ -78,6 +82,17 @@ export default function TesterTestDetail() {
     setTest(testRow || null);
     setApplication(appRow || null);
     setFindings(findingRows || []);
+
+    // RLS (migration 0007) only returns the briefing to accepted testers who
+    // have accepted the NDA where one is required.
+    if (appRow?.status === 'accepted') {
+      const { data: briefingRow, error: briefingError } = await supabase
+        .from('test_briefings').select('briefing').eq('test_id', id).maybeSingle();
+      if (briefingError) console.error('TesterTestDetail load (briefing):', briefingError.message);
+      setBriefing(briefingRow?.briefing || '');
+    } else {
+      setBriefing(null);
+    }
     setLoading(false);
   }, [id, user?.id]);
 
@@ -98,6 +113,24 @@ export default function TesterTestDetail() {
     setNdaOpen(false);
     await load();
     return { error: null };
+  };
+
+  const handleReply = async (findingId) => {
+    const text = (replyDrafts[findingId] || '').trim();
+    if (!text) {
+      setReplyError((r) => ({ ...r, [findingId]: 'Write a reply first.' }));
+      return;
+    }
+    setReplyingTo(findingId);
+    const { error } = await respondToFinding(findingId, text);
+    setReplyingTo(null);
+    if (error) {
+      setReplyError((r) => ({ ...r, [findingId]: error.message || 'Could not send your reply.' }));
+      return;
+    }
+    setReplyDrafts((d) => ({ ...d, [findingId]: '' }));
+    setReplyError((r) => ({ ...r, [findingId]: '' }));
+    await load();
   };
 
   const handleSubmitFinding = async (e) => {
@@ -148,6 +181,7 @@ export default function TesterTestDetail() {
   }
 
   const isAccepted = application?.status === 'accepted';
+  const isComplete = test.status === 'complete';
 
   return (
     <PlatformLayout title={test.title}>
@@ -214,6 +248,34 @@ export default function TesterTestDetail() {
         </div>
 
         {isAccepted && (
+          <div className="card p-6 space-y-2">
+            <h2 className="flex items-center gap-2 font-display font-semibold text-slate-900 dark:text-slate-50">
+              <ClipboardList size={16} aria-hidden="true" /> Briefing
+            </h2>
+            {briefing ? (
+              <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{briefing}</p>
+            ) : test.nda && !application?.nda_accepted_at ? (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                This test requires an NDA, and your application was made before NDAs were recorded, so the briefing isn&apos;t available to you here.
+              </p>
+            ) : (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                {test.clients?.company_name || 'The company'} didn&apos;t add a briefing. Use the description above.
+              </p>
+            )}
+          </div>
+        )}
+
+        {isAccepted && isComplete && (
+          <div className="card p-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              This test is complete, so it no longer accepts new findings. You can still reply to questions on
+              your findings below.
+            </p>
+          </div>
+        )}
+
+        {isAccepted && !isComplete && (
           <div className="card p-6 space-y-4">
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">Submit a Finding</h2>
             <form onSubmit={handleSubmitFinding} className="space-y-4">
@@ -275,7 +337,9 @@ export default function TesterTestDetail() {
               icon={FileSearch}
               title="No findings submitted yet"
               description={
-                isAccepted
+                isAccepted && isComplete
+                  ? 'This test is complete.'
+                  : isAccepted
                   ? 'Use the form above to submit your first finding for this test.'
                   : 'Findings can be submitted once your application is accepted.'
               }
@@ -296,8 +360,33 @@ export default function TesterTestDetail() {
                     <p className="text-xs text-slate-500 dark:text-slate-400">{f.description}</p>
                     {f.review_reason && (
                       <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-1">
-                        Reviewer note: {f.review_reason}
+                        {f.status === 'more_info' || f.tester_response ? 'Question from the company' : 'Reviewer note'}: {f.review_reason}
                       </p>
+                    )}
+                    {f.tester_response && f.status !== 'more_info' && (
+                      <p className="text-xs text-slate-700 dark:text-slate-300 border-l-2 border-brand-400 pl-2 whitespace-pre-wrap">
+                        <span className="font-semibold">Your reply:</span> {f.tester_response}
+                      </p>
+                    )}
+                    {f.status === 'more_info' && (
+                      <div className="pt-1 space-y-2">
+                        <label className="sr-only" htmlFor={`reply-${f.id}`}>Reply to the company</label>
+                        <textarea
+                          id={`reply-${f.id}`}
+                          rows={3}
+                          maxLength={5000}
+                          className="form-input text-sm resize-none"
+                          placeholder="Answer the company's question…"
+                          value={replyDrafts[f.id] || ''}
+                          onChange={(e) => setReplyDrafts((d) => ({ ...d, [f.id]: e.target.value }))}
+                        />
+                        {replyError[f.id] && (
+                          <p className="text-xs text-error-600 dark:text-error-400" role="alert">{replyError[f.id]}</p>
+                        )}
+                        <Button size="sm" loading={replyingTo === f.id} onClick={() => handleReply(f.id)}>
+                          <Send size={13} className="mr-1.5" /> Send reply
+                        </Button>
+                      </div>
                     )}
                     <p className="text-[11px] text-slate-400 dark:text-slate-500">
                       {f.submitted_at ? f.submitted_at.slice(0, 10) : ''}
