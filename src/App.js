@@ -10,6 +10,7 @@ import { supabase } from './lib/supabaseClient';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import ResetPassword from './pages/ResetPassword';
+import RequestAccess from './pages/RequestAccess';
 import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyTests from './pages/CompanyTests';
 import CreateTest from './pages/CreateTest';
@@ -20,6 +21,7 @@ import TesterOnboarding from './pages/TesterOnboarding';
 import TesterProfile from './pages/TesterProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPayouts from './pages/AdminPayouts';
+import AdminRequests from './pages/AdminRequests';
 import ComingSoon from './pages/ComingSoon';
 
 // Components & Providers
@@ -265,7 +267,7 @@ function AppRoutes() {
   // Public routes that don't require password. /reset-password is here too:
   // it's reached via a Supabase-emailed recovery link, and a tester/client
   // clicking that link shouldn't have to also clear the marketing gate first.
-  const publicRoutes = ['/', '/login', '/reset-password'];
+  const publicRoutes = ['/', '/login', '/reset-password', '/request-access'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
   const needsAuth = !isAuthenticated && !isPublicRoute;
 
@@ -292,6 +294,7 @@ function AppRoutes() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/request-access" element={<RequestAccess />} />
 
         {/* Company routes */}
         <Route path="/company/dashboard" element={guarded('company', <CompanyDashboard />)} />
@@ -326,6 +329,7 @@ function AppRoutes() {
         <Route path="/admin/reports" element={guarded('admin', <ComingSoon title="Reports" />)} />
         <Route path="/admin/security" element={guarded('admin', <ComingSoon title="Security" />)} />
         <Route path="/admin/payouts" element={guarded('admin', <AdminPayouts />)} />
+        <Route path="/admin/requests" element={guarded('admin', <AdminRequests />)} />
         <Route path="/admin/settings" element={guarded('admin', <ComingSoon title="Settings" />)} />
 
         {/* Fallback */}

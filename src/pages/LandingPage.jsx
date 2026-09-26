@@ -128,18 +128,18 @@ export default function LandingPage() {
             <Button
               size="xl"
               className="bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 shadow-glow"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/request-access')}
               iconRight={<ArrowRight size={18} />}
             >
-              Get Started
+              Request access
             </Button>
             <Button
               size="xl"
               variant="ghost"
-              className="text-slate-300 hover:text-white border border-white/15 hover:bg-white/10"
-              onClick={() => navigate('/login')}
+              className="!text-slate-100 hover:!text-white border border-white/25 hover:bg-white/10"
+              onClick={() => navigate('/request-access?type=tester')}
             >
-              Talk to Sales
+              Apply to test
             </Button>
           </div>
         </ScrollReveal>

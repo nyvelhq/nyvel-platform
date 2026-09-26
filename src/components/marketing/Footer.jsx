@@ -22,7 +22,7 @@ const footerSections = [
       { label: 'Case Studies', href: '#' },
       { label: 'Blog', href: '#' },
       { label: 'Careers', href: '#' },
-      { label: 'Contact Us', href: '#' },
+      { label: 'Contact Us', href: '/request-access' },
     ],
   },
   {
@@ -31,7 +31,7 @@ const footerSections = [
       { label: 'Documentation', href: '#' },
       { label: 'API Reference', href: '#' },
       { label: 'Help Center', href: '#' },
-      { label: 'Join as Tester', href: '/login' },
+      { label: 'Apply to test', href: '/request-access?type=tester' },
       { label: 'Status', href: '#' },
     ],
   },
