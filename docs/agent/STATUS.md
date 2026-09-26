@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (ADM-02)._
+_Last updated: 2026-09-26 by the orchestrator (QA-01)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -240,7 +240,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    The counting logic is in `src/utils/adminReports.js`, with 6 unit
    tests. **Settings and Security are removed from the admin sidebar** until
    they show or change something real; their URLs still land on "Coming
-   soon". No migration. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/38_
+   soon". No migration. — _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/38_
 24. **QA-01 End-to-end test framework (Playwright + TypeScript)** — agreed
    with Eben 2026-09-26; start **after items 15–23 are done**.
    - Lives in this repo under `e2e/` (own `package.json`/`tsconfig`, TypeScript;
@@ -258,7 +258,19 @@ runs before merging; test it on a local Postgres like 0006/0007.
      added/updated — add to the PR template and `docs/qa/DEFINITION_OF_DONE.md`.
    - Phase 1 harness + smoke; then one area per PR (auth & gate, test
      creation, applications & NDA, findings triage & replies, payouts, access
-     requests, admin). _Size L · phased._ — _status: not started_
+     requests, admin). _Size L · phased._ — _status: phase 1 in PR —
+     https://github.com/nyvelhq/nyvel-platform/pull/39_. Phase 1 contents:
+     - the `e2e/` project and local Supabase config;
+     - reset/seed and per-role sign-in;
+     - page objects and a data factory;
+     - 15 `@smoke` tests (2 also on mobile): sign-in and role access, the full
+       launch → apply (NDA) → accept → report → more info → reply → accept
+       → pay loop, public access requests, and axe on 9 pages;
+     - 3 regression data-isolation tests;
+     - a CI job, a nightly workflow, and the keep-current rule in the
+       definition of done and PR template.
+
+     Next: one area per PR.
 
 ### Eben-owned (decisions or dashboard work, not code — do in parallel)
 

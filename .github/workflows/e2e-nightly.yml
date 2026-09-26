@@ -1,0 +1,43 @@
+name: E2E Nightly
+
+# Full end-to-end regression every night against main, plus on demand.
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    name: E2E full regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'  # supabase-js needs Node 22's built-in WebSocket
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            e2e/package-lock.json
+      - run: npm ci
+        working-directory: .
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run db:start
+      - run: npm run db:schema
+      - run: npm run app:build
+      - run: npx playwright test
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nightly
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+          retention-days: 14
+      - if: always()
+        run: npm run db:stop

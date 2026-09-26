@@ -382,6 +382,7 @@ export default function CompanyTestDetail() {
                         <div className="space-y-2 pt-1">
                           <textarea
                             autoFocus
+                            aria-label="Reason"
                             className="form-input min-h-[70px] resize-none text-sm"
                             placeholder={`Reason for marking this "${reasonPromptFor.decision === 'rejected' ? 'Rejected' : 'More Info Needed'}"...`}
                             value={reasonDraft}
