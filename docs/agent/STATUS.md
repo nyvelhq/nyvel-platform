@@ -240,7 +240,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    The counting logic is in `src/utils/adminReports.js`, with 6 unit
    tests. **Settings and Security are removed from the admin sidebar** until
    they show or change something real; their URLs still land on "Coming
-   soon". No migration. — _status: in PR — PR_LINK_
+   soon". No migration. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/38_
 24. **QA-01 End-to-end test framework (Playwright + TypeScript)** — agreed
    with Eben 2026-09-26; start **after items 15–23 are done**.
    - Lives in this repo under `e2e/` (own `package.json`/`tsconfig`, TypeScript;
