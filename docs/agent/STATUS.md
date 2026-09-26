@@ -259,7 +259,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    - Phase 1 harness + smoke; then one area per PR (auth & gate, test
      creation, applications & NDA, findings triage & replies, payouts, access
      requests, admin). _Size L · phased._ — _status: phase 1 in PR —
-     PR_LINK_. Phase 1 contents:
+     https://github.com/nyvelhq/nyvel-platform/pull/39_. Phase 1 contents:
      - the `e2e/` project and local Supabase config;
      - reset/seed and per-role sign-in;
      - page objects and a data factory;
