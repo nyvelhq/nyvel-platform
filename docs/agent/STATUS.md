@@ -172,7 +172,7 @@ runs before merging; test it on a local Postgres like 0006/0007.
    The finding form shows "N of 25 findings used", replaces the form with a
    message at the cap, and limits field lengths to match. 7 checks in
    `supabase/tests/60_findings_cap.sql`; STRIDE D3 marked fixed. _Size S ·
-   migration._ — _status: in PR — PR_LINK_
+   migration._ — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/33_
 19. **ADM-01 Admin Users & Tests on real data** — both are "Coming soon"
    since UX-01; rebuild on `profiles`/`clients`/`tests` reusing the existing
    table UI in `AdminUsers.jsx`/`AdminTests.jsx`, with read-only views first
