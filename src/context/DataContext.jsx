@@ -402,12 +402,10 @@ export function DataProvider({ children }) {
   };
 
   // Admin marks a tester's flat per-test compensation as paid (C-06).
-  // Upserts on (test_id, tester_id) — the payouts table's own unique
-  // constraint — so this both creates the first payout record for a pair
-  // and would no-op/overwrite if called again, though the UI only offers
-  // this action while status is still 'pending' (payouts are meant to be
-  // append-only once paid, per the BA spec). Admin-only via RLS
-  // ("payouts: admin full access" in schema.sql) — no new migration needed.
+  // Upserts on (test_id, tester_id), the table's unique constraint. Admin-only
+  // via RLS. Once paid the row is locked (migration 0010 rejects any API
+  // update/delete), and the server stamps paid_at/paid_by and logs the change
+  // to payout_history — the values sent here are overwritten.
   const markPayoutPaid = async ({ testId, testerId, amount }) => {
     const { error } = await supabase.from('payouts').upsert(
       {

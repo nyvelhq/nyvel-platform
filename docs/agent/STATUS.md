@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (DEV-01)._
+_Last updated: 2026-09-26 by the orchestrator (SEC-02)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -101,12 +101,14 @@ runs before merging; test it on a local Postgres like 0006/0007.
    with a sign-off checklist, and documented branch-protection settings
    (RUNBOOK §4.1). The new DB tests immediately caught a bug in 0007:
    `set_test_status` was callable by anon / profile-less users (NULL from
-   `is_admin()`), fixed by migration 0009. — _status: in PR — https://github.com/nyvelhq/nyvel-platform/pull/25_
-12. **SEC-02 Make paid payouts immutable + auditable** — `payouts` is
-   "append-only once paid" by convention only; an admin update silently
-   rewrites amount/recipient with no history. Trigger rejecting updates to
-   paid rows plus a `payout_history` table (STRIDE T4/R2). _Size S–M ·
-   migration._ — _status: not started_
+   `is_admin()`), fixed by migration 0009. — _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/25_
+12. **SEC-02 Make paid payouts immutable + auditable** — migration 0010:
+   API callers (admins included) can't update or delete a paid payout;
+   paid_at/paid_by are server-stamped; every insert/update/delete is logged
+   to `payout_history` (admin-read-only, no FKs so it survives deletes).
+   SQL-editor corrections still possible and logged. 17 new checks in
+   `supabase/tests/20_payouts.sql`. _Size S–M · migration._ — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/26_
 13. **SEC-03 Stop companies editing a tester's finding content** — the 0004
    triage policy lets a company UPDATE any column, so it can rewrite a
    finding's title/description/severity — the tester's own record of what
