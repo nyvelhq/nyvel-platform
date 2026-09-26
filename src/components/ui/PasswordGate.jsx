@@ -32,7 +32,7 @@ export default function PasswordGate({ onAuthenticate }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 dark:from-slate-950 dark:to-slate-900">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 dark:from-slate-950 dark:to-slate-900">
       <div className="w-full max-w-md px-6 py-8">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -73,7 +73,7 @@ export default function PasswordGate({ onAuthenticate }) {
               </button>
             </div>
             {error && (
-              <p className="form-error mt-2">{error}</p>
+              <p className="form-error mt-2" role="alert">{error}</p>
             )}
           </div>
 
@@ -93,6 +93,6 @@ export default function PasswordGate({ onAuthenticate }) {
           Contact your administrator for access.
         </p>
       </div>
-    </div>
+    </main>
   );
 }

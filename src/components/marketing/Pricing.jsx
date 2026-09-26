@@ -35,7 +35,7 @@ export default function Pricing() {
             >
               {plan.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-accent-500 text-white text-xs font-bold rounded-full shadow-sm">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-accent-500 text-slate-950 text-xs font-bold rounded-full shadow-sm">
                     <Sparkles size={12} />
                     Recommended
                   </span>
@@ -46,7 +46,7 @@ export default function Pricing() {
                 <h3 className={`font-display font-bold text-xl mb-1 ${plan.highlighted ? 'text-white' : 'text-slate-900'}`}>
                   {plan.name}
                 </h3>
-                <p className={`text-sm mb-6 ${plan.highlighted ? 'text-brand-200' : 'text-slate-500'}`}>
+                <p className={`text-sm mb-6 ${plan.highlighted ? 'text-white/90' : 'text-slate-500'}`}>
                   {plan.tagline}
                 </p>
 
@@ -56,7 +56,7 @@ export default function Pricing() {
                       <span className={`font-display text-5xl font-bold ${plan.highlighted ? 'text-white' : 'text-slate-900'}`}>
                         ${plan.price}
                       </span>
-                      <span className={`text-sm font-medium mb-2 ${plan.highlighted ? 'text-brand-200' : 'text-slate-400'}`}>
+                      <span className={`text-sm font-medium mb-2 ${plan.highlighted ? 'text-white/90' : 'text-slate-500'}`}>
                         / {plan.period}
                       </span>
                     </div>
@@ -74,7 +74,7 @@ export default function Pricing() {
                         size={16}
                         className={`flex-shrink-0 mt-0.5 ${plan.highlighted ? 'text-accent-300' : 'text-brand-500'}`}
                       />
-                      <span className={plan.highlighted ? 'text-brand-100' : 'text-slate-600'}>{f}</span>
+                      <span className={plan.highlighted ? 'text-white' : 'text-slate-600'}>{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -94,7 +94,7 @@ export default function Pricing() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-slate-400 mt-10">
+        <p className="text-center text-sm text-slate-500 mt-10">
           Nyvel is in private beta. Tester compensation is paid out through Nyvel.
         </p>
       </div>

@@ -172,7 +172,7 @@ export default function CompanyTests() {
                         <th><SortHeader label="Testers" sortKey="testers" activeKey={sortKey} onSort={toggleSort} /></th>
                         <th><SortHeader label="Issues" sortKey="issues" activeKey={sortKey} onSort={toggleSort} /></th>
                         <th><SortHeader label="Due Date" sortKey="dueDate" activeKey={sortKey} onSort={toggleSort} /></th>
-                        <th></th>
+                        <th><span className="sr-only">Actions</span></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -183,13 +183,13 @@ export default function CompanyTests() {
                           onClick={() => setDetailTest(test)}
                         >
                           <td className="max-md:!hidden">
-                            <span className="font-mono text-xs text-slate-400 dark:text-slate-500">{test.id}</span>
+                            <span className="font-mono text-xs text-slate-500 dark:text-slate-400">{test.id}</span>
                           </td>
                           <td>
                             <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                             <div className="flex gap-1 mt-1">
                               {test.platform.map((p) => (
-                                <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium">
+                                <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded font-medium">
                                   {p}
                                 </span>
                               ))}

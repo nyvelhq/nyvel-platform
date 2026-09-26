@@ -14,9 +14,9 @@ const variants = {
   // Dark background variant
   dark: 'bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 active:bg-slate-950 dark:active:bg-slate-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
   // Accent/success actions
-  accent: 'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 dark:bg-accent-600 dark:hover:bg-accent-500 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
+  accent: 'bg-accent-500 hover:bg-accent-400 active:bg-accent-600 dark:bg-accent-500 dark:hover:bg-accent-400 text-slate-950 shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
   // Success/approval actions
-  success: 'bg-success-600 hover:bg-success-700 active:bg-success-800 dark:bg-success-700 dark:hover:bg-success-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
+  success: 'bg-success-700 hover:bg-success-800 active:bg-success-900 dark:bg-success-700 dark:hover:bg-success-800 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
   // Warning actions
   warning: 'bg-warning-600 hover:bg-warning-700 active:bg-warning-800 dark:bg-warning-700 dark:hover:bg-warning-600 text-white shadow-elevation-xs hover:shadow-elevation-sm active:shadow-elevation-xs hover:scale-[1.02] active:scale-[0.95]',
 };

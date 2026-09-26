@@ -90,7 +90,7 @@ export default function PrivateAccess({ children }) {
                 </button>
               </div>
               {error && (
-                <p className="form-error mt-2">{error}</p>
+                <p className="form-error mt-2" role="alert">{error}</p>
               )}
             </div>
 

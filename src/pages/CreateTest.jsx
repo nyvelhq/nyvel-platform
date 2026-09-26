@@ -230,7 +230,7 @@ export default function CreateTest() {
                       <p className={`text-xs font-semibold ${selected ? 'text-brand-700 dark:text-brand-300' : 'text-slate-700 dark:text-slate-300'}`}>
                         {t.label}
                       </p>
-                      <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">{t.desc}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.desc}</p>
                     </div>
                   </button>
                   );
@@ -303,7 +303,7 @@ export default function CreateTest() {
                 onChange={(e) => set('testerCount', Number(e.target.value))}
                 className="w-full accent-brand-600 mt-1"
               />
-              <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500 mt-1">
+              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
                 <span>5</span><span>200</span>
               </div>
             </div>

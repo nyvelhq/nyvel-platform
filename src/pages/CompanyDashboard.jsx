@@ -107,9 +107,10 @@ export default function CompanyDashboard() {
               </p>
               {severityTotal > 0 && (
               <div className="md:flex md:items-center md:gap-8">
-              <div className="relative cursor-pointer md:w-64 flex-shrink-0">
+              {/* The legend buttons beside the chart are the accessible version of it. */}
+              <div className="relative cursor-pointer md:w-64 flex-shrink-0" aria-hidden="true">
                 <ResponsiveContainer width="100%" height={200}>
-                  <PieChart>
+                  <PieChart accessibilityLayer={false}>
                     <Pie
                       data={issuesBySeverity}
                       cx="50%"
@@ -119,6 +120,7 @@ export default function CompanyDashboard() {
                       paddingAngle={3}
                       dataKey="value"
                       isAnimationActive={false}
+                      rootTabIndex={-1}
                       onClick={(entry) => toggleSeverityFilter(entry.name)}
                     >
                       {issuesBySeverity.map((entry, i) => (
@@ -147,6 +149,8 @@ export default function CompanyDashboard() {
                   return (
                     <button
                       key={item.name}
+                      type="button"
+                      aria-pressed={active}
                       onClick={() => toggleSeverityFilter(item.name)}
                       className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md border text-left transition-colors ${
                         active
@@ -215,7 +219,7 @@ export default function CompanyDashboard() {
                   <th>Testers</th>
                   <th>Issues</th>
                   <th>Due Date</th>
-                  <th></th>
+                  <th><span className="sr-only">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -238,7 +242,7 @@ export default function CompanyDashboard() {
                       <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                       <div className="flex gap-1 mt-1">
                         {test.platform.map((p) => (
-                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded font-medium">
+                          <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded font-medium">
                             {p}
                           </span>
                         ))}
@@ -269,9 +273,10 @@ export default function CompanyDashboard() {
                           e.stopPropagation();
                           setDetailTest(test);
                         }}
-                        className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
+                        aria-label={`Quick view: ${test.name}`}
+                        className="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 transition-colors"
                       >
-                        <ExternalLink size={14} />
+                        <ExternalLink size={14} aria-hidden="true" />
                       </button>
                     </td>
                   </tr>

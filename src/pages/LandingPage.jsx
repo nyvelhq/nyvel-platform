@@ -30,6 +30,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
+      <main>
       <Hero />
       <TrustSignals />
       <Features />
@@ -144,6 +145,7 @@ export default function LandingPage() {
           </div>
         </ScrollReveal>
       </section>
+      </main>
 
       <Footer />
     </div>

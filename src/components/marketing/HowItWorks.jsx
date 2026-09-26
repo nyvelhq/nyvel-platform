@@ -59,7 +59,7 @@ export default function HowItWorks() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="section-eyebrow mb-4">Process</span>
+          <span className="section-eyebrow mb-4 !text-brand-400">Process</span>
           <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mt-2">
             How <span className="gradient-text">Nyvel</span> works
           </h2>
@@ -82,7 +82,7 @@ export default function HowItWorks() {
             <button
               onClick={() => setTab('tester')}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150
-                ${tab === 'tester' ? 'bg-accent-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'}`}
+                ${tab === 'tester' ? 'bg-accent-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
               <User size={16} />
               For Testers
@@ -109,7 +109,7 @@ export default function HowItWorks() {
                   </div>
                 )}
                 <div className="glass-card rounded-2xl p-6 h-full hover:border-brand-500/30 transition-colors">
-                  <div className={`font-mono text-4xl font-bold mb-4 ${tab === 'company' ? 'text-brand-500/40' : 'text-accent-500/40'}`}>
+                  <div className={`font-mono text-4xl font-bold mb-4 ${tab === 'company' ? 'text-brand-400' : 'text-accent-400'}`}>
                     {step.num}
                   </div>
                   <h3 className="font-display font-bold text-white text-base mb-3">{step.title}</h3>

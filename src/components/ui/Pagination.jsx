@@ -33,11 +33,12 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
   return (
     <div className="flex items-center justify-between mt-6 gap-4">
       <div className="flex items-center gap-4">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
           Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
         </p>
         {onPageSizeChange && (
           <select
+            aria-label="Rows per page"
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
             className="px-3 py-1 text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all duration-150"
@@ -53,9 +54,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          aria-label="Previous page"
           className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 transition-all duration-150 hover:scale-110 active:scale-95"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={18} aria-hidden="true" />
         </button>
 
         {startPage > 1 && (
@@ -74,6 +76,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
           <button
             key={page}
             onClick={() => onPageChange(page)}
+            aria-label={`Page ${page}`}
+            aria-current={page === currentPage ? 'page' : undefined}
             style={{ animationDelay: `${idx * 25}ms` }}
             className={`px-3 py-1 rounded-lg transition-all duration-150 animate-bounce-in ${
               page === currentPage
@@ -100,9 +104,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange, page
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          aria-label="Next page"
           className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 transition-all duration-150 hover:scale-110 active:scale-95"
         >
-          <ChevronRight size={18} />
+          <ChevronRight size={18} aria-hidden="true" />
         </button>
       </div>
     </div>

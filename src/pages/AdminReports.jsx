@@ -29,8 +29,8 @@ export default function AdminReports() {
   };
 
   const kpis = [
-    { label: 'Total Revenue', value: 284.9, format: (n) => `$${n.toFixed(1)}K`, color: 'text-emerald-600 dark:text-emerald-400', note: '↑ 8.4% vs last period', noteColor: 'text-emerald-600 dark:text-emerald-400 font-semibold' },
-    { label: 'Avg. Test Value', value: 1280, format: (n) => `$${Math.round(n).toLocaleString()}`, color: 'text-brand-600 dark:text-brand-400', note: 'Per completed test', noteColor: 'text-slate-400 dark:text-slate-500' },
+    { label: 'Total Revenue', value: 284.9, format: (n) => `$${n.toFixed(1)}K`, color: 'text-emerald-700 dark:text-emerald-400', note: '↑ 8.4% vs last period', noteColor: 'text-emerald-700 dark:text-emerald-400 font-semibold' },
+    { label: 'Avg. Test Value', value: 1280, format: (n) => `$${Math.round(n).toLocaleString()}`, color: 'text-brand-600 dark:text-brand-400', note: 'Per completed test', noteColor: 'text-slate-500 dark:text-slate-400' },
     { label: 'Avg. Completion', value: 91, format: (n) => `${Math.round(n)}%`, color: 'text-cyan-600 dark:text-cyan-400', note: '↑ 9% vs last period', noteColor: 'text-cyan-600 dark:text-cyan-400 font-semibold' },
     { label: 'Churn Rate', value: 2.3, format: (n) => `${n.toFixed(1)}%`, color: 'text-amber-600 dark:text-amber-400', note: '↓ 0.5% vs last period', noteColor: 'text-amber-600 dark:text-amber-400 font-semibold' },
   ];
@@ -39,9 +39,9 @@ export default function AdminReports() {
     {
       title: 'Platform Reliability',
       rows: [
-        { label: 'Uptime', value: '99.97%', valueClass: 'text-emerald-600 dark:text-emerald-400' },
+        { label: 'Uptime', value: '99.97%', valueClass: 'text-emerald-700 dark:text-emerald-400' },
         { label: 'Avg Response Time', value: '245ms', valueClass: 'text-slate-900 dark:text-slate-100' },
-        { label: 'Error Rate', value: '0.03%', valueClass: 'text-emerald-600 dark:text-emerald-400' },
+        { label: 'Error Rate', value: '0.03%', valueClass: 'text-emerald-700 dark:text-emerald-400' },
       ],
     },
     {
@@ -57,7 +57,7 @@ export default function AdminReports() {
       rows: [
         { label: 'Avg Test Quality', value: '8.7/10', valueClass: 'text-slate-900 dark:text-slate-100' },
         { label: 'Bug Detection Rate', value: '94%', valueClass: 'text-slate-900 dark:text-slate-100' },
-        { label: 'False Positives', value: '2%', valueClass: 'text-emerald-600 dark:text-emerald-400' },
+        { label: 'False Positives', value: '2%', valueClass: 'text-emerald-700 dark:text-emerald-400' },
       ],
     },
   ];

@@ -1,48 +1,27 @@
 import React from 'react';
-import { Twitter, Linkedin, Github, Shield, Award } from 'lucide-react';
+import { Shield, Award } from 'lucide-react';
 import NyvelMark from '../ui/NyvelMark';
 
+// Only links that go somewhere. Privacy Policy and Terms come back when
+// those pages exist (Eben-owned, see docs/agent/STATUS.md).
 const footerSections = [
   {
     title: 'Platform',
     links: [
-      { label: 'How It Works', href: '#how-it-works' },
-      { label: 'Bug Hunt', href: '#' },
-      { label: 'Usability Testing', href: '#' },
-      { label: 'Global QA', href: '#' },
-      { label: 'Load Testing', href: '#' },
-      { label: 'Fintech & Payments', href: '#' },
-      { label: 'Game Playtesting', href: '#' },
+      { label: 'Test types', href: '#test-types' },
+      { label: 'Features', href: '#features' },
+      { label: 'How it works', href: '#how-it-works' },
+      { label: 'Security', href: '#security' },
+      { label: 'Pricing', href: '#pricing' },
     ],
   },
   {
-    title: 'Company',
+    title: 'Get started',
     links: [
-      { label: 'About Nyvel', href: '#' },
-      { label: 'Case Studies', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Contact Us', href: '/request-access' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'Documentation', href: '#' },
-      { label: 'API Reference', href: '#' },
-      { label: 'Help Center', href: '#' },
+      { label: 'Request access', href: '/request-access' },
       { label: 'Apply to test', href: '/request-access?type=tester' },
-      { label: 'Status', href: '#' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Terms of Service', href: '#' },
-      { label: 'GDPR', href: '#' },
-      { label: 'Security', href: '#' },
-      { label: 'Cookie Policy', href: '#' },
+      { label: 'Contact us', href: '/request-access' },
+      { label: 'Sign in', href: '/login' },
     ],
   },
 ];
@@ -51,80 +30,51 @@ export default function Footer() {
   return (
     <footer className="bg-slate-950 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Top: logo + links */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-5">
               <NyvelMark size={32} className="rounded-lg" />
               <span className="font-display font-bold text-white text-lg">
                 Ny<span className="text-brand-400">vel</span>
               </span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6">
+            <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
               The real human beta testing platform. Ship with confidence.
             </p>
-            <div className="flex gap-3">
-              {[
-                { Icon: Twitter, label: 'Nyvel on X' },
-                { Icon: Linkedin, label: 'Nyvel on LinkedIn' },
-                { Icon: Github, label: 'Nyvel on GitHub' },
-              ].map(({ Icon, label }) => (
-                <button
-                  key={label}
-                  type="button"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
-                >
-                  <Icon size={16} />
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Link columns */}
           {footerSections.map((section) => (
-            <div key={section.title}>
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">
+            <nav key={section.title} aria-labelledby={`footer-${section.title.replace(" ", "-")}`}>
+              <h2 id={`footer-${section.title.replace(" ", "-")}`} className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">
                 {section.title}
-              </h4>
+              </h2>
               <ul className="space-y-2.5">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    {link.href === '#' ? (
-                      <button
-                        type="button"
-                        className="text-sm text-slate-400 hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </button>
-                    ) : (
-                      <a
-                        href={link.href}
-                        className="text-sm text-slate-400 hover:text-white transition-colors"
-                      >
-                        {link.label}
-                      </a>
-                    )}
+                    <a href={link.href} className="text-sm text-slate-300 hover:text-white transition-colors">
+                      {link.label}
+                    </a>
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
 
         {/* Divider */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400">
             © 2026 Nyvel Technologies, Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Shield size={12} className="text-brand-400" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Shield size={12} className="text-brand-400" aria-hidden="true" />
               Encrypted &amp; access-controlled
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Award size={12} className="text-accent-400" />
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Award size={12} className="text-accent-400" aria-hidden="true" />
               GDPR &amp; CCPA-aligned
             </div>
           </div>
