@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ShieldCheck, UserCheck, Layers, Timer, X } from 'lucide-react';
-import { tickerItems } from '../../data/mockData';
 import Button from '../ui/Button';
 import { duration, ease } from '../../motion/tokens';
 
@@ -19,70 +18,9 @@ const statItems = [
   { value: 'Fast', label: 'Structured results, quickly', icon: Timer },
 ];
 
-const ticker = [...tickerItems, ...tickerItems];
-
-const LEDGER_TARGETS = { testers: 1284, tests: 342, bugs: 14, hours: 6 };
-
-function useLedgerCountUp(active) {
-  const [values, setValues] = React.useState({ testers: 0, tests: 0, bugs: 0, hours: 0 });
-
-  React.useEffect(() => {
-    if (!active) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setValues(LEDGER_TARGETS);
-      return;
-    }
-    let raf;
-    const start = performance.now();
-    const totalDuration = 900;
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / totalDuration);
-      const p = easeOutCubic(t);
-      setValues({
-        testers: Math.round(LEDGER_TARGETS.testers * p),
-        tests: Math.round(LEDGER_TARGETS.tests * p),
-        bugs: Math.round(LEDGER_TARGETS.bugs * p),
-        hours: Math.round(LEDGER_TARGETS.hours * p),
-      });
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [active]);
-
-  return values;
-}
-
 export default function Hero() {
   const navigate = useNavigate();
   const [showBanner, setShowBanner] = React.useState(true);
-  const ledgerRef = React.useRef(null);
-  const [ledgerVisible, setLedgerVisible] = React.useState(false);
-  const ledgerCounts = useLedgerCountUp(ledgerVisible);
-
-  React.useEffect(() => {
-    const el = ledgerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setLedgerVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  const ledgerMetrics = [
-    { label: 'Testers active now', value: ledgerCounts.testers.toLocaleString() },
-    { label: 'Tests completed this week', value: ledgerCounts.tests.toLocaleString() },
-    { label: 'Median bugs found / test', value: String(ledgerCounts.bugs) },
-    { label: 'Avg. hours to first report', value: `${ledgerCounts.hours}h` },
-  ];
 
   return (
     <section className="relative min-h-screen flex flex-col bg-slate-950 overflow-hidden">
@@ -104,13 +42,7 @@ export default function Hero() {
               <div className="flex items-center gap-3 max-w-2xl">
                 <span className="text-accent-400 font-bold text-lg">✨</span>
                 <p className="text-slate-100 text-sm sm:text-base">
-                  <span className="font-semibold">Just launched:</span> Testers in 42 countries. Create your test in 5 minutes.{' '}
-                  <button
-                    onClick={() => navigate('/login?role=company')}
-                    className="font-bold text-accent-400 hover:text-accent-300 underline transition-colors"
-                  >
-                    Try free
-                  </button>
+                  <span className="font-semibold">Now in private beta:</span> we&apos;re onboarding our first companies and testers.
                 </p>
               </div>
               <button
@@ -158,7 +90,7 @@ export default function Hero() {
           Get real-world feedback from vetted testers before launch. Professional QA review included.
         </p>
 
-        {/* Key Benefits — Checkmarks — beat 2 (fades in with CTAs, trust line, Quality Ledger) */}
+        {/* Key Benefits — Checkmarks — beat 2 (fades in with CTAs) */}
         <div
           className="mt-8 space-y-2 text-center max-w-xl animate-fade-2"
           style={{ opacity: 0, animationFillMode: 'forwards' }}
@@ -169,7 +101,7 @@ export default function Hero() {
           </p>
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
             <span className="text-accent-400 font-bold text-lg">✓</span>
-            Results in 24-48 hours, not weeks
+            Findings you can review, accept and act on in one place
           </p>
           <p className="flex items-center justify-center gap-3 text-sm sm:text-base text-slate-300">
             <span className="text-accent-400 font-bold text-lg">✓</span>
@@ -198,53 +130,6 @@ export default function Hero() {
           >
             Join as Tester
           </Button>
-        </div>
-
-        {/* Trust indicators below CTA */}
-        <div
-          className="mt-6 text-center animate-fade-2"
-          style={{ opacity: 0, animationFillMode: 'forwards' }}
-        >
-          <p className="text-xs text-slate-500 font-medium">
-            14-day free trial. No credit card required. Cancel anytime.
-          </p>
-        </div>
-
-        {/* Quality Ledger — replaces the old standalone activity ticker with
-            real-time-feeling platform metrics; the ticker is demoted to a
-            secondary strip underneath. */}
-        <div
-          ref={ledgerRef}
-          className="mt-14 w-full max-w-3xl animate-fade-2 text-left"
-          style={{ opacity: 0, animationFillMode: 'forwards' }}
-        >
-          <div className="border border-white/10 rounded-xl overflow-hidden bg-slate-900/60 backdrop-blur-sm">
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-slate-900/40">
-              <span className="font-display font-bold text-sm text-slate-200">Quality Ledger</span>
-              <span className="font-mono text-[11px] text-slate-500">real-time platform metrics</span>
-              <span className="ml-auto flex items-center gap-1.5 text-xs text-accent-400 font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-                LIVE
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-white/10">
-              {ledgerMetrics.map((m) => (
-                <div key={m.label} className="px-4 py-5">
-                  <p className="font-display font-bold text-2xl sm:text-3xl text-white">{m.value}</p>
-                  <p className="text-xs text-slate-400 mt-1.5 font-medium">{m.label}</p>
-                </div>
-              ))}
-            </div>
-            <div className="ticker-wrap py-2.5 border-t border-white/10">
-              <div className="ticker-inner">
-                {ticker.map((item, i) => (
-                  <span key={i} className="text-xs text-slate-500 mx-7 font-mono whitespace-nowrap">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Value-prop row */}

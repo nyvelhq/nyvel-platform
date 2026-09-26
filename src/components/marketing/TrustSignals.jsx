@@ -15,8 +15,8 @@ const trustItems = [
   },
   {
     icon: Globe,
-    label: 'Global Coverage',
-    description: 'Real testers in 42+ countries, 10+ languages',
+    label: 'Real People',
+    description: 'Real testers on their own devices, not bots or emulators',
   },
   {
     icon: Award,

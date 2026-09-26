@@ -18,7 +18,7 @@ const companySteps = [
   {
     num: '02',
     title: 'We Recruit Testers',
-    desc: 'Nyvel surfaces your test to qualified, vetted testers within minutes. Most tests reach full capacity within 24 hours.',
+    desc: 'Nyvel lists your test for vetted testers to apply to, and you choose who joins.',
   },
   {
     num: '03',

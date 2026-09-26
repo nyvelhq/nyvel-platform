@@ -37,7 +37,7 @@ export default function Pricing() {
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-accent-500 text-white text-xs font-bold rounded-full shadow-sm">
                     <Sparkles size={12} />
-                    Most Popular
+                    Recommended
                   </span>
                 </div>
               )}
@@ -95,8 +95,7 @@ export default function Pricing() {
         </div>
 
         <p className="text-center text-sm text-slate-400 mt-10">
-          All plans include a 14-day free trial. No credit card required.
-          Tester compensation handled automatically by Nyvel.
+          Nyvel is in private beta. Tester compensation is paid out through Nyvel.
         </p>
       </div>
     </section>

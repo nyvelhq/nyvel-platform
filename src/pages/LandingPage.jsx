@@ -122,7 +122,7 @@ export default function LandingPage() {
           </h2>
           <p className="text-lg text-slate-400 mb-10">
             Put professional-grade beta testing behind your next release — find bugs,
-            improve UX, and launch with confidence. 14-day free trial. No credit card required.
+            improve UX, and launch with confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -131,7 +131,7 @@ export default function LandingPage() {
               onClick={() => navigate('/login')}
               iconRight={<ArrowRight size={18} />}
             >
-              Start Your Free Trial
+              Get Started
             </Button>
             <Button
               size="xl"

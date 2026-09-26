@@ -191,6 +191,30 @@ describe('loadCompanyTests (derived company test rows)', () => {
     const [t1, t2] = getApi().companyTests;
     expect(t1).toMatchObject({ id: 't1', status: 'Active', testers: 1, issues: 1, criticalIssues: 1, severity: 'Critical' });
     expect(t2).toMatchObject({ id: 't2', status: 'Completed', testers: 1, issues: 1, criticalIssues: 0, severity: 'Medium' });
+    expect(t1).toMatchObject({ pendingApplicants: 1, openFindings: 1, acceptedBySeverity: { critical: 1 } });
+    expect(t2).toMatchObject({ pendingApplicants: 0, openFindings: 0, acceptedBySeverity: { medium: 1 } });
+  });
+});
+
+describe('loadMyEarnings (tester payouts + accepted findings)', () => {
+  it('exposes the signed-in tester\'s payouts and accepted-finding test ids', async () => {
+    __setAuth({ user: { id: 'tester-1', role: 'tester' }, isAuthenticated: true });
+    __setResponse('payouts', {
+      data: [{ test_id: 't1', amount: 50, status: 'paid', paid_at: '2026-09-01T00:00:00Z' }],
+      error: null,
+    });
+    __setResponse('findings', { data: [{ test_id: 't1' }, { test_id: 't2' }], error: null });
+
+    const getApi = await renderApi();
+    await waitFor(() => expect(getApi().myPayouts).toHaveLength(1));
+    expect(getApi().myAcceptedFindingTestIds).toEqual(['t1', 't2']);
+  });
+
+  it('loads nothing for a non-tester', async () => {
+    __setResponse('payouts', { data: [{ test_id: 't1', amount: 50, status: 'paid' }], error: null });
+    const getApi = await renderApi();
+    await waitFor(() => expect(getApi().dataLoading).toBe(false));
+    expect(getApi().myPayouts).toEqual([]);
   });
 });
 

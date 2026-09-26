@@ -43,12 +43,6 @@ const adminNav = [
 
 const navByRole = { company: companyNav, tester: testerNav, admin: adminNav };
 
-const demoNotifications = [
-  { id: 1, text: 'New tester applied to your active test', time: '5 min ago' },
-  { id: 2, text: 'A critical issue was reported', time: '1 hr ago' },
-  { id: 3, text: 'A payout was processed', time: '3 hr ago' },
-];
-
 const roleConfig = {
   company: { label: 'Company', icon: Briefcase, color: 'text-brand-400', bg: 'bg-brand-600/20' },
   tester: { label: 'Tester', icon: User, color: 'text-accent-400', bg: 'bg-accent-600/20' },
@@ -256,10 +250,6 @@ export default function PlatformLayout({ children, title }) {
                 className="relative p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
               >
                 <Bell size={20} />
-                <span
-                  className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent-500 ring-2 ring-white dark:ring-slate-900"
-                  aria-hidden="true"
-                />
               </button>
 
               {notifOpen && (
@@ -271,12 +261,7 @@ export default function PlatformLayout({ children, title }) {
                   <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                     <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">Notifications</p>
                   </div>
-                  {demoNotifications.map((n) => (
-                    <div key={n.id} className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                      <p className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{n.text}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{n.time}</p>
-                    </div>
-                  ))}
+                  <p className="px-4 py-6 text-sm text-center text-slate-500 dark:text-slate-400">No notifications yet.</p>
                 </div>
               )}
             </div>

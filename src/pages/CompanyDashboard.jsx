@@ -1,12 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FlaskConical, Users, AlertTriangle, CheckCircle, Plus, ExternalLink, X,
+  FlaskConical, Users, AlertTriangle, UserPlus, Plus, ExternalLink, X,
 } from 'lucide-react';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell
-} from 'recharts';
+import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import PlatformLayout from '../components/platform/PlatformLayout';
 import StatCard from '../components/ui/StatCard';
 import EmptyState from '../components/ui/EmptyState';
@@ -18,9 +15,14 @@ import TestDetailDrawer from '../components/company/TestDetailDrawer';
 import useDarkMode from '../hooks/useDarkMode';
 import { useAuth } from '../App';
 import { useAppData } from '../context/DataContext';
-import {
-  companyStats, activityChartData, issuesBySeverity
-} from '../data/mockData';
+import { deriveCompanySummary } from '../utils/dashboardStats';
+
+const greeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
@@ -34,10 +36,9 @@ export default function CompanyDashboard() {
     setSeverityFilter((current) => (current === name ? null : name));
   };
 
-  const severityTotal = useMemo(
-    () => issuesBySeverity.reduce((sum, s) => sum + s.value, 0),
-    []
-  );
+  const summary = useMemo(() => deriveCompanySummary(companyTests), [companyTests]);
+  const issuesBySeverity = summary.severity;
+  const severityTotal = issuesBySeverity.reduce((sum, s) => sum + s.value, 0);
   const filteredSeverityEntry = severityFilter
     ? issuesBySeverity.find((s) => s.name === severityFilter)
     : null;
@@ -47,12 +48,6 @@ export default function CompanyDashboard() {
     : companyTests;
 
   // Theme-aware chart palette (Recharts can't read Tailwind `dark:` variants)
-  const chart = {
-    axis: isDark ? '#64748b' : '#94a3b8',
-    grid: isDark ? 'rgba(51, 65, 85, 0.5)' : 'rgba(203, 213, 225, 0.3)',
-    brand: isDark ? '#38c4b0' : '#17a897',
-    accent: isDark ? '#fbbf24' : '#f59e0b',
-  };
   const tooltipStyle = {
     borderRadius: '8px',
     border: `1px solid ${isDark ? '#334155' : '#cbd5e1'}`,
@@ -69,11 +64,8 @@ export default function CompanyDashboard() {
         <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/50">
           <div>
             <h1 className="font-display text-2xl font-bold text-slate-900 dark:text-slate-50">
-              Good morning, {user?.name?.split(' ')[0]} 👋
+              {greeting()}{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-              {user?.company} · {user?.plan} Plan
-            </p>
           </div>
           <Button
             icon={<Plus size={16} />}
@@ -89,94 +81,33 @@ export default function CompanyDashboard() {
           <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             <ScrollReveal animation="fade-in-page" staggerIndex={0} staggerDelay={100}>
-              <StatCard
-                label="Active Tests"
-                value={companyStats.activeTests}
-                animate
-                trend={companyStats.trends.activeTests}
-                trendCaption="vs. last week"
-                icon={FlaskConical}
-                iconColor="violet"
-              />
+              <StatCard label="Active Tests" value={summary.activeTests} animate icon={FlaskConical} iconColor="violet" />
             </ScrollReveal>
             <ScrollReveal animation="fade-in-page" staggerIndex={1} staggerDelay={100}>
-              <StatCard
-                label="Total Testers"
-                value={companyStats.totalTesters}
-                animate
-                trend={companyStats.trends.totalTesters}
-                trendCaption="vs. last month"
-                icon={Users}
-                iconColor="cyan"
-              />
+              <StatCard label="Testers Accepted" value={summary.acceptedTesters} animate icon={Users} iconColor="cyan" />
             </ScrollReveal>
             <ScrollReveal animation="fade-in-page" staggerIndex={2} staggerDelay={100}>
-              <StatCard
-                label="Open Issues"
-                value={companyStats.openIssues}
-                animate
-                trend={companyStats.trends.openIssues}
-                trendCaption="vs. last week"
-                icon={AlertTriangle}
-                iconColor="amber"
-                invert
-              />
+              <StatCard label="Applicants to Review" value={summary.applicantsToReview} animate icon={UserPlus} iconColor="amber" />
             </ScrollReveal>
             <ScrollReveal animation="fade-in-page" staggerIndex={3} staggerDelay={100}>
-              <StatCard
-                label="Completion Rate"
-                value={companyStats.completionRate}
-                animate
-                format={(n) => `${Math.round(n)}%`}
-                trend={companyStats.trends.completionRate}
-                trendLabel="%"
-                trendCaption="vs. last month"
-                icon={CheckCircle}
-                iconColor="green"
-              />
+              <StatCard label="Findings to Triage" value={summary.findingsToTriage} animate icon={AlertTriangle} iconColor="amber" />
             </ScrollReveal>
           </div>
         </div>
 
-        {/* Analytics Section */}
+        {/* Findings summary */}
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Analytics</h2>
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            {/* Activity line chart */}
-            <div className="xl:col-span-2 card p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Test Activity</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Issues found & testers active over time</p>
-                </div>
-              <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400">
-                <span className="flex items-center gap-2">
-                  <span className="w-3 h-0.5 bg-brand-500 rounded-full inline-block" />
-                  Issues
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="w-3 h-0.5 bg-accent-400 rounded-full inline-block" />
-                  Testers
-                </span>
-              </div>
-            </div>
-              <ResponsiveContainer width="100%" height={240}>
-                <LineChart data={activityChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
-                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 12, fill: chart.axis }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: chart.axis }} />
-                  <Line type="monotone" dataKey="issues" stroke={chart.brand} strokeWidth={3} dot={{ fill: chart.brand, r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                  <Line type="monotone" dataKey="testers" stroke={chart.accent} strokeWidth={3} dot={{ fill: chart.accent, r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-          </div>
-
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-4">Findings</h2>
+          <div>
             {/* Issues by severity donut */}
             <div className="card p-6">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-1">Issues by Severity</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">Click a severity to filter the table below</p>
-              <div className="relative cursor-pointer">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50 mb-1">Accepted Findings by Severity</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">
+                {severityTotal ? 'Click a severity to filter the table below' : 'Findings you accept on your tests will show up here.'}
+              </p>
+              {severityTotal > 0 && (
+              <div className="md:flex md:items-center md:gap-8">
+              <div className="relative cursor-pointer md:w-64 flex-shrink-0">
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
@@ -206,11 +137,11 @@ export default function CompanyDashboard() {
                     {filteredSeverityEntry ? filteredSeverityEntry.value : severityTotal}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    {filteredSeverityEntry ? `${filteredSeverityEntry.name.toLowerCase()} issues` : 'total issues'}
+                    {filteredSeverityEntry ? `${filteredSeverityEntry.name.toLowerCase()} findings` : 'accepted findings'}
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="grid grid-cols-2 gap-2 mt-4 md:mt-0 flex-1 max-w-sm">
                 {issuesBySeverity.map((item) => {
                   const active = severityFilter === item.name;
                   return (
@@ -229,6 +160,8 @@ export default function CompanyDashboard() {
                   );
                 })}
               </div>
+              </div>
+              )}
             </div>
           </div>
         </div>
@@ -276,7 +209,6 @@ export default function CompanyDashboard() {
             <table className="w-full data-table">
               <thead>
                 <tr>
-                  <th>Test ID</th>
                   <th>Name</th>
                   <th>Type</th>
                   <th>Status</th>
@@ -302,9 +234,6 @@ export default function CompanyDashboard() {
                     }`}
                     onClick={() => setDetailTest(test)}
                   >
-                    <td>
-                      <span className="font-mono text-xs text-slate-400 dark:text-slate-500">{test.id}</span>
-                    </td>
                     <td>
                       <span className="font-medium text-slate-800 dark:text-slate-200">{test.name}</span>
                       <div className="flex gap-1 mt-1">
