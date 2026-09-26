@@ -97,7 +97,7 @@ export default function TesterDashboard() {
 
   return (
     <PlatformLayout title="Tester Dashboard">
-      <div className="p-6 space-y-6">
+      <div className="p-2 sm:p-6 space-y-6">
         {/* Onboarding banner */}
         {showOnboardingBanner && (
           <div className="flex items-center gap-4 bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/50 rounded-xl px-5 py-4">
@@ -359,9 +359,9 @@ export default function TesterDashboard() {
                           <p className="text-xs text-slate-400 dark:text-slate-500">{app.company}</p>
                         </div>
                       </td>
-                      <td><TypeBadge type={app.type} /></td>
-                      <td><StatusBadge status={app.status} /></td>
-                      <td>
+                      <td data-label="Type"><TypeBadge type={app.type} /></td>
+                      <td data-label="Status"><StatusBadge status={app.status} /></td>
+                      <td data-label="Progress">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 w-20">
                             <div
@@ -372,14 +372,15 @@ export default function TesterDashboard() {
                           <span className="text-xs text-slate-500 dark:text-slate-400 w-8 text-right">{app.progress}%</span>
                         </div>
                       </td>
-                      <td className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
-                      <td className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
+                      <td data-label="Pay" className="font-semibold text-emerald-600 dark:text-emerald-400">${app.compensation}</td>
+                      <td data-label="Due" className="text-slate-500 dark:text-slate-400 text-xs">{app.dueDate}</td>
                       <td>
                         <button
                           onClick={() => navigate(`/tester/tests/${app.sourceTestId}`)}
+                          aria-label={`Open ${app.testName}`}
                           className="text-brand-500 hover:text-brand-700 dark:hover:text-brand-300"
                         >
-                          <ExternalLink size={14} />
+                          <ExternalLink size={14} aria-hidden="true" />
                         </button>
                       </td>
                     </tr>

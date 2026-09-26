@@ -4,7 +4,7 @@ This file is the source of truth for the autonomous build orchestrator. It is
 read at the start of every run and updated (in the same PR) whenever a queue
 item moves to "in PR".
 
-_Last updated: 2026-09-26 by the orchestrator (QA-01 queued)._
+_Last updated: 2026-09-26 by the orchestrator (UX-04)._
 
 ## Current state (as of Sep 23, 2026)
 
@@ -123,12 +123,14 @@ runs before merging; test it on a local Postgres like 0006/0007.
    re-pointed ("Request access" / "Apply to test" / "Contact us"), login page
    links to both. No email sent; approving doesn't create an account. —
    _status: done — merged via https://github.com/nyvelhq/nyvel-platform/pull/28_
-15. **UX-04 Mobile: core actions reachable on phones** — applicant
-   Accept/Decline, My Tests table and the page header are clipped at 390px
-   (cards use `overflow-hidden` with no scroll); switch key tables to
-   stacked cards below `md`, fix the header wrap/avatar cut-off, and the
-   landing page's 14px horizontal overflow (`LandingPage.jsx` security
-   badge row). _Size M._ — _status: not started_
+15. **UX-04 Mobile: core actions reachable on phones** — every `.data-table`
+   stacks into labelled cards below `md` (one CSS rule + `data-label` on
+   cells: applicants, My Tests, dashboard, My Applications, test history,
+   payouts, admin top companies); header title truncates, 80px theme toggle
+   fixed to 40px (`w-10` was 80px on this spacing scale), tighter phone
+   padding; test-detail header and finding headers stack on phones; landing
+   page 14px overflow fixed. — _status: in PR —
+   https://github.com/nyvelhq/nyvel-platform/pull/29_
 16. **UX-05 Persist tester profiles** — onboarding answers (bio, skills,
    devices, location) live only in `sessionStorage` and vanish on logout or
    a new device; companies never see them. Add columns/table + RLS, save

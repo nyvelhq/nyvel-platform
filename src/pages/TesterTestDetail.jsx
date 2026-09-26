@@ -167,7 +167,7 @@ export default function TesterTestDetail() {
   if (!test) {
     return (
       <PlatformLayout title="Test Details">
-        <div className="p-8">
+        <div className="p-2 sm:p-8">
           <EmptyState
             icon={FileSearch}
             title="Test not found"
@@ -185,7 +185,7 @@ export default function TesterTestDetail() {
 
   return (
     <PlatformLayout title={test.title}>
-      <div className="p-8 space-y-6 max-w-3xl">
+      <div className="p-2 sm:p-8 space-y-6 max-w-3xl">
         <button
           onClick={() => navigate('/tester/dashboard')}
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
@@ -193,7 +193,7 @@ export default function TesterTestDetail() {
           <ArrowLeft size={14} /> Back to Dashboard
         </button>
 
-        <div className="card p-6 space-y-4">
+        <div className="card p-3 sm:p-6 space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="font-display text-xl font-bold text-slate-900 dark:text-slate-50">{test.title}</h1>
@@ -248,7 +248,7 @@ export default function TesterTestDetail() {
         </div>
 
         {isAccepted && (
-          <div className="card p-6 space-y-2">
+          <div className="card p-3 sm:p-6 space-y-2">
             <h2 className="flex items-center gap-2 font-display font-semibold text-slate-900 dark:text-slate-50">
               <ClipboardList size={16} aria-hidden="true" /> Briefing
             </h2>
@@ -267,7 +267,7 @@ export default function TesterTestDetail() {
         )}
 
         {isAccepted && isComplete && (
-          <div className="card p-6">
+          <div className="card p-3 sm:p-6">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               This test is complete, so it no longer accepts new findings. You can still reply to questions on
               your findings below.
@@ -276,7 +276,7 @@ export default function TesterTestDetail() {
         )}
 
         {isAccepted && !isComplete && (
-          <div className="card p-6 space-y-4">
+          <div className="card p-3 sm:p-6 space-y-4">
             <h2 className="font-display font-semibold text-slate-900 dark:text-slate-50">Submit a Finding</h2>
             <form onSubmit={handleSubmitFinding} className="space-y-4">
               <div>
@@ -350,9 +350,9 @@ export default function TesterTestDetail() {
                 const badge = findingStatusBadge[f.status] || findingStatusBadge.open;
                 return (
                   <li key={f.id} className="p-4 space-y-1.5">
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
                       <p className="font-medium text-slate-800 dark:text-slate-200 text-sm">{f.title}</p>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
                         <PriorityBadge priority={f.severity.charAt(0).toUpperCase() + f.severity.slice(1)} />
                         <Badge label={badge.label} color={badge.color} dot />
                       </div>

@@ -59,7 +59,7 @@ export default function CompanyDashboard() {
 
   return (
     <PlatformLayout title="Dashboard">
-      <div className="p-8 space-y-8">
+      <div className="p-2 sm:p-8 space-y-8">
         {/* Welcome bar */}
         <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/50">
           <div>
@@ -244,9 +244,9 @@ export default function CompanyDashboard() {
                         ))}
                       </div>
                     </td>
-                    <td><TypeBadge type={test.type} /></td>
-                    <td><StatusBadge status={test.status} /></td>
-                    <td>
+                    <td data-label="Type"><TypeBadge type={test.type} /></td>
+                    <td data-label="Status"><StatusBadge status={test.status} /></td>
+                    <td data-label="Testers">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 w-16">
                           <div
@@ -259,10 +259,10 @@ export default function CompanyDashboard() {
                         </span>
                       </div>
                     </td>
-                    <td>
+                    <td data-label="Issues">
                       <SeverityBadge count={test.issues} type="bugs" />
                     </td>
-                    <td className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">{test.dueDate}</td>
+                    <td data-label="Due" className="text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">{test.dueDate}</td>
                     <td>
                       <button
                         onClick={(e) => {

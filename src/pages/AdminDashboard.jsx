@@ -284,7 +284,7 @@ export default function AdminDashboard() {
 
   return (
     <PlatformLayout title="Platform Overview">
-      <div className="p-8 space-y-8">
+      <div className="p-2 sm:p-8 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between animate-fade-up">
           <div>
@@ -448,7 +448,7 @@ export default function AdminDashboard() {
                     className="table-row-enter"
                     style={{ animationDelay: `${560 + idx * 60}ms` }}
                   >
-                    <td>
+                    <td data-label="Rank">
                       <span className={`font-mono text-sm font-bold ${idx === 0 ? 'text-amber-500' : idx === 1 ? 'text-slate-400' : idx === 2 ? 'text-orange-400' : 'text-slate-300 dark:text-slate-600'}`}>
                         #{idx + 1}
                       </span>
@@ -461,8 +461,8 @@ export default function AdminDashboard() {
                         <span className="font-medium text-slate-800 dark:text-slate-200">{co.name}</span>
                       </div>
                     </td>
-                    <td className="font-semibold text-slate-700 dark:text-slate-300">{co.tests}</td>
-                    <td className="font-bold text-emerald-600 dark:text-emerald-400">${co.spend.toLocaleString()}</td>
+                    <td data-label="Tests run" className="font-semibold text-slate-700 dark:text-slate-300">{co.tests}</td>
+                    <td data-label="Paid out" className="font-bold text-emerald-600 dark:text-emerald-400">${co.spend.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

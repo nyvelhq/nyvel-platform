@@ -95,7 +95,7 @@ export default function TesterOnboarding() {
 
   return (
     <PlatformLayout title="Complete Your Profile">
-      <div className="p-6 max-w-2xl mx-auto">
+      <div className="p-2 sm:p-6 max-w-2xl mx-auto">
         <Stepper steps={steps} currentStep={step} variant="compact" />
 
         <div className="card rounded-2xl p-6">

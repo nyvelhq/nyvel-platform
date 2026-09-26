@@ -221,7 +221,7 @@ export default function PlatformLayout({ children, title }) {
         onTouchEnd={handleTouchEnd}
       >
         {/* Top header */}
-        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-4 sm:px-6 gap-4 flex-shrink-0">
+        <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center px-2 sm:px-6 gap-2 sm:gap-4 flex-shrink-0">
           {/* Mobile sidebar toggle */}
           <button
             className="lg:hidden text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 p-1 transition-colors"
@@ -232,12 +232,12 @@ export default function PlatformLayout({ children, title }) {
           </button>
 
           {/* Page title */}
-          <div className="flex-1">
-            <h1 className="font-display font-bold text-slate-900 dark:text-slate-50 text-lg">{title}</h1>
+          <div className="flex-1 min-w-0">
+            <h1 className="font-display font-bold text-slate-900 dark:text-slate-50 text-lg truncate">{title}</h1>
           </div>
 
           {/* Header actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
             {/* Theme toggle */}
             <ThemeToggle />
 
@@ -268,7 +268,7 @@ export default function PlatformLayout({ children, title }) {
             </div>
 
             {/* Divider */}
-            <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
+            <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-slate-700" />
 
             {/* User menu */}
             <div className="relative" ref={userMenuRef}>
@@ -284,7 +284,7 @@ export default function PlatformLayout({ children, title }) {
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 hidden sm:block">
                   {user?.name?.split(' ')[0]}
                 </span>
-                <ChevronDown size={14} className="text-slate-400 dark:text-slate-500" aria-hidden="true" />
+                <ChevronDown size={14} className="hidden sm:block text-slate-400 dark:text-slate-500" aria-hidden="true" />
               </button>
 
               {userMenuOpen && (
